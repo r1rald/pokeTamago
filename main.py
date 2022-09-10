@@ -3,7 +3,9 @@ import json, time, threading, sched
 
 
 class Player:
-    food_cd = 0
+    eat_cd = 0
+    training_cd = 0
+    play_cd = 0
 
 
     def __init__(self):
@@ -17,18 +19,22 @@ class Player:
             sg.popup('Eating...', title='', keep_on_top=True, auto_close=True, auto_close_duration=3.5, icon='Data\img\dish.ico')
         else:
             sg.popup('You can not do that right now!', title='Oops!', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\img\dish.ico')
-
+        return ('', 3.5)
 
     def training(self):
-        self.status['food'] -= 5
-        self.status['exhausted'] += 20
-        self.stats['xp'] += 5
-        if self.status['bored'] <= 10:
-            self.status['bored'] == 0
+        if self.training_cd == 0:
+            self.training_cd = 7200
+            self.status['food'] -= 5
+            self.status['exhausted'] += 20
+            self.stats['xp'] += 5
+            if self.status['bored'] <= 10:
+                self.status['bored'] == 0
+            else:
+                self.status['bored'] -= 10
+            sg.popup('Working out...', title='', keep_on_top=True, auto_close=True, auto_close_duration=6, icon='Data\img\dish.ico')
         else:
-            self.status['bored'] -= 10
-        sg.popup('Working out...', title='', keep_on_top=True, auto_close=True, auto_close_duration=6, icon='Data\img\dish.ico')
-        return ('Working out...', 6)
+            sg.popup('You can not do that right now!', title='Oops!', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\img\dish.ico')
+        return ('', 6)
 
 
     def play(self):
@@ -73,10 +79,20 @@ class Player:
         if self.status['health'] <= 0:
             self.status["alive"] = False
 
-        if self.food_cd > 0:
-            self.food_cd -= 1
+        if self.eat_cd > 0:
+            self.eat_cd -= 1
         else:
-           self.food_cd = 0
+           self.eat_cd = 0
+
+        if self.training_cd > 0:
+            self.training_cd -= 1
+        else:
+           self.training_cd = 0
+
+        if self.play_cd > 0:
+            self.play_cd -= 1
+        else:
+           self.play_cd = 0
 
 
     def autosave(self):

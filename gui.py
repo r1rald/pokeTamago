@@ -1,4 +1,3 @@
-from optparse import Values
 import PySimpleGUI as sg
 import json,os,sys
 
@@ -164,7 +163,7 @@ def mainGame(self):
         [sg.T(f"{self.stats['name']}".upper(),font=('',15,'bold'),background_color='#506478')],
         [sg.HSeparator(color='#3c4754',p=0)],
         [sg.T(f"Level {self.stats['level']}",font=('',10),background_color='#506478')],
-        [sg.ProgressBar(max_value=round((4 * ((self.stats['level']+1) ** 3)) / 5),bar_color=('#28fc03','#525252'),orientation='h',expand_x=True,expand_y=True,relief=sg.RELIEF_RAISED,key='progress_1',)],
+        [sg.ProgressBar(max_value=eval(self.stats['xp_needed']),bar_color=('#28fc03','#525252'),orientation='h',expand_x=True,expand_y=True,relief=sg.RELIEF_RAISED,key='progress_1',)],
         ]
     imageLayout = [
         [sg.Image(self.stats['portrait'],k='image',background_color='#506478',p=0,expand_x=True,expand_y=True)],
