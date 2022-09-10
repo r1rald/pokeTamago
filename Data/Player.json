@@ -1,0 +1,26 @@
+{
+"stats": 
+    {
+    "name"     : "",
+    "portrait" : "",
+    "type"     : [],
+    "level"    : 1,
+    "xp"       : 0,
+    "xp_needed": "round((4 * ((self.stats['level']+1) ** 3)) / 5)",
+    "Attack": 50,
+    "Defense": 53,
+    "Sp. Attack": 58,
+    "Sp. Defense": 60,
+    "Speed": 51
+    },
+    
+"status": 
+    {
+    "health"   : 43,
+    "age"      : 0,
+    "bored"    : 0,
+    "food"     : 100,
+    "exhausted": 0,
+    "alive"    : true
+    }   
+}
