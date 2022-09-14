@@ -1,15 +1,4 @@
-from optparse import Values
-import PySimpleGUI as sg
-import json,os,sys
-
-directory = 'Data\save'
-saves = []
-
-def read_save():
-    for filename in os.listdir(directory):
-        f = os.path.join(directory, filename)
-        if os.path.isfile(f):
-            saves.append(f.replace('.json', '').replace('Data\save\\', ''))
+import os, sys, time, funct as f, PySimpleGUI as sg
 
 def newGame(self):
     new_game = [[sg.Text("What is your desire?")],
@@ -21,10 +10,7 @@ def newGame(self):
         if (event == sg.WIN_CLOSED) or (event == 'Exit'):
             sys.exit()
         if (event == 'Catch new Pokemon'):
-            with open('Data\Player.json', 'r') as player:
-                data = json.load(player)
-                self.status = data['status']
-                self.stats = data['stats']
+            f.default_player(self)
 
             name = [[sg.Text('What is the name of your Pokemon?')],
                     [sg.Input(key='-IN-')],
@@ -36,9 +22,9 @@ def newGame(self):
                 if (event == sg.WINDOW_CLOSED):
                     sys.exit()
                 if (event == 'Enter') or (event == 'Submit'):
-                    saves.clear()
-                    read_save()
-                    if values['-IN-'] in saves:
+                    f.saves.clear()
+                    f.read_save()
+                    if values['-IN-'] in f.saves:
                         sg.Popup('This Pokemon is already exist!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\img\warning.ico')
                     elif values['-IN-'] == '':
                         sg.Popup('You must give a name to your Pokemon!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\img\warning.ico')
@@ -48,15 +34,9 @@ def newGame(self):
                         self.stats["name"] = values['-IN-']
                         break
 
-            pokes = []
-            types = []
-            with open('Data\pokedex.json', 'r') as read_file:
-                data = json.load(read_file)
-                for poke in data:
-                    pokes.append(poke['name'])
-                    types.append(poke['type'])
+            f.open_dex()
 
-            pokeChoose = [[sg.Listbox(values=[x for x in pokes], enable_events=True, size=(25, 15), key="poke", expand_x=True)], 
+            pokeChoose = [[sg.Listbox(values=[x for x in f.pokes], enable_events=True, size=(25, 15), key="poke", expand_x=True)], 
                     [sg.B('Choose'),sg.Button('Submit', visible=False, bind_return_key=True)]]
             pokeWindow = sg.Window('Load', pokeChoose, icon='Data\img\load.ico')
 
@@ -65,7 +45,7 @@ def newGame(self):
                 if (event == sg.WINDOW_CLOSED):
                     sys.exit()
                 if (event== 'Choose') or (event =='Submit'):
-                    index = pokes.index(f'{values["poke"][0]}')
+                    index = f.pokes.index(f'{values["poke"][0]}')
                     if ' ' in values["poke"][0]:
                         name = values["poke"][0].replace(' ', '')
                     elif "'" in values["poke"][0]:
@@ -73,17 +53,17 @@ def newGame(self):
                     else:
                         name = values["poke"][0]
                     self.stats['portrait'] = f'Data\\img\\poke\\{name}.gif'
-                    self.stats['type'] = types[index]
+                    self.stats['type'] = f.types[index]
                     break
 
             pokeWindow.close()
             window2.close()
 
         if (event == 'Continue existing Pokemon'):
-            saves.clear()
-            read_save()
+            f.saves.clear()
+            f.read_save()
 
-            load = [[sg.Listbox(values=[x for x in saves], enable_events=True, size=(25, 15), key="load", expand_x=True)], 
+            load = [[sg.Listbox(values=[x for x in f.saves], enable_events=True, size=(25, 15), key="load", expand_x=True)], 
             [sg.B('Load'),sg.B('Delete'),sg.Button('Submit', visible=False, bind_return_key=True)]]
             window2 = sg.Window('Load', load, icon='Data\img\load.ico')
             
@@ -95,19 +75,17 @@ def newGame(self):
                     if not values["load"]:
                         sg.Popup('You must choose a save file!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\img\warning.ico')
                     else:
-                        with open(f'Data\save\{values["load"][0]}.json', 'r') as player:
-                            data = json.load(player)
-                            self.stats = data['stats']
-                            self.status = data['status']
-                            break
+                        f.load_saves(self, values["load"][0])
+                        break
                 if (event == 'Delete'):
                     if not values["load"]:
                         sg.Popup('You must choose a save file!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\img\warning.ico')
                     else:
                         os.remove(f'Data\save\{values["load"][0]}.json')
-                        saves.clear()
-                        read_save()
-                        window2['load'].update(values=[x for x in saves])
+                        f.saves.clear()
+                        f.read_save()
+                        window2['load'].update(values=[x for x in f.saves])
+            f.offline_time(self)
             window2.close()
         break
     window1.close()
@@ -136,7 +114,7 @@ def mainGame(self):
         [sg.HSeparator(color='#3c4754',p=0)],
         [sg.ProgressBar(max_value=100,orientation='h',expand_x=True,expand_y=True,p=0,key='bored',)],
         [sg.HSeparator(color='#3c4754',p=0)],
-        [sg.ProgressBar(max_value=120,orientation='h',expand_x=True,expand_y=True,p=0,key='exhausted',)]
+        [sg.ProgressBar(max_value=100,orientation='h',expand_x=True,expand_y=True,p=0,key='exhausted',)]
         ]
     stats_layout = [
         [sg.T(f"Attack",font=('',10,'bold'),background_color='#506478')],
@@ -164,7 +142,7 @@ def mainGame(self):
         [sg.T(f"{self.stats['name']}".upper(),font=('',15,'bold'),background_color='#506478')],
         [sg.HSeparator(color='#3c4754',p=0)],
         [sg.T(f"Level {self.stats['level']}",font=('',10),background_color='#506478')],
-        [sg.ProgressBar(max_value=round((4 * ((self.stats['level']+1) ** 3)) / 5),bar_color=('#28fc03','#525252'),orientation='h',expand_x=True,expand_y=True,relief=sg.RELIEF_RAISED,key='progress_1',)],
+        [sg.ProgressBar(max_value=eval(self.stats['xp_needed']),bar_color=('#28fc03','#525252'),orientation='h',expand_x=True,expand_y=True,relief=sg.RELIEF_RAISED,key='progress_1',)],
         ]
     imageLayout = [
         [sg.Image(self.stats['portrait'],k='image',background_color='#506478',p=0,expand_x=True,expand_y=True)],
@@ -227,11 +205,11 @@ def mainGame(self):
             sg.popup(f"{self.stats['name']} hast fallen and lost thy life. :(", title='', keep_on_top=True)
             break
 
-        if self.status["exhausted"] < 80:
+        if self.status["exhausted"] < 60:
             xhstdClr = (None)
-        if self.status["exhausted"] > 80:
+        if self.status["exhausted"] > 60:
             xhstdClr = ('orange','white')
-        if self.status["exhausted"] > 100:
+        if self.status["exhausted"] > 80:
             xhstdClr = ('red','white')
 
         if self.status["food"] > 50:
@@ -274,5 +252,6 @@ def mainGame(self):
         mainWindow['Speed'].update(self.stats['Speed'])
         mainWindow["image"].UpdateAnimation(self.stats['portrait'],time_between_frames=25)
 
+    self.status['time'] = round(time.time())
     mainWindow.close()
     sys.exit()

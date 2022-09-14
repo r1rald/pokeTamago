@@ -16,11 +16,15 @@
     
 "status": 
     {
-    "health"   : 43,
-    "age"      : 0,
-    "bored"    : 0,
-    "food"     : 100,
-    "exhausted": 0,
-    "alive"    : true
+    "health"     : 43,
+    "age"        : 0,
+    "bored"      : 0,
+    "food"       : 100,
+    "exhausted"  : 0,
+    "alive"      : true,
+    "time"       : 0,
+    "eat_cd"     : 0,
+    "training_cd": 0,
+    "play_cd"    : 0
     }   
 }
