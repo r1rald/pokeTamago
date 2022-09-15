@@ -93,7 +93,6 @@ def newGame(self):
 
 
 def mainGame(self):
-    
     status_layout = [
         [sg.T("Health",font=('',10,'bold'),background_color='#506478')],
         [sg.HSeparator(color='#3c4754',p=0)],
@@ -187,7 +186,6 @@ def mainGame(self):
 
     while True:
         event,value = mainWindow.read(timeout=25)
-
         if (event == sg.WIN_CLOSED) or (event == 'Exit'):
             self.autosave()
             break
@@ -233,7 +231,9 @@ def mainGame(self):
         days, h_remainder = divmod(self.status['age'], 86400)
         hrs, remainder = divmod(h_remainder, 3600)
         mins, secs = divmod(remainder, 60)
+
         age = f"{secs}"
+        
         if mins > 0:
             age = f"{mins}:{secs}"
         if hrs > 0:

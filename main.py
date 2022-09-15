@@ -1,6 +1,6 @@
 from obj import Poke
-from threading import Thread, Event
-import time, sched, sys
+from threading import Thread
+import time, sched
 
 
 if __name__ == "__main__":
@@ -15,8 +15,6 @@ if __name__ == "__main__":
             s.enter(1, 1, run, (sc,))
 
     s.enter(1, 1, run, (s,))
-
-    breaking = Event()
 
     t = Thread(target=s.run)
     t.start()
