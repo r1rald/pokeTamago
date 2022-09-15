@@ -1,4 +1,4 @@
-import time, os, json, gui as g
+import time, os, json
 
 def load_saves(self, var):
     with open(f'Data\save\{var}.json', 'r') as player:

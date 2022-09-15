@@ -1,5 +1,6 @@
 import os, sys, time, funct as f, PySimpleGUI as sg
 
+
 def newGame(self):
     new_game = [[sg.Text("What is your desire?")],
                 [sg.Button('Catch new Pokemon'), sg.Button('Continue existing Pokemon'), sg.Button('Exit')]]
@@ -186,6 +187,7 @@ def mainGame(self):
 
     while True:
         event,value = mainWindow.read(timeout=25)
+
         if (event == sg.WIN_CLOSED) or (event == 'Exit'):
             self.autosave()
             break
