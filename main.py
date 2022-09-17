@@ -1,6 +1,6 @@
 from obj import Poke
 from threading import Thread
-import time, sched
+import time, sched, sys
 
 
 if __name__ == "__main__":
@@ -13,9 +13,10 @@ if __name__ == "__main__":
         p.passing_time()
         if p.status["alive"]:
             s.enter(1, 1, run, (sc,))
+        if p.run is False:
+            sys.exit()
 
     s.enter(1, 1, run, (s,))
-
     t = Thread(target=s.run)
     t.start()
 
