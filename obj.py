@@ -2,7 +2,7 @@ import json, gui as g, PySimpleGUI as sg
 
 class Poke:
     run = True
-    
+
     def __init__(self):
         g.newGame(self)
 
@@ -52,9 +52,9 @@ class Poke:
 
     def passing_time(self):
         self.condition['age'] += 1
-        self.condition["bored"] += 0.0046
-        self.condition["food"] -= 0.0011
-        self.condition["exhausted"] += 0.0017
+        self.condition["bored"] += 0.0069
+        self.condition["food"] -= 0.0034
+        self.condition["exhausted"] += 0.0023
 
         if self.condition["bored"] > 80:
             self.condition["exhausted"] += 0.01

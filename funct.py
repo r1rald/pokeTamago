@@ -41,9 +41,9 @@ def offline_time(self):
     elapsed_time = now - then
 
     self.condition['age'] += elapsed_time
-    self.condition["bored"] += (0.0001*elapsed_time)
-    self.condition["food"] -= (0.0001*elapsed_time)
-    self.condition["exhausted"] += (0.0001*elapsed_time)
+    self.condition["bored"] += (0.0046*elapsed_time)
+    self.condition["food"] -= (0.0011*elapsed_time)
+    self.condition["exhausted"] += (0.0017*elapsed_time)
 
     if self.condition["bored"] > 100:
         self.condition["bored"] = 100

@@ -4,7 +4,7 @@ import os, sys, time, funct as f, PySimpleGUI as sg
 def newGame(self):
     new_game = [[sg.Text("What is your desire?")],
                 [sg.Button('Catch new Pokemon'), sg.Button('Continue existing Pokemon'), sg.Button('Exit')]]
-    window1 = sg.Window('tamago', new_game, icon='Data\img\logo.ico', grab_anywhere=True)
+    window1 = sg.Window('pokéTamago', new_game, icon='Data\img\logo.ico', grab_anywhere=True)
 
     while True:
         event, values = window1.read()
@@ -182,7 +182,7 @@ def mainGame(self):
         [sg.Column(buttonColumn), sg.Column(Column, element_justification='c')],     
         ]
         
-    mainWindow = sg.Window('tamago',layout,icon='Data\img\logo.ico')
+    mainWindow = sg.Window('pokéTamago',layout,icon='Data\img\logo.ico')
 
     while True:
         event,value = mainWindow.read(timeout=25)
