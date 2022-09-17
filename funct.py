@@ -1,9 +1,10 @@
-import time, os, json, gui as g
+import time, os, json
 
 def load_saves(self, var):
     with open(f'Data\save\{var}.json', 'r') as player:
         data = json.load(player)
         self.stats = data['stats']
+        self.condition = data['condition']
         self.status = data['status']
 
 
@@ -21,6 +22,7 @@ def default_player(self):
     with open('Data\Player.json', 'r') as player:
         data = json.load(player)
         self.status = data['status']
+        self.condition = data['condition']
         self.stats = data['stats']
 
 
@@ -38,16 +40,16 @@ def offline_time(self):
     now = round(time.time())
     elapsed_time = now - then
 
-    self.status['age'] += (1*elapsed_time)
-    self.status["bored"] += (0.0001*elapsed_time)
-    self.status["food"] -= (0.0001*elapsed_time)
-    self.status["exhausted"] += (0.0001*elapsed_time)
+    self.condition['age'] += elapsed_time
+    self.condition["bored"] += (0.0001*elapsed_time)
+    self.condition["food"] -= (0.0001*elapsed_time)
+    self.condition["exhausted"] += (0.0001*elapsed_time)
 
-    if self.status["bored"] > 100:
-        self.status["bored"] = 100
+    if self.condition["bored"] > 100:
+        self.condition["bored"] = 100
 
-    if self.status["food"] < 0:
-        self.status["food"] = 0
+    if self.condition["food"] < 0:
+        self.condition["food"] = 0
 
-    if self.status["exhausted"] >= 120:
-        self.status["exhausted"] = 120
+    if self.condition["exhausted"] >= 120:
+        self.condition["exhausted"] = 120

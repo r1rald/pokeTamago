@@ -1,5 +1,6 @@
 import os, sys, time, funct as f, PySimpleGUI as sg
 
+
 def newGame(self):
     new_game = [[sg.Text("What is your desire?")],
                 [sg.Button('Catch new Pokemon'), sg.Button('Continue existing Pokemon'), sg.Button('Exit')]]
@@ -92,8 +93,7 @@ def newGame(self):
 
 
 def mainGame(self):
-    
-    status_layout = [
+    condition_layout = [
         [sg.T("Health",font=('',10,'bold'),background_color='#506478')],
         [sg.HSeparator(color='#3c4754',p=0)],
         [sg.T("Age",font=('',10,'bold'),background_color='#506478')],
@@ -105,8 +105,8 @@ def mainGame(self):
         [sg.T(f"Exhausted",font=('',10,'bold'),background_color='#506478')]
         ]
 
-    status_values = [
-        [sg.T(f"{round(self.status['health'])}",font=('',10,'bold'),background_color='#506478',k='health')],
+    condition_values = [
+        [sg.T(f"{round(self.condition['health'])}",font=('',10,'bold'),background_color='#506478',k='health')],
         [sg.HSeparator(color='#3c4754',p=0)],
         [sg.T("",font=('',10,'bold'),background_color='#506478',k='age')],
         [sg.HSeparator(color='#3c4754',p=0)],
@@ -153,7 +153,7 @@ def mainGame(self):
     else:
         TypeImage2 = [sg.Image(f'Data\img\poke\\types\{self.stats["type"][1]}_Type_Icon.png',k='type2',background_color='#506478',p=0,size=(30,24),tooltip=f' {self.stats["type"][1]} ')]
 
-    statusBar = [
+    conditionBar = [
         [sg.Image(f'Data\img\poke\\types\{self.stats["type"][0]}_Type_Icon.png',k='type1',background_color='#506478',p=0,size=(30,24),tooltip=f' {self.stats["type"][0]} ')],
         [sg.HSeparator(color='#3c4754',p=0)],
         TypeImage2,
@@ -162,9 +162,9 @@ def mainGame(self):
         ]
 
     Column = [
-        [sg.Frame('',imageLayout,background_color='#506478',size=(170, 100),element_justification='center',p=((0, 0), (0, 5))),sg.Frame('',statusBar,background_color='#506478',size=(30, 100),element_justification='center',p=((0, 0), (0, 5)))],
+        [sg.Frame('',imageLayout,background_color='#506478',size=(170, 100),element_justification='center',p=((0, 0), (0, 5))),sg.Frame('',conditionBar,background_color='#506478',size=(30, 100),element_justification='center',p=((0, 0), (0, 5)))],
         [sg.Frame('',nameLayout,background_color='#506478',size=(200, 90),element_justification='center',p=((0, 0), (5, 5)))],
-        [sg.Frame('',status_layout,background_color='#506478',size=(100,142),element_justification='center',p=((0, 0), (5, 5))), sg.Frame('',status_values,background_color='#506478',size=(100,142),element_justification='center',p=((0, 0), (5, 5)))],
+        [sg.Frame('',condition_layout,background_color='#506478',size=(100,142),element_justification='center',p=((0, 0), (5, 5))), sg.Frame('',condition_values,background_color='#506478',size=(100,142),element_justification='center',p=((0, 0), (5, 5)))],
         [sg.Frame('',stats_layout,background_color='#506478',size=(100,142),element_justification='center',p=((0, 0), (5, 0))), sg.Frame('',stats_values,background_color='#506478',size=(100,142),element_justification='center',p=((0, 0), (5, 0)))]
         ]
     buttonColumn = [
@@ -188,6 +188,7 @@ def mainGame(self):
         event,value = mainWindow.read(timeout=25)
         if (event == sg.WIN_CLOSED) or (event == 'Exit'):
             self.autosave()
+            self.run = False
             break
         if event == sg.TIMEOUT_KEY:
             mainWindow.refresh()
@@ -205,33 +206,35 @@ def mainGame(self):
             sg.popup(f"{self.stats['name']} hast fallen and lost thy life. :(", title='', keep_on_top=True)
             break
 
-        if self.status["exhausted"] < 60:
+        if self.condition["exhausted"] < 60:
             xhstdClr = (None)
-        if self.status["exhausted"] > 60:
+        if self.condition["exhausted"] > 60:
             xhstdClr = ('orange','white')
-        if self.status["exhausted"] > 80:
+        if self.condition["exhausted"] > 80:
             xhstdClr = ('red','white')
 
-        if self.status["food"] > 50:
+        if self.condition["food"] > 50:
             fdClr = (None)
-        if self.status["food"] < 50:
+        if self.condition["food"] < 50:
             fdClr = ('green','white')
-        if self.status["food"] < 30:
+        if self.condition["food"] < 30:
             fdClr = ('orange','white')
-        if self.status["food"] < 15:
+        if self.condition["food"] < 15:
             fdClr = ('red','white')
 
-        if self.status["bored"] < 60:
+        if self.condition["bored"] < 60:
             fdClr = (None)
-        if self.status["bored"] > 60:
+        if self.condition["bored"] > 60:
             fdClr = ('orange','white')
-        if self.status["bored"] > 80:
+        if self.condition["bored"] > 80:
             fdClr = ('red','white')
 
-        days, h_remainder = divmod(self.status['age'], 86400)
+        days, h_remainder = divmod(self.condition['age'], 86400)
         hrs, remainder = divmod(h_remainder, 3600)
         mins, secs = divmod(remainder, 60)
+
         age = f"{secs}"
+        
         if mins > 0:
             age = f"{mins}:{secs}"
         if hrs > 0:
@@ -240,11 +243,11 @@ def mainGame(self):
             age = f"{days}d {hrs}:{mins}:{secs}"
 
         mainWindow['progress_1'].update(self.stats['xp'])
-        mainWindow['health'].update(round(self.status['health']))
+        mainWindow['health'].update(round(self.condition['health']))
         mainWindow['age'].update(age)
-        mainWindow['food'].update(self.status['food'],bar_color=fdClr)
-        mainWindow['bored'].update(self.status['bored'],bar_color=fdClr)
-        mainWindow['exhausted'].update(self.status['exhausted'],bar_color=xhstdClr)  
+        mainWindow['food'].update(self.condition['food'],bar_color=fdClr)
+        mainWindow['bored'].update(self.condition['bored'],bar_color=fdClr)
+        mainWindow['exhausted'].update(self.condition['exhausted'],bar_color=xhstdClr)  
         mainWindow['Attack'].update(self.stats['Attack'])
         mainWindow['Defense'].update(self.stats['Defense'])
         mainWindow['Sp. Attack'].update(self.stats['Sp. Attack'])

@@ -14,15 +14,22 @@
     "Speed": 51
     },
     
-"status": 
+"condition": 
     {
     "health"     : 43,
     "age"        : 0,
     "bored"      : 0,
     "food"       : 100,
-    "exhausted"  : 0,
+    "exhausted"  : 0
+    },
+
+"status": 
+    {
     "alive"      : true,
     "time"       : 0,
+    "sleeping"   : false,
+    "trained"    : false,
+    "played"     : false,
     "eat_cd"     : 0,
     "training_cd": 0,
     "play_cd"    : 0
