@@ -26,12 +26,13 @@
 "status": 
     {
     "alive"      : true,
-    "time"       : 0,
+    "revive"     : false,
+    "revive_time": 0,
     "sleeping"   : false,
-    "trained"    : false,
-    "played"     : false,
+    "sleep"      : 0,
     "eat_cd"     : 0,
     "training_cd": 0,
-    "play_cd"    : 0
+    "play_cd"    : 0,
+    "time"       : 0
     }   
 }

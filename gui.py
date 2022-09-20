@@ -4,7 +4,7 @@ import os, sys, time, funct as f, PySimpleGUI as sg
 def newGame(self):
     new_game = [[sg.Text("What is your desire?")],
                 [sg.Button('Catch new Pokemon'), sg.Button('Continue existing Pokemon'), sg.Button('Exit')]]
-    window1 = sg.Window('pokéTamago', new_game, icon='Data\img\logo.ico', grab_anywhere=True)
+    window1 = sg.Window('pokéTamago', new_game, icon='Data\\img\\logo.ico', grab_anywhere=True)
 
     while True:
         event, values = window1.read()
@@ -16,7 +16,7 @@ def newGame(self):
             name = [[sg.Text('What is the name of your Pokemon?')],
                     [sg.Input(key='-IN-')],
                     [sg.Button('Enter'), sg.Button('Submit', visible=False, bind_return_key=True)]]
-            window2 = sg.Window('Name', name, icon='Data\img\logo.ico', grab_anywhere=True)
+            window2 = sg.Window('Name', name, icon='Data\\img\\logo.ico', grab_anywhere=True)
 
             while True:
                 event, values = window2.read()
@@ -26,11 +26,11 @@ def newGame(self):
                     f.saves.clear()
                     f.read_save()
                     if values['-IN-'] in f.saves:
-                        sg.Popup('This Pokemon is already exist!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\img\warning.ico')
+                        sg.Popup('This Pokemon is already exist!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
                     elif values['-IN-'] == '':
-                        sg.Popup('You must give a name to your Pokemon!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\img\warning.ico')
+                        sg.Popup('You must give a name to your Pokemon!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
                     elif len(values['-IN-']) > 14:
-                        sg.Popup('Please try a shorter name!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\img\warning.ico')
+                        sg.Popup('Please try a shorter name!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
                     else:
                         self.stats["name"] = values['-IN-']
                         break
@@ -39,7 +39,7 @@ def newGame(self):
 
             pokeChoose = [[sg.Listbox(values=[x for x in f.pokes], enable_events=True, size=(25, 15), key="poke", expand_x=True)], 
                     [sg.B('Choose'),sg.Button('Submit', visible=False, bind_return_key=True)]]
-            pokeWindow = sg.Window('Load', pokeChoose, icon='Data\img\load.ico')
+            pokeWindow = sg.Window('Load', pokeChoose, icon='Data\\img\\load.ico')
 
             while True:
                 event, values = pokeWindow.read()
@@ -66,7 +66,7 @@ def newGame(self):
 
             load = [[sg.Listbox(values=[x for x in f.saves], enable_events=True, size=(25, 15), key="load", expand_x=True)], 
             [sg.B('Load'),sg.B('Delete'),sg.Button('Submit', visible=False, bind_return_key=True)]]
-            window2 = sg.Window('Load', load, icon='Data\img\load.ico')
+            window2 = sg.Window('Load', load, icon='Data\\img\\load.ico')
             
             while True:
                 event, values = window2.read()
@@ -74,15 +74,15 @@ def newGame(self):
                     sys.exit()
                 if (event == 'Load') or (event == 'Submit'):
                     if not values["load"]:
-                        sg.Popup('You must choose a save file!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\img\warning.ico')
+                        sg.Popup('You must choose a save file!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
                     else:
                         f.load_saves(self, values["load"][0])
                         break
                 if (event == 'Delete'):
                     if not values["load"]:
-                        sg.Popup('You must choose a save file!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\img\warning.ico')
+                        sg.Popup('You must choose a save file!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
                     else:
-                        os.remove(f'Data\save\{values["load"][0]}.json')
+                        os.remove(f'Data\\save\\{values["load"][0]}.json')
                         f.saves.clear()
                         f.read_save()
                         window2['load'].update(values=[x for x in f.saves])
@@ -104,7 +104,6 @@ def mainGame(self):
         [sg.HSeparator(color='#3c4754',p=0)],
         [sg.T(f"Exhausted",font=('',10,'bold'),background_color='#506478')]
         ]
-
     condition_values = [
         [sg.T(f"{round(self.condition['health'])}",font=('',10,'bold'),background_color='#506478',k='health')],
         [sg.HSeparator(color='#3c4754',p=0)],
@@ -149,12 +148,12 @@ def mainGame(self):
         ]
 
     if len(self.stats["type"]) < 2:
-        TypeImage2 = [sg.Image(f'Data\img\poke\\types\\none.png',k='type2',background_color='#506478',p=0,size=(30,24),tooltip=' There is no second type of this Pokemon ')]
+        TypeImage2 = [sg.Image(f'Data\\img\\poke\\types\\none.png',k='type2',background_color='#506478',p=0,size=(30,24),tooltip=' There is no second type of this Pokemon ')]
     else:
-        TypeImage2 = [sg.Image(f'Data\img\poke\\types\{self.stats["type"][1]}_Type_Icon.png',k='type2',background_color='#506478',p=0,size=(30,24),tooltip=f' {self.stats["type"][1]} ')]
+        TypeImage2 = [sg.Image(f'Data\\img\\poke\\types\\{self.stats["type"][1]}_Type_Icon.png',k='type2',background_color='#506478',p=0,size=(30,24),tooltip=f' {self.stats["type"][1]} ')]
 
     conditionBar = [
-        [sg.Image(f'Data\img\poke\\types\{self.stats["type"][0]}_Type_Icon.png',k='type1',background_color='#506478',p=0,size=(30,24),tooltip=f' {self.stats["type"][0]} ')],
+        [sg.Image(f'Data\\img\\poke\\types\\{self.stats["type"][0]}_Type_Icon.png',k='type1',background_color='#506478',p=0,size=(30,24),tooltip=f' {self.stats["type"][0]} ')],
         [sg.HSeparator(color='#3c4754',p=0)],
         TypeImage2,
         [sg.HSeparator(color='#3c4754',p=0)],
@@ -182,7 +181,7 @@ def mainGame(self):
         [sg.Column(buttonColumn), sg.Column(Column, element_justification='c')],     
         ]
         
-    mainWindow = sg.Window('pokéTamago',layout,icon='Data\img\logo.ico')
+    mainWindow = sg.Window('pokéTamago',layout,icon='Data\\img\\logo.ico')
 
     while True:
         event,value = mainWindow.read(timeout=25)
@@ -202,9 +201,8 @@ def mainGame(self):
             self.play()
         if event == 'Sleep':
             self.sleep()
-        if self.status['alive'] == False:
-            sg.popup(f"{self.stats['name']} hast fallen and lost thy life. :(", title='', keep_on_top=True)
-            break
+        if not self.status['alive']:
+            death_screen(self)
 
         if self.condition["exhausted"] < 60:
             xhstdClr = (None)
@@ -257,4 +255,31 @@ def mainGame(self):
 
     self.status['time'] = round(time.time())
     mainWindow.close()
-    sys.exit()
+
+
+def death_screen(self):
+    if not self.status['revive']:
+        gif = 'death'
+        text = '''Sadly seems like your pet is passed away.
+    Do you want to revive this Pokemon?'''
+        buttons = [sg.B('Revive',size=8),sg.B('Let go',size=8),sg.B('Exit',size=8,p=((50,0),(0,0)))]
+    if self.status['revive']:
+        gif = 'revive'
+        text = f'Your Pokemon is about to begin a new life.\n The process will take {self.status["revive_time"]} second(s)'
+        buttons = []
+        
+    layout = [
+        [sg.Image(f'Data\\img\\{gif}.gif',k='ghost',p=((20,20),(20,0)),)],
+        [sg.T(f'{text}',p=((0,0),(20,20)))],
+        buttons
+    ]
+
+    deathWindow = sg.Window('Passing',layout,icon='Data\\img\\death.ico',element_justification = "center")
+
+    while True:
+        event,value = deathWindow.read(timeout=150)
+        if (event == sg.WIN_CLOSED) or (event == 'Exit'):
+            sys.exit()
+
+
+        deathWindow['ghost'].UpdateAnimation(f'Data\\img\\{gif}.gif',time_between_frames=150)

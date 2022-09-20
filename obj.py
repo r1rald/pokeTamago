@@ -11,9 +11,9 @@ class Poke:
         if self.status['food_cd'] == 0:
             self.status['food_cd'] = 3600
             self.condition['food'] = 100
-            sg.popup('Eating...', title='', keep_on_top=True, auto_close=True, auto_close_duration=3.5, icon='Data\img\dish.ico')
+            sg.popup('Eating...', title='', keep_on_top=True, auto_close=True, auto_close_duration=3.5, icon='Data\\img\\dish.ico')
         else:
-            sg.popup('You can not do that right now!', title='Oops!', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\img\dish.ico')
+            sg.popup('You can not do that right now!', title='Oops!', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\dish.ico')
 
 
     def training(self):
@@ -26,9 +26,9 @@ class Poke:
                 self.condition['bored'] == 0
             else:
                 self.condition['bored'] -= 10
-            sg.popup('Working out...', title='', keep_on_top=True, auto_close=True, auto_close_duration=6, icon='Data\img\dish.ico')
+            sg.popup('Working out...', title='', keep_on_top=True, auto_close=True, auto_close_duration=6, icon='Data\\img\\dish.ico')
         else:
-            sg.popup('You can not do that right now!', title='Oops!', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\img\dish.ico')
+            sg.popup('You can not do that right now!', title='Oops!', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\dish.ico')
 
 
     def play(self):
@@ -40,14 +40,14 @@ class Poke:
                 self.condition['bored'] == 0
             else:
                 self.condition['bored'] -= 20
-            sg.popup('Playing...', title='', keep_on_top=True, auto_close=True, auto_close_duration=4, icon='Data\img\dish.ico')
+            sg.popup('Playing...', title='', keep_on_top=True, auto_close=True, auto_close_duration=4, icon='Data\\img\\dish.ico')
         else:
-            sg.popup('You can not do that right now!', title='Oops!', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\img\dish.ico')
+            sg.popup('You can not do that right now!', title='Oops!', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\dish.ico')
 
     def sleep(self):
         self.condition['exhausted'] = 0
         self.condition['food'] = 20
-        sg.popup('Sleeping...', title='', keep_on_top=True, auto_close=True, auto_close_duration=10, icon='Data\img\dish.ico')
+        sg.popup('Sleeping...', title='', keep_on_top=True, auto_close=True, auto_close_duration=10, icon='Data\\img\\dish.ico')
         
 
     def passing_time(self):
@@ -70,8 +70,9 @@ class Poke:
             if self.condition["exhausted"] > 100:
                 self.condition["exhausted"] = 100
 
-        if self.condition['health'] <= 0:
-            self.condition["alive"] = False
+        if self.condition['health'] < 0:
+            self.condition['health'] = 0
+            self.status["alive"] = False
 
         if self.status['eat_cd'] > 0:
             self.status['eat_cd'] -= 1
@@ -89,12 +90,17 @@ class Poke:
            self.status['play_cd'] = 0
 
 
+    def revive(self):
+        if self.condition["alive"] == False:
+            pass
+
+
     def autosave(self):
         save = {}
         save['stats'] = self.stats
         save['condition'] = self.condition
         save['status'] = self.status
-        with open(f"Data\save\{self.stats['name']}.json", 'w') as outfile:
+        with open(f"Data\\save\\{self.stats['name']}.json", 'w') as outfile:
             json.dump(save, outfile)
 
 
