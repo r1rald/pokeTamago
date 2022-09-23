@@ -20,5 +20,5 @@ if __name__ == "__main__":
     t = Thread(target=s.run)
     t.start()
 
-    while True:
+    while p.run:
         p.run()
