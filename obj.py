@@ -19,7 +19,7 @@ class Poke:
     def training(self):
         if self.status['training_cd'] == 0:
             self.status['training_cd'] = 7200
-            self.status['food'] -= 5
+            self.condition['food'] -= 5
             self.condition['exhausted'] += 20
             self.stats['xp'] += 5
             if self.condition['bored'] <= 10:
@@ -51,48 +51,53 @@ class Poke:
         
 
     def passing_time(self):
-        self.condition['age'] += 1
-        self.condition["bored"] += 0.0069
-        self.condition["food"] -= 0.0034
-        self.condition["exhausted"] += 0.0023
+        if self.status["alive"]:
+            self.condition['age'] += 1
+            self.condition["bored"] += 0.0069
+            self.condition["food"] -= 0.0034
+            self.condition["exhausted"] += 0.0023
 
-        if self.condition["bored"] > 80:
-            self.condition["exhausted"] += 0.01
-            if self.condition["bored"] > 100:
-                self.condition["bored"] = 100
+            if self.condition["bored"] > 80:
+                self.condition["exhausted"] += 0.01
+                if self.condition["bored"] > 100:
+                    self.condition["bored"] = 100
 
-        if self.condition["food"] < 0:
-            self.condition["food"] = 0
-            self.condition["health"] -= 0.1
+            if self.condition["food"] < 0:
+                self.condition["food"] = 0
+                self.condition["health"] -= 0.1
 
-        if self.condition["exhausted"] >= 100:
-            self.condition["health"] -= 0.1
-            if self.condition["exhausted"] > 100:
-                self.condition["exhausted"] = 100
+            if self.condition["exhausted"] >= 100:
+                self.condition["health"] -= 0.1
+                if self.condition["exhausted"] > 100:
+                    self.condition["exhausted"] = 100
 
-        if self.condition['health'] < 0:
-            self.condition['health'] = 0
-            self.status["alive"] = False
+            if self.condition['health'] < 0:
+                self.condition['health'] = 0
+                self.status["alive"] = False
 
-        if self.status['eat_cd'] > 0:
-            self.status['eat_cd'] -= 1
+            if self.status['eat_cd'] > 0:
+                self.status['eat_cd'] -= 1
+            else:
+                self.status['eat_cd'] = 0
+
+            if self.status['training_cd'] > 0:
+                self.status['training_cd'] -= 1
+            else:
+                self.status['training_cd'] = 0
+
+            if self.status['play_cd'] > 0:
+                self.status['play_cd'] -= 1
+            else:
+                self.status['play_cd'] = 0
         else:
-           self.status['eat_cd'] = 0
-
-        if self.status['training_cd'] > 0:
-            self.status['training_cd'] -= 1
-        else:
-           self.status['training_cd'] = 0
-
-        if self.status['play_cd'] > 0:
-            self.status['play_cd'] -= 1
-        else:
-           self.status['play_cd'] = 0
-
-
-    def revive(self):
-        if self.condition["alive"] == False:
-            pass
+            if self.status['revive'] and self.status['revive_time'] > 0:
+                self.status['revive_time'] -= 1
+                if self.status['revive_time'] == 0:
+                    self.condition['bored'] = 0
+                    self.condition['food'] = 100
+                    self.condition['exhausted'] = 0
+                    self.status['alive'] = True
+                    self.status['revive'] = False
 
 
     def autosave(self):
