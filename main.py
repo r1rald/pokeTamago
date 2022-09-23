@@ -11,14 +11,14 @@ if __name__ == "__main__":
     def run(sc):
         p.autosave()
         p.passing_time()
-        if p.status["alive"]:
-            s.enter(1, 1, run, (sc,))
+        s.enter(1, 1, run, (sc,))
         if p.run is False:
+            p.autosave()
             sys.exit()
 
     s.enter(1, 1, run, (s,))
     t = Thread(target=s.run)
     t.start()
 
-    while p.status['alive']:
+    while True:
         p.run()
