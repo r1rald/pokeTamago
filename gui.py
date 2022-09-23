@@ -227,22 +227,9 @@ def mainGame(self):
         if self.condition["bored"] > 80:
             fdClr = ('red','white')
 
-        days, h_remainder = divmod(self.condition['age'], 86400)
-        hrs, remainder = divmod(h_remainder, 3600)
-        mins, secs = divmod(remainder, 60)
-
-        age = f"{secs}"
-        
-        if mins > 0:
-            age = f"{mins}:{secs}"
-        if hrs > 0:
-            age = f"{hrs}:{mins}:{secs}"
-        if days > 0:
-            age = f"{days}d {hrs}:{mins}:{secs}"
-
         mainWindow['progress_1'].update(self.stats['xp'])
         mainWindow['health'].update(round(self.condition['health']))
-        mainWindow['age'].update(age)
+        mainWindow['age'].update(f.process_time(self.condition['age']))
         mainWindow['food'].update(self.condition['food'],bar_color=fdClr)
         mainWindow['bored'].update(self.condition['bored'],bar_color=fdClr)
         mainWindow['exhausted'].update(self.condition['exhausted'],bar_color=xhstdClr)  
@@ -258,28 +245,43 @@ def mainGame(self):
 
 
 def death_screen(self):
-    if not self.status['revive']:
-        gif = 'death'
-        text = '''Sadly seems like your pet is passed away.
-    Do you want to revive this Pokemon?'''
-        buttons = [sg.B('Revive',size=8),sg.B('Let go',size=8),sg.B('Exit',size=8,p=((50,0),(0,0)))]
-    if self.status['revive']:
-        gif = 'revive'
-        text = f'Your Pokemon is about to begin a new life.\n The process will take {self.status["revive_time"]} second(s)'
-        buttons = []
-        
-    layout = [
-        [sg.Image(f'Data\\img\\{gif}.gif',k='ghost',p=((20,20),(20,0)),)],
-        [sg.T(f'{text}',p=((0,0),(20,20)))],
-        buttons
+    layout1 = [
+        [sg.Image(f'Data\\img\\death.gif',k='image',p=((20,20),(20,0)))],
+        [sg.Text('''Sadly seems like your pet is passed away.
+    Do you want to revive this Pokemon?''',p=((0,0),(20,20)),k='text')],
+        [sg.Button('Revive',size=8,k='r'),sg.Button('Let go',size=8,k='l'),sg.Button('Exit',size=8,p=((50,0),(0,0)))]
+    ]
+    layout2 = [
+        [sg.Image(f'Data\\img\\revive.gif',k='image',p=((20,20),(20,0)),)],
+        [sg.Text(f'''Your Pokemon is about to begin a new life.
+    The process will take {f.process_time(self.status["revive_time"])}''',p=((0,0),(20,20)),k='text')],
+        [sg.Button('Revive',size=8,k='r'),sg.Button('Let go',size=8,k='l'),sg.Button('Exit',size=8,p=((50,0),(0,0)))]
     ]
 
-    deathWindow = sg.Window('Passing',layout,icon='Data\\img\\death.ico',element_justification = "center")
+    if not self.status["revive"]:
+        deathWindow = sg.Window('Passing',layout1,icon='Data\\img\\death.ico',element_justification = "center")
+    else:
+        deathWindow = sg.Window('Revive',layout2,icon='Data\\img\\death.ico',element_justification = "center")
 
     while True:
         event,value = deathWindow.read(timeout=150)
         if (event == sg.WIN_CLOSED) or (event == 'Exit'):
+            self.autosave()
+            self.run = False
+            sys.exit()
+        if (event == 'r'):
+            self.status['revive'] = True
+            self.status['revive_time'] = 604800
+        if (event == 'l'):
+            os.remove(f'Data\\save\\{self.stats["name"]}.json')
+            self.run = False
             sys.exit()
 
-
-        deathWindow['ghost'].UpdateAnimation(f'Data\\img\\{gif}.gif',time_between_frames=150)
+        if not self.status["revive"]:
+            deathWindow['image'].UpdateAnimation(f'Data\\img\\death.gif',time_between_frames=150)
+        elif self.status["revive"]:
+            deathWindow['image'].UpdateAnimation(f'Data\\img\\revive.gif',time_between_frames=150)
+            deathWindow['text'].update(f'''Your Pokemon is about to begin a new life.
+    The process will take {f.process_time(self.status["revive_time"])}''')
+            deathWindow['r'].update(disabled=True)
+            deathWindow['l'].update(disabled=True)
