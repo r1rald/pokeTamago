@@ -1,4 +1,4 @@
-import json, gui as g, PySimpleGUI as sg
+import json, time, gui as g, PySimpleGUI as sg
 
 class Poke:
     run = True
@@ -89,15 +89,10 @@ class Poke:
                 self.status['play_cd'] -= 1
             else:
                 self.status['play_cd'] = 0
+                
         else:
             if self.status['revive'] and self.status['revive_time'] > 0:
                 self.status['revive_time'] -= 1
-                if self.status['revive_time'] == 0:
-                    self.condition['bored'] = 0
-                    self.condition['food'] = 100
-                    self.condition['exhausted'] = 0
-                    self.status['alive'] = True
-                    self.status['revive'] = False
 
 
     def autosave(self):
@@ -105,6 +100,7 @@ class Poke:
         save['stats'] = self.stats
         save['condition'] = self.condition
         save['status'] = self.status
+        self.status['time'] = round(time.time())
         with open(f"Data\\save\\{self.stats['name']}.json", 'w') as outfile:
             json.dump(save, outfile)
 

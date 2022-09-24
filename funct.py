@@ -56,7 +56,7 @@ def offline_time(self):
             self.condition["exhausted"] = 120
     else:
         if self.status['revive']:
-            if self.status['revive_time'] > 0 and self.status['revive_time'] < elapsed_time:
+            if self.status['revive_time'] > elapsed_time:
                 self.status['revive_time'] -= elapsed_time
             else:
                 self.status['revive_time'] = 0

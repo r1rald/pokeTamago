@@ -240,7 +240,6 @@ def mainGame(self):
         mainWindow['Speed'].update(self.stats['Speed'])
         mainWindow["image"].UpdateAnimation(self.stats['portrait'],time_between_frames=25)
 
-    self.status['time'] = round(time.time())
     mainWindow.close()
 
 
@@ -254,7 +253,7 @@ def death_screen(self):
     layout2 = [
         [sg.Image(f'Data\\img\\revive.gif',k='image',p=((20,20),(20,0)),)],
         [sg.Text(f'''Your Pokemon is about to begin a new life.
-    The process will take {f.process_time(self.status["revive_time"])}''',p=((0,0),(20,20)),k='text')],
+    The process will take {f.process_time(self.status["revive_time"])}.''',p=((0,0),(20,20)),k='text')],
         [sg.Button('Revive',size=8,k='r'),sg.Button('Let go',size=8,k='l'),sg.Button('Exit',size=8,p=((50,0),(0,0)))]
     ]
 
@@ -271,17 +270,27 @@ def death_screen(self):
             sys.exit()
         if (event == 'r'):
             self.status['revive'] = True
-            self.status['revive_time'] = 604800
+            self.status['revive_time'] = 60
         if (event == 'l'):
             os.remove(f'Data\\save\\{self.stats["name"]}.json')
             self.run = False
             sys.exit()
+        if self.status['revive'] and self.status['revive_time'] == 0:
+            self.condition['health'] = self.stats['MaxHP']
+            self.condition['bored'] = 0
+            self.condition['food'] = 100
+            self.condition['exhausted'] = 0
+            self.status['alive'] = True
+            self.status['revive'] = False
+            break
 
         if not self.status["revive"]:
             deathWindow['image'].UpdateAnimation(f'Data\\img\\death.gif',time_between_frames=150)
         elif self.status["revive"]:
             deathWindow['image'].UpdateAnimation(f'Data\\img\\revive.gif',time_between_frames=150)
             deathWindow['text'].update(f'''Your Pokemon is about to begin a new life.
-    The process will take {f.process_time(self.status["revive_time"])}''')
+    The process will take {f.process_time(self.status["revive_time"])}.''')
             deathWindow['r'].update(disabled=True)
             deathWindow['l'].update(disabled=True)
+
+    deathWindow.close()

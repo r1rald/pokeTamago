@@ -12,7 +12,7 @@ if __name__ == "__main__":
         p.autosave()
         p.passing_time()
         s.enter(1, 1, run, (sc,))
-        if p.run is False:
+        if not p.run:
             p.autosave()
             sys.exit()
 
