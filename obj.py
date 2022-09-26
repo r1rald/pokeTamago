@@ -8,17 +8,15 @@ class Poke:
 
 
     def eat(self):
-        if self.status['food_cd'] == 0:
-            self.status['food_cd'] = 3600
-            self.condition['food'] = 100
-            sg.popup('Eating...', title='', keep_on_top=True, auto_close=True, auto_close_duration=3.5, icon='Data\\img\\dish.ico')
+        if self.status['eat_time'] == 0:
+            self.status['eating'] = True
+            self.status['eat_time'] = 28800
         else:
-            sg.popup('You can not do that right now!', title='Oops!', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\dish.ico')
-
+            sg.popup("You can't feed your pet for now!",title='',)
 
     def training(self):
-        if self.status['training_cd'] == 0:
-            self.status['training_cd'] = 7200
+        if self.status['training_time'] == 0:
+            self.status['training_time'] = 86400
             self.condition['food'] -= 5
             self.condition['exhausted'] += 20
             self.stats['xp'] += 5
@@ -26,13 +24,10 @@ class Poke:
                 self.condition['bored'] == 0
             else:
                 self.condition['bored'] -= 10
-            sg.popup('Working out...', title='', keep_on_top=True, auto_close=True, auto_close_duration=6, icon='Data\\img\\dish.ico')
-        else:
-            sg.popup('You can not do that right now!', title='Oops!', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\dish.ico')
 
 
     def play(self):
-        if self.status['play_cd'] == 0:
+        if self.status['play_time'] == 0:
             self.condition['food'] -= 2
             self.condition['exhausted'] += 10
             self.stats['xp'] += 1
@@ -40,15 +35,15 @@ class Poke:
                 self.condition['bored'] == 0
             else:
                 self.condition['bored'] -= 20
-            sg.popup('Playing...', title='', keep_on_top=True, auto_close=True, auto_close_duration=4, icon='Data\\img\\dish.ico')
-        else:
-            sg.popup('You can not do that right now!', title='Oops!', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\dish.ico')
+
 
     def sleep(self):
+        self.status['sleeping'] = True
+        self.status['sleep_time'] = 28800
         self.condition['exhausted'] = 0
+        self.condition['bored'] = 0
         self.condition['food'] = 20
-        sg.popup('Sleeping...', title='', keep_on_top=True, auto_close=True, auto_close_duration=10, icon='Data\\img\\dish.ico')
-        
+
 
     def passing_time(self):
         if self.status["alive"]:
@@ -75,24 +70,22 @@ class Poke:
                 self.condition['health'] = 0
                 self.status["alive"] = False
 
-            if self.status['eat_cd'] > 0:
-                self.status['eat_cd'] -= 1
-            else:
-                self.status['eat_cd'] = 0
+            if self.status['eat_time'] > 0:
+                self.status['eat_time'] -= 1
 
-            if self.status['training_cd'] > 0:
-                self.status['training_cd'] -= 1
-            else:
-                self.status['training_cd'] = 0
+            if self.status['training_time'] > 0:
+                self.status['training_time'] -= 1
 
-            if self.status['play_cd'] > 0:
-                self.status['play_cd'] -= 1
-            else:
-                self.status['play_cd'] = 0
+            if self.status['play_time'] > 0:
+                self.status['play_time'] -= 1
                 
-        else:
-            if self.status['revive'] and self.status['revive_time'] > 0:
-                self.status['revive_time'] -= 1
+        if self.status['revive'] and self.status['revive_time'] > 0:
+            self.status['revive_time'] -= 1
+
+        if self.status['sleeping']:
+            self.condition['age'] += 1
+            self.status['sleep_time'] -= 1
+
 
 
     def autosave(self):
@@ -100,7 +93,7 @@ class Poke:
         save['stats'] = self.stats
         save['condition'] = self.condition
         save['status'] = self.status
-        self.status['time'] = round(time.time())
+        self.status['logoff_time'] = round(time.time())
         with open(f"Data\\save\\{self.stats['name']}.json", 'w') as outfile:
             json.dump(save, outfile)
 

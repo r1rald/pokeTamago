@@ -1,4 +1,5 @@
 import time, os, json
+from random import randint
 
 def load_saves(self, var):
     with open(f'Data\save\{var}.json', 'r') as player:
@@ -19,7 +20,7 @@ def open_dex():
 
 
 def default_player(self):
-    with open('Data\\Player.json', 'r') as player:
+    with open('Data\\default.json', 'r') as player:
         data = json.load(player)
         self.status = data['status']
         self.condition = data['condition']
@@ -36,7 +37,7 @@ def read_save():
 
 
 def offline_time(self):
-    then = self.status['time']
+    then = self.status['logoff_time']
     now = round(time.time())
     elapsed_time = now - then
     
@@ -54,12 +55,20 @@ def offline_time(self):
 
         if self.condition["exhausted"] >= 120:
             self.condition["exhausted"] = 120
-    else:
-        if self.status['revive']:
-            if self.status['revive_time'] > elapsed_time:
-                self.status['revive_time'] -= elapsed_time
-            else:
-                self.status['revive_time'] = 0
+    
+    if not self.status["alive"] and self.status['revive']:
+        if self.status['revive_time'] > elapsed_time:
+            self.status['revive_time'] -= elapsed_time
+        else:
+            self.status['revive_time'] = 0
+    
+    if self.status['sleeping']:
+        self.condition['age'] += elapsed_time
+        if self.status['sleep_time'] > elapsed_time:
+            self.status['sleep_time'] -= elapsed_time
+        else:
+            self.status['sleep_time'] = 0       
+
 
 def process_time(source):
     days, h_remainder = divmod(source, 86400)
@@ -76,3 +85,11 @@ def process_time(source):
         age = f"{days}d {hrs:02}:{mins:02}:{secs:02}"
 
     return age
+
+def rng(num):
+    rng = randint(0,num)
+    
+    if rng % 2 == 0: miss = False
+    else: miss = True
+
+    return miss
