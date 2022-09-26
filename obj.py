@@ -12,7 +12,7 @@ class Poke:
             self.status['eating'] = True
             self.status['eat_time'] = 28800
         else:
-            sg.popup("You can't feed your pet for now!",title='',)
+            sg.popup("You can't feed your pet for now!",title='',keep_on_top=True, auto_close=True, auto_close_duration=3,any_key_closes=True,icon='Data\\img\\warning.ico')
 
     def training(self):
         if self.status['training_time'] == 0:
@@ -95,7 +95,7 @@ class Poke:
         save['status'] = self.status
         self.status['logoff_time'] = round(time.time())
         with open(f"Data\\save\\{self.stats['name']}.json", 'w') as outfile:
-            json.dump(save, outfile)
+            json.dump(save, outfile,indent=4)
 
 
     def run(self):

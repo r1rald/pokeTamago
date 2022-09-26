@@ -26,11 +26,11 @@ def newGame(self):
                     f.saves.clear()
                     f.read_save()
                     if values['-IN-'] in f.saves:
-                        sg.Popup('This Pokemon is already exist!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
+                        sg.Popup('This Pokemon is already exist!',title='error',keep_on_top=True,auto_close=True,auto_close_duration=3,any_key_closes=True,icon='Data\\img\\warning.ico')
                     elif values['-IN-'] == '':
-                        sg.Popup('You must give a name to your Pokemon!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
+                        sg.Popup('You must give a name to your Pokemon!', title='error',keep_on_top=True,auto_close=True,auto_close_duration=3,any_key_closes=True,icon='Data\\img\\warning.ico')
                     elif len(values['-IN-']) > 14:
-                        sg.Popup('Please try a shorter name!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
+                        sg.Popup('Please try a shorter name!',title='error',keep_on_top=True,auto_close=True,auto_close_duration=3,any_key_closes=True,icon='Data\\img\\warning.ico')
                     else:
                         self.stats["name"] = values['-IN-']
                         break
@@ -341,22 +341,24 @@ def eat_screen(self):
         if (event == sg.WIN_CLOSED) or (event == 'Back'):
             break
         if (event == 'snack'):
-            eatWindow['image'].update('Data\\img\\snack.gif')
-            eatWindow['image'].UpdateAnimation('Data\\img\\snack.gif',time_between_frames=175)
+            portion -= 1
             if self.condition['food'] <= 90 and f.rng(100):
+                eatWindow['image'].UpdateAnimation('Data\\img\\snack.gif',time_between_frames=175)
+                eatWindow['image'].update('Data\\img\\snack.gif')
                 self.condition['food'] += 10
-                portion -= 1
             else:
-                print('lol')
+                eatWindow['image'].update('Data\\img\\eat_miss.gif')
+                eatWindow['image'].UpdateAnimation('Data\\img\\eat_miss.gif',time_between_frames=175)
             continue
         if (event == 'meal'):
-            eatWindow['image'].update('Data\\img\\meal.gif')
-            eatWindow['image'].UpdateAnimation('Data\\img\\meal.gif',time_between_frames=175)
+            portion -= 1
             if self.condition['food'] <= 75 and f.rng(100):
+                eatWindow['image'].update('Data\\img\\meal.gif')
+                eatWindow['image'].UpdateAnimation('Data\\img\\meal.gif',time_between_frames=175)
                 self.condition['food'] += 25
-                portion -= 1
             else:
-                print('lol')
+                eatWindow['image'].update('Data\\img\\eat_miss.gif')
+                eatWindow['image'].UpdateAnimation('Data\\img\\eat_miss.gif',time_between_frames=175)
             continue
 
         eatWindow['image'].UpdateAnimation('Data\\img\\eat.gif',time_between_frames=175)
