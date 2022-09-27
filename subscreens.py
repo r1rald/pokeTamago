@@ -1,4 +1,5 @@
-import sys, os, funct as f, PySimpleGUI as sg
+from random import randint
+import sys, os, time, funct as f, PySimpleGUI as sg
 
 def death_screen(self):
     layout1 = [
@@ -10,7 +11,7 @@ def death_screen(self):
     layout2 = [
         [sg.Image('Data\\img\\revive.gif',k='image',p=((20,20),(20,0)),)],
         [sg.Text('Your pet is about to begin a new life.',k='text1',p=((0,0),(20,0)))],
-        [sg.Text(f'The process will take {f.process_time(self.status["revive_time"])}.',p=((0,0),(0,20)),k='text2')],
+        [sg.Text(f'The process will take {f.time_counter(self.status["revive_time"])}.',p=((0,0),(0,20)),k='text2')],
         [sg.Button('Revive',size=8,k='r'),sg.Button('Let go',size=8,k='l'),sg.Button('Exit',size=8,p=((50,0),(0,0)))]
     ]
 
@@ -45,7 +46,7 @@ def death_screen(self):
         elif self.status["revive"]:
             deathWindow['image'].UpdateAnimation('Data\\img\\revive.gif',time_between_frames=150)
             deathWindow['text1'].update('Your pet is about to begin a new life.')
-            deathWindow['text2'].update(f'The process will take {f.process_time(self.status["revive_time"])}.')
+            deathWindow['text2'].update(f'The process will take {f.time_counter(self.status["revive_time"])}.')
             deathWindow['r'].update(disabled=True)
             deathWindow['l'].update(disabled=True)
 
@@ -56,7 +57,7 @@ def sleep_screen(self):
     layout = [
         [sg.Image('Data\\img\\sleep.gif',k='image',p=((20,20),(0,0)))],
         [sg.Text('Shhh!!! Your pet is sleeping now.')],
-        [sg.Text(f'Let it rest for about {f.process_time(self.status["sleep_time"])}.',p=((0,0),(20,20)),k='text')],
+        [sg.Text(f'Let it rest for about {f.time_counter(self.status["sleep_time"])}.',p=((0,0),(20,20)),k='text')],
         [sg.Button('Exit',size=8)]
     ]
 
@@ -73,12 +74,13 @@ def sleep_screen(self):
             break
 
         sleepWindow['image'].UpdateAnimation('Data\\img\\sleep.gif',time_between_frames=150)
-        sleepWindow['text'].update(f'Let it rest for about {f.process_time(self.status["sleep_time"])}.')
+        sleepWindow['text'].update(f'Let it rest for about {f.time_counter(self.status["sleep_time"])}.')
 
     sleepWindow.close()
 
 def eat_screen(self):
-    portion = 5
+    portion = randint(5,10)
+    gif_update = 'eat'
 
     layout = [
         [sg.Image('Data\\img\\eat.gif',k='image',p=((20,20),(20,20)))],
@@ -96,26 +98,20 @@ def eat_screen(self):
             break
         if (event == 'snack'):
             portion -= 1
-            if self.condition['food'] <= 90 and f.rng(100):
-                eatWindow['image'].UpdateAnimation('Data\\img\\snack.gif',time_between_frames=175)
-                eatWindow['image'].update('Data\\img\\snack.gif')
+            if self.condition['food'] <= 90 and f.chance(2):
                 self.condition['food'] += 10
+                gif_update = 'snack'
             else:
-                eatWindow['image'].update('Data\\img\\eat_miss.gif')
-                eatWindow['image'].UpdateAnimation('Data\\img\\eat_miss.gif',time_between_frames=175)
-            continue
+                gif_update = 'eat_miss'
         if (event == 'meal'):
             portion -= 1
-            if self.condition['food'] <= 75 and f.rng(100):
-                eatWindow['image'].update('Data\\img\\meal.gif')
-                eatWindow['image'].UpdateAnimation('Data\\img\\meal.gif',time_between_frames=175)
+            if self.condition['food'] <= 75 and f.chance(3):
                 self.condition['food'] += 25
+                gif_update = 'meal'
             else:
-                eatWindow['image'].update('Data\\img\\eat_miss.gif')
-                eatWindow['image'].UpdateAnimation('Data\\img\\eat_miss.gif',time_between_frames=175)
-            continue
+                gif_update = 'eat_miss'
 
-        eatWindow['image'].UpdateAnimation('Data\\img\\eat.gif',time_between_frames=175)
+        eatWindow['image'].UpdateAnimation(f'Data\\img\\{gif_update}.gif',time_between_frames=150)
         eatWindow['text1'].update(f'You have {portion} portions.')
 
         if portion == 0:

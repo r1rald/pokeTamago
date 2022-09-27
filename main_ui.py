@@ -232,7 +232,7 @@ def mainGame(self):
 
         mainWindow['progress_1'].update(self.stats['xp'])
         mainWindow['health'].update(round(self.condition['health']))
-        mainWindow['age'].update(f.process_time(self.condition['age']))
+        mainWindow['age'].update(f.time_counter(self.condition['age']))
         mainWindow['food'].update(self.condition['food'],bar_color=fdClr)
         mainWindow['bored'].update(self.condition['bored'],bar_color=fdClr)
         mainWindow['exhausted'].update(self.condition['exhausted'],bar_color=xhstdClr)  

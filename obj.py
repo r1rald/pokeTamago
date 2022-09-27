@@ -10,7 +10,7 @@ class Poke:
     def eat(self):
         if self.status['eat_time'] == 0:
             self.status['eating'] = True
-            self.status['eat_time'] = 28800
+            #self.status['eat_time'] = 28800
         else:
             sg.popup("You can't feed your pet for now!",title='',keep_on_top=True, auto_close=True, auto_close_duration=3,any_key_closes=True,icon='Data\\img\\warning.ico')
 

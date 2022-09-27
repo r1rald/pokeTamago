@@ -68,7 +68,7 @@ def offline_time(self):
             self.status['sleep_time'] = 0       
 
 
-def process_time(source):
+def time_counter(source):
     days, h_remainder = divmod(source, 86400)
     hrs, remainder = divmod(h_remainder, 3600)
     mins, secs = divmod(remainder, 60)
@@ -83,9 +83,10 @@ def process_time(source):
 
     return age
 
-def rng(num):
-    rng = randint(0,num)
-    if rng % 2 == 0: miss = False
-    else: miss = True
-
+def chance(num):
+    rng = randint(0,100)
+    miss = False if rng % num == 0 else True
     return miss
+
+
+
