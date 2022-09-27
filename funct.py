@@ -49,12 +49,10 @@ def offline_time(self):
 
         if self.condition["bored"] > 100:
             self.condition["bored"] = 100
-
+        if self.condition["exhausted"] > 100:
+            self.condition["exhausted"] = 100
         if self.condition["food"] < 0:
             self.condition["food"] = 0
-
-        if self.condition["exhausted"] >= 120:
-            self.condition["exhausted"] = 120
     
     if not self.status["alive"] and self.status['revive']:
         if self.status['revive_time'] > elapsed_time:
@@ -76,7 +74,6 @@ def process_time(source):
     mins, secs = divmod(remainder, 60)
     
     age = f"{secs:02}"
-    
     if mins > 0:
         age = f"{mins:02}:{secs:02}"
     if hrs > 0:
@@ -88,7 +85,6 @@ def process_time(source):
 
 def rng(num):
     rng = randint(0,num)
-    
     if rng % 2 == 0: miss = False
     else: miss = True
 
