@@ -1,5 +1,88 @@
 from random import randint
-import sys, os, time, funct as f, PySimpleGUI as sg
+import sys, os, funct as f, PySimpleGUI as sg
+
+
+def new_pokemon_screen(self):
+    name = [[sg.Text('What is the name of your Pokemon?')],
+                    [sg.Input(key='-IN-')],
+                    [sg.Button('Enter'), sg.Button('Submit', visible=False, bind_return_key=True)]]
+    window2 = sg.Window('Name', name, icon='Data\\img\\logo.ico', grab_anywhere=True)
+
+    while True:
+        event, values = window2.read()
+        match event:
+            case sg.WINDOW_CLOSED:
+                sys.exit()
+            case 'Enter' | 'Submit':
+                f.saves.clear()
+                f.read_save()
+        if values['-IN-'] in f.saves:
+            sg.Popup('This Pokemon is already exist!',title='error',keep_on_top=True,auto_close=True,auto_close_duration=3,icon='Data\\img\\warning.ico')
+        elif values['-IN-'] == '':
+            sg.Popup('You must give a name to your Pokemon!', title='error',keep_on_top=True,auto_close=True,auto_close_duration=3,icon='Data\\img\\warning.ico')
+        elif len(values['-IN-']) > 14:
+            sg.Popup('Please try a shorter name!',title='error',keep_on_top=True,auto_close=True,auto_close_duration=3,icon='Data\\img\\warning.ico')
+        else:
+            self.stats["name"] = values['-IN-']
+            break
+    window2.close()
+
+
+def choose_pokemon(self):
+    pokeChoose = [[sg.Listbox(values=[x for x in f.pokes], enable_events=True, size=(25, 15), key="poke", expand_x=True)], 
+            [sg.B('Choose'),sg.Button('Submit', visible=False, bind_return_key=True)]]
+    pokeWindow = sg.Window('Choose', pokeChoose, icon='Data\\img\\pokeball.ico')
+
+    while True:
+        event, values = pokeWindow.read()
+        match event:
+            case sg.WINDOW_CLOSED:
+                sys.exit()
+            case 'Choose' | 'Submit':
+                index = f.pokes.index(f'{values["poke"][0]}')
+                if ' ' in values["poke"][0]:
+                    name = values["poke"][0].replace(' ', '')
+                elif "'" in values["poke"][0]:
+                    name = values["poke"][0].replace("'", '')
+                else:
+                    name = values["poke"][0]
+                self.stats['portrait'] = f'Data\\img\\poke\\{name}.gif'
+                self.stats['type'] = f.types[index]
+                break
+    pokeWindow.close()
+
+
+def loading_screen(self):
+    load = [[sg.Listbox(values=[x for x in f.saves], enable_events=True, size=(25, 15), key="load", expand_x=True)], 
+    [sg.B('Load'),sg.B('Delete'),sg.Button('Submit', visible=False, bind_return_key=True)]]
+    window2 = sg.Window('Load', load, icon='Data\\img\\load.ico')
+    
+    while True:
+        event, values = window2.read()
+        match event:
+            case sg.WINDOW_CLOSED:
+                sys.exit()
+            case 'Load' | 'Submit':
+                if not values["load"]:
+                    sg.Popup('You must choose a save file!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
+                else:
+                    f.load_saves(self, values["load"][0])
+                    break
+            case 'Delete':
+                if not values["load"]:
+                    sg.Popup('You must choose a save file!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
+                else:
+                    os.remove(f'Data\\save\\{values["load"][0]}.json')
+                    f.saves.clear()
+                    f.read_save()
+                    window2['load'].update(values=[x for x in f.saves])
+    f.offline_time(self)
+    window2.close()
+
+
+def option_screen():
+    pass
+
 
 def death_screen(self):
     layout1 = [
@@ -43,7 +126,7 @@ def death_screen(self):
 
         if not self.status["revive"]:
             deathWindow['image'].UpdateAnimation('Data\\img\\death.gif',time_between_frames=150)
-        elif self.status["revive"]:
+        if self.status["revive"]:
             deathWindow['image'].UpdateAnimation('Data\\img\\revive.gif',time_between_frames=150)
             deathWindow['text1'].update('Your pet is about to begin a new life.')
             deathWindow['text2'].update(f'The process will take {f.time_counter(self.status["revive_time"])}.')

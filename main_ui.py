@@ -1,93 +1,33 @@
 import os, sys, funct as f, subscreens as sc, PySimpleGUI as sg
 
-
 def newGame(self):
-    new_game = [[sg.Text("What is your desire?")],
-                [sg.Button('Catch new Pokemon'), sg.Button('Continue existing Pokemon'), sg.Button('Exit')]]
-    window1 = sg.Window('pokéTamago', new_game, icon='Data\\img\\logo.ico', grab_anywhere=True)
+    buttonColumn = [
+        [sg.Button('New Pokemon', size=12)],
+        [sg.Button('Load Pokemon', size=12)], 
+        [sg.B('Options',size=12)],
+        [sg.B('Exit',size=12)]
+        ]
+    layout = [
+        [sg.Image('Data\\img\\logo.png',subsample=3)], 
+        [sg.Column(buttonColumn, element_justification='c')]   
+        ]
+
+    window1 = sg.Window('', layout, icon='Data\\img\\logo.ico',element_justification='c',grab_anywhere=True)
 
     while True:
         event, values = window1.read()
-        if (event == sg.WIN_CLOSED) or (event == 'Exit'):
-            sys.exit()
-        if (event == 'Catch new Pokemon'):
-            f.default_player(self)
-
-            name = [[sg.Text('What is the name of your Pokemon?')],
-                    [sg.Input(key='-IN-')],
-                    [sg.Button('Enter'), sg.Button('Submit', visible=False, bind_return_key=True)]]
-            window2 = sg.Window('Name', name, icon='Data\\img\\logo.ico', grab_anywhere=True)
-
-            while True:
-                event, values = window2.read()
-                if (event == sg.WINDOW_CLOSED):
-                    sys.exit()
-                if (event == 'Enter') or (event == 'Submit'):
-                    f.saves.clear()
-                    f.read_save()
-                    if values['-IN-'] in f.saves:
-                        sg.Popup('This Pokemon is already exist!',title='error',keep_on_top=True,auto_close=True,auto_close_duration=3,any_key_closes=True,icon='Data\\img\\warning.ico')
-                    elif values['-IN-'] == '':
-                        sg.Popup('You must give a name to your Pokemon!', title='error',keep_on_top=True,auto_close=True,auto_close_duration=3,any_key_closes=True,icon='Data\\img\\warning.ico')
-                    elif len(values['-IN-']) > 14:
-                        sg.Popup('Please try a shorter name!',title='error',keep_on_top=True,auto_close=True,auto_close_duration=3,any_key_closes=True,icon='Data\\img\\warning.ico')
-                    else:
-                        self.stats["name"] = values['-IN-']
-                        break
-
-            f.open_dex()
-
-            pokeChoose = [[sg.Listbox(values=[x for x in f.pokes], enable_events=True, size=(25, 15), key="poke", expand_x=True)], 
-                    [sg.B('Choose'),sg.Button('Submit', visible=False, bind_return_key=True)]]
-            pokeWindow = sg.Window('Load', pokeChoose, icon='Data\\img\\load.ico')
-
-            while True:
-                event, values = pokeWindow.read()
-                if (event == sg.WINDOW_CLOSED):
-                    sys.exit()
-                if (event== 'Choose') or (event =='Submit'):
-                    index = f.pokes.index(f'{values["poke"][0]}')
-                    if ' ' in values["poke"][0]:
-                        name = values["poke"][0].replace(' ', '')
-                    elif "'" in values["poke"][0]:
-                        name = values["poke"][0].replace("'", '')
-                    else:
-                        name = values["poke"][0]
-                    self.stats['portrait'] = f'Data\\img\\poke\\{name}.gif'
-                    self.stats['type'] = f.types[index]
-                    break
-
-            pokeWindow.close()
-            window2.close()
-
-        if (event == 'Continue existing Pokemon'):
-            f.saves.clear()
-            f.read_save()
-
-            load = [[sg.Listbox(values=[x for x in f.saves], enable_events=True, size=(25, 15), key="load", expand_x=True)], 
-            [sg.B('Load'),sg.B('Delete'),sg.Button('Submit', visible=False, bind_return_key=True)]]
-            window2 = sg.Window('Load', load, icon='Data\\img\\load.ico')
-            
-            while True:
-                event, values = window2.read()
-                if (event == sg.WINDOW_CLOSED):
-                    sys.exit()
-                if (event == 'Load') or (event == 'Submit'):
-                    if not values["load"]:
-                        sg.Popup('You must choose a save file!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
-                    else:
-                        f.load_saves(self, values["load"][0])
-                        break
-                if (event == 'Delete'):
-                    if not values["load"]:
-                        sg.Popup('You must choose a save file!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
-                    else:
-                        os.remove(f'Data\\save\\{values["load"][0]}.json')
-                        f.saves.clear()
-                        f.read_save()
-                        window2['load'].update(values=[x for x in f.saves])
-            f.offline_time(self)
-            window2.close()
+        match event:
+            case sg.WIN_CLOSED |'Exit':
+                sys.exit()
+            case 'New Pokemon':
+                f.default_player(self)
+                sc.new_pokemon_screen(self)
+                f.open_dex()
+                sc.choose_pokemon(self)
+            case 'Load Pokemon':
+                f.saves.clear()
+                f.read_save()
+                sc.loading_screen(self)
         break
     window1.close()
 
@@ -185,21 +125,24 @@ def mainGame(self):
 
     while True:
         event, value = mainWindow.read(timeout=25)
-        if (event == sg.WIN_CLOSED) or (event == 'Exit'):
-            self.run = False
-            break
-        if (event == sg.TIMEOUT_KEY):
-            mainWindow.refresh()
-        if (event == 'Eat'):
-            self.eat()
-        if (event == 'Battle'):
-            pass
-        if (event == 'Training'):
-            self.training()
-        if (event == 'Play'):
-            self.play()
-        if (event == 'Sleep'):
-            self.sleep()
+
+        match event:
+            case sg.WIN_CLOSED | 'Exit':
+                self.run = False
+                break
+            case sg.TIMEOUT_KEY:
+                mainWindow.refresh()
+            case 'Eat':
+                self.eat()
+            case 'Battle':
+                pass
+            case 'Training':
+                self.training()
+            case 'Play':
+                self.play()
+            case 'Sleep':
+                self.sleep()
+
         if not self.status['alive']:
             sc.death_screen(self)
         if self.status['sleeping']:
@@ -207,34 +150,32 @@ def mainGame(self):
         if self.status['eating']:
             sc.eat_screen(self)
 
-        if self.condition["exhausted"] < 60:
-            xhstdClr = (None)
-        elif 80 > self.condition["exhausted"] > 60:
-            xhstdClr = ('orange','white')
-        else:
-            xhstdClr = ('red','white')
-
-        if self.condition["food"] > 50:
+        if 40 < self.condition["food"]:
             fdClr = (None)
-        if self.condition["food"] < 50:
-            fdClr = ('green','white')
-        if self.condition["food"] < 30:
+        elif 20 < self.condition["food"] < 40:
             fdClr = ('orange','white')
-        if self.condition["food"] < 15:
+        else:
             fdClr = ('red','white')
 
         if self.condition["bored"] < 60:
-            fdClr = (None)
-        if self.condition["bored"] > 60:
-            fdClr = ('orange','white')
-        if self.condition["bored"] > 80:
-            fdClr = ('red','white')
+            brdClr = (None)
+        elif 60 < self.condition["bored"] < 80:
+            brdClr = ('orange','white')
+        else:
+            brdClr = ('red','white')
+
+        if self.condition["exhausted"] < 60:
+            xhstdClr = (None)
+        elif 60 < self.condition["exhausted"] < 80:
+            xhstdClr = ('orange','white')
+        else:
+            xhstdClr = ('red','white')
 
         mainWindow['progress_1'].update(self.stats['xp'])
         mainWindow['health'].update(round(self.condition['health']))
         mainWindow['age'].update(f.time_counter(self.condition['age']))
         mainWindow['food'].update(self.condition['food'],bar_color=fdClr)
-        mainWindow['bored'].update(self.condition['bored'],bar_color=fdClr)
+        mainWindow['bored'].update(self.condition['bored'],bar_color=brdClr)
         mainWindow['exhausted'].update(self.condition['exhausted'],bar_color=xhstdClr)  
         mainWindow['Attack'].update(self.stats['Attack'])
         mainWindow['Defense'].update(self.stats['Defense'])
