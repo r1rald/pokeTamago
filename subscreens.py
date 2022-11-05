@@ -1,43 +1,49 @@
-from random import randint
-import sys, os, funct as f, PySimpleGUI as sg
+import sys
+import os
+import funct as f
+import layouts as ui
+import PySimpleGUI as sg
+import themes
 
 
 def new_pokemon_screen(self):
-    name = [[sg.Text('What is the name of your Pokemon?')],
-                    [sg.Input(key='-IN-')],
-                    [sg.Button('Enter'), sg.Button('Submit', visible=False, bind_return_key=True)]]
-    window2 = sg.Window('Name', name, icon='Data\\img\\logo.ico', grab_anywhere=True)
+
+    pokeName = sg.Window(
+        'Name', ui.newPoke(), icon='Data\\img\\logo.ico', grab_anywhere=True)
 
     while True:
-        event, values = window2.read()
+        event, values = pokeName.read()
         match event:
-            case sg.WINDOW_CLOSED:
-                sys.exit()
+            case sg.WINDOW_CLOSED | 'Back':
+                break
             case 'Enter' | 'Submit':
                 f.saves.clear()
                 f.read_save()
         if values['-IN-'] in f.saves:
-            sg.Popup('This Pokemon is already exist!',title='error',keep_on_top=True,auto_close=True,auto_close_duration=3,icon='Data\\img\\warning.ico')
+            sg.Popup('This Pokemon is already exist!', title='error', keep_on_top=True,
+                     auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
         elif values['-IN-'] == '':
-            sg.Popup('You must give a name to your Pokemon!', title='error',keep_on_top=True,auto_close=True,auto_close_duration=3,icon='Data\\img\\warning.ico')
+            sg.Popup('You must give a name to your Pokemon!', title='error', keep_on_top=True,
+                     auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
         elif len(values['-IN-']) > 14:
-            sg.Popup('Please try a shorter name!',title='error',keep_on_top=True,auto_close=True,auto_close_duration=3,icon='Data\\img\\warning.ico')
+            sg.Popup('Please try a shorter name!', title='error', keep_on_top=True,
+                     auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
         else:
             self.stats["name"] = values['-IN-']
             break
-    window2.close()
+    pokeName.close()
 
 
 def choose_pokemon(self):
-    pokeChoose = [[sg.Listbox(values=[x for x in f.pokes], enable_events=True, size=(25, 15), key="poke", expand_x=True)], 
-            [sg.B('Choose'),sg.Button('Submit', visible=False, bind_return_key=True)]]
-    pokeWindow = sg.Window('Choose', pokeChoose, icon='Data\\img\\pokeball.ico')
+
+    pokeChooseWin = sg.Window('Choose', ui.choosePoke(),
+                              icon='Data\\img\\pokeball.ico')
 
     while True:
-        event, values = pokeWindow.read()
+        event, values = pokeChooseWin.read()
         match event:
-            case sg.WINDOW_CLOSED:
-                sys.exit()
+            case sg.WINDOW_CLOSED | 'Back':
+                break
             case 'Choose' | 'Submit':
                 index = f.pokes.index(f'{values["poke"][0]}')
                 if ' ' in values["poke"][0]:
@@ -49,59 +55,64 @@ def choose_pokemon(self):
                 self.stats['portrait'] = f'Data\\img\\poke\\{name}.gif'
                 self.stats['type'] = f.types[index]
                 break
-    pokeWindow.close()
+    pokeChooseWin.close()
 
 
 def loading_screen(self):
-    load = [[sg.Listbox(values=[x for x in f.saves], enable_events=True, size=(25, 15), key="load", expand_x=True)], 
-    [sg.B('Load'),sg.B('Delete'),sg.Button('Submit', visible=False, bind_return_key=True)]]
-    window2 = sg.Window('Load', load, icon='Data\\img\\load.ico')
-    
+
+    loadScreen = sg.Window('Load', ui.load(), icon='Data\\img\\load.ico')
+
     while True:
-        event, values = window2.read()
+        event, values = loadScreen.read()
         match event:
-            case sg.WINDOW_CLOSED:
-                sys.exit()
+            case sg.WINDOW_CLOSED | 'Back':
+                break
             case 'Load' | 'Submit':
                 if not values["load"]:
-                    sg.Popup('You must choose a save file!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
+                    sg.Popup('You must choose a save file!', title='error', keep_on_top=True,
+                             auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
                 else:
                     f.load_saves(self, values["load"][0])
                     break
             case 'Delete':
                 if not values["load"]:
-                    sg.Popup('You must choose a save file!', title='error', keep_on_top=True, auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
+                    sg.Popup('You must choose a save file!', title='error', keep_on_top=True,
+                             auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
                 else:
                     os.remove(f'Data\\save\\{values["load"][0]}.json')
                     f.saves.clear()
                     f.read_save()
-                    window2['load'].update(values=[x for x in f.saves])
-    f.offline_time(self)
-    window2.close()
+                    loadScreen['load'].update(values=[x for x in f.saves])
+    loadScreen.close()
 
 
 def option_screen():
-    pass
+
+    OptWindow = sg.Window(
+        'Options', ui.options(), icon='Data\\img\\gear.ico', grab_anywhere=True)
+
+    while True:
+        event, values = OptWindow.read()
+        match event:
+            case sg.WIN_CLOSED | 'Back':
+                break
+            case 'Apply':
+                sg.theme(values["theme"])
+
+        OptWindow['theme_txt'].update(f'Current theme:')
+        OptWindow['music_txt'].update(f'Current theme:')
+
+    OptWindow.close()
 
 
 def death_screen(self):
-    layout1 = [
-        [sg.Image('Data\\img\\death.gif',k='image',p=((20,20),(20,0)))],
-        [sg.Text('Sadly seems like your pet is passed away.',k='text1',p=((0,0),(20,0)))],
-        [sg.Text('Do you want to revive it?',p=((0,0),(0,20)),k='text2')],
-        [sg.Button('Revive',size=8,k='r'),sg.Button('Let go',size=8,k='l'),sg.Button('Exit',size=8,p=((50,0),(0,0)))]
-    ]
-    layout2 = [
-        [sg.Image('Data\\img\\revive.gif',k='image',p=((20,20),(20,0)),)],
-        [sg.Text('Your pet is about to begin a new life.',k='text1',p=((0,0),(20,0)))],
-        [sg.Text(f'The process will take {f.time_counter(self.status["revive_time"])}.',p=((0,0),(0,20)),k='text2')],
-        [sg.Button('Revive',size=8,k='r'),sg.Button('Let go',size=8,k='l'),sg.Button('Exit',size=8,p=((50,0),(0,0)))]
-    ]
 
     if not self.status["revive"]:
-        deathWindow = sg.Window('Passing',layout1,icon='Data\\img\\death.ico',element_justification = "center")
+        deathWindow = sg.Window(
+            'Passing', ui.dead1(), icon='Data\\img\\death.ico', element_justification="center")
     else:
-        deathWindow = sg.Window('Revive',layout2,icon='Data\\img\\death.ico',element_justification = "center")
+        deathWindow = sg.Window(
+            'Revive', ui.dead2(self), icon='Data\\img\\death.ico', element_justification="center")
 
     while True:
         event, value = deathWindow.read(timeout=150)
@@ -125,11 +136,15 @@ def death_screen(self):
             break
 
         if not self.status["revive"]:
-            deathWindow['image'].UpdateAnimation('Data\\img\\death.gif',time_between_frames=150)
+            deathWindow['image'].UpdateAnimation(
+                'Data\\img\\death.gif', time_between_frames=150)
         if self.status["revive"]:
-            deathWindow['image'].UpdateAnimation('Data\\img\\revive.gif',time_between_frames=150)
-            deathWindow['text1'].update('Your pet is about to begin a new life.')
-            deathWindow['text2'].update(f'The process will take {f.time_counter(self.status["revive_time"])}.')
+            deathWindow['image'].UpdateAnimation(
+                'Data\\img\\revive.gif', time_between_frames=150)
+            deathWindow['text1'].update(
+                'Your pet is about to begin a new life.')
+            deathWindow['text2'].update(
+                f'The process will take {f.time_counter(self.status["revive_time"])}.')
             deathWindow['r'].update(disabled=True)
             deathWindow['l'].update(disabled=True)
 
@@ -137,14 +152,9 @@ def death_screen(self):
 
 
 def sleep_screen(self):
-    layout = [
-        [sg.Image('Data\\img\\sleep.gif',k='image',p=((20,20),(0,0)))],
-        [sg.Text('Shhh!!! Your pet is sleeping now.')],
-        [sg.Text(f'Let it rest for about {f.time_counter(self.status["sleep_time"])}.',p=((0,0),(20,20)),k='text')],
-        [sg.Button('Exit',size=8)]
-    ]
 
-    sleepWindow = sg.Window('Sleeping',layout,icon='Data\\img\\sleep.ico',element_justification = "center")
+    sleepWindow = sg.Window(
+        'Sleeping', ui.sleeping(self), icon='Data\\img\\sleep.ico', element_justification="center")
 
     while True:
         event, value = sleepWindow.read(timeout=150)
@@ -156,24 +166,20 @@ def sleep_screen(self):
             self.status['sleeping'] = False
             break
 
-        sleepWindow['image'].UpdateAnimation('Data\\img\\sleep.gif',time_between_frames=150)
-        sleepWindow['text'].update(f'Let it rest for about {f.time_counter(self.status["sleep_time"])}.')
+        sleepWindow['image'].UpdateAnimation(
+            'Data\\img\\sleep.gif', time_between_frames=150)
+        sleepWindow['text'].update(
+            f'Let it rest for about {f.time_counter(self.status["sleep_time"])}.')
 
     sleepWindow.close()
 
+
 def eat_screen(self):
-    portion = randint(5,10)
+    
     gif_update = 'eat'
 
-    layout = [
-        [sg.Image('Data\\img\\eat.gif',k='image',p=((20,20),(20,20)))],
-        [sg.Text(f'You have {portion} portions.',k='text1',p=((0,0),(20,0)))],
-        [sg.Text("You don't have any food for now!", visible=False,k='text2')],
-        [sg.Text("Your pet is full, you can't feed it for now!", visible=False,k='text3')],
-        [sg.Button('Give a snack',size=10,k='snack',p=((0,0),(20,0))),sg.Button('Serve a meal',size=10,k='meal',p=((0,0),(20,0))),sg.Button('Back',size=8,p=((50,0),(20,0)))]
-    ]
-
-    eatWindow = sg.Window('Eating',layout,icon='Data\\img\\eat.ico',element_justification = "center")
+    eatWindow = sg.Window(
+        'Eating', ui.eating(), icon='Data\\img\\eat.ico', element_justification="center")
 
     while True:
         event, value = eatWindow.read(timeout=150)
@@ -194,7 +200,8 @@ def eat_screen(self):
             else:
                 gif_update = 'eat_miss'
 
-        eatWindow['image'].UpdateAnimation(f'Data\\img\\{gif_update}.gif',time_between_frames=150)
+        eatWindow['image'].UpdateAnimation(
+            f'Data\\img\\{gif_update}.gif', time_between_frames=150)
         eatWindow['text1'].update(f'You have {portion} portions.')
 
         if portion == 0:
