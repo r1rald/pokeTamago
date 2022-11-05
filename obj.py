@@ -1,4 +1,9 @@
-import json, time, main_ui as g, PySimpleGUI as sg
+import sys
+import json
+import time
+import main_ui as g
+import PySimpleGUI as sg
+
 
 class Poke:
     run = True
@@ -6,13 +11,13 @@ class Poke:
     def __init__(self):
         g.newGame(self)
 
-
     def eat(self):
         if self.status['eat_time'] == 0:
             self.status['eating'] = True
-            #self.status['eat_time'] = 28800
+            self.status['eat_time'] = 28800
         else:
-            sg.popup("You can't feed your pet for now!",title='',keep_on_top=True, auto_close=True, auto_close_duration=3,any_key_closes=True,icon='Data\\img\\warning.ico')
+            sg.popup("You can't feed your pet for now!", title='', keep_on_top=True, auto_close=True,
+                     auto_close_duration=3, any_key_closes=True, icon='Data\\img\\warning.ico')
 
     def training(self):
         if self.status['training_time'] == 0:
@@ -25,7 +30,6 @@ class Poke:
             else:
                 self.condition['bored'] -= 10
 
-
     def play(self):
         if self.status['play_time'] == 0:
             self.condition['food'] -= 2
@@ -36,7 +40,6 @@ class Poke:
             else:
                 self.condition['bored'] -= 20
 
-
     def sleep(self):
         self.status['sleeping'] = True
         self.status['sleep_time'] = 28800
@@ -44,11 +47,10 @@ class Poke:
         self.condition['bored'] = 0
         self.condition['food'] = 20
 
-
     def passing_time(self):
         if self.status["alive"]:
             self.condition['age'] += 1
-            
+
             self.condition["bored"] += 0.0069
             if self.condition["bored"] > 80:
                 self.condition["exhausted"] += 0.01
@@ -76,15 +78,13 @@ class Poke:
                 self.status['training_time'] -= 1
             if self.status['play_time'] > 0:
                 self.status['play_time'] -= 1
-                
+
         if self.status['revive'] and self.status['revive_time'] > 0:
             self.status['revive_time'] -= 1
 
         if self.status['sleeping']:
             self.condition['age'] += 1
             self.status['sleep_time'] -= 1
-
-
 
     def autosave(self):
         save = {}
@@ -93,8 +93,7 @@ class Poke:
         save['status'] = self.status
         self.status['logoff_time'] = round(time.time())
         with open(f"Data\\save\\{self.stats['name']}.json", 'w') as outfile:
-            json.dump(save, outfile,indent=4)
-
+            json.dump(save, outfile, indent=4)
 
     def run(self):
         g.mainGame(self)
