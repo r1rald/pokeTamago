@@ -1,7 +1,11 @@
-import time, os, json
+import time
+import os
+import json
 from random import randint
 
+
 def load_saves(self, var):
+    load_saves.has_been_called = True
     with open(f'Data\save\{var}.json', 'r') as player:
         data = json.load(player)
         self.stats = data['stats']
@@ -11,7 +15,10 @@ def load_saves(self, var):
 
 pokes = []
 types = []
+
+
 def open_dex():
+    open_dex.has_been_called = True
     with open('Data\pokedex.json', 'r') as read_file:
         data = json.load(read_file)
         for poke in data:
@@ -20,6 +27,7 @@ def open_dex():
 
 
 def default_player(self):
+    default_player.has_been_called = True
     with open('Data\\default.json', 'r') as player:
         data = json.load(player)
         self.status = data['status']
@@ -29,7 +37,10 @@ def default_player(self):
 
 directory = 'Data\\save'
 saves = []
+
+
 def read_save():
+    read_save.has_been_called = True
     for filename in os.listdir(directory):
         f = os.path.join(directory, filename)
         if os.path.isfile(f):
@@ -37,10 +48,11 @@ def read_save():
 
 
 def offline_time(self):
+    offline_time.has_been_called = True
     then = self.status['logoff_time']
     now = round(time.time())
     elapsed_time = now - then
-    
+
     if self.status["alive"]:
         self.condition['age'] += elapsed_time
         self.condition["bored"] += (0.0046*elapsed_time)
@@ -53,26 +65,26 @@ def offline_time(self):
             self.condition["exhausted"] = 100
         if self.condition["food"] < 0:
             self.condition["food"] = 0
-    
+
     if not self.status["alive"] and self.status['revive']:
         if self.status['revive_time'] > elapsed_time:
             self.status['revive_time'] -= elapsed_time
         else:
             self.status['revive_time'] = 0
-    
+
     if self.status['sleeping']:
         self.condition['age'] += elapsed_time
         if self.status['sleep_time'] > elapsed_time:
             self.status['sleep_time'] -= elapsed_time
         else:
-            self.status['sleep_time'] = 0       
+            self.status['sleep_time'] = 0
 
 
 def time_counter(source):
     days, h_remainder = divmod(source, 86400)
     hrs, remainder = divmod(h_remainder, 3600)
     mins, secs = divmod(remainder, 60)
-    
+
     age = f"{secs:02}"
     if mins > 0:
         age = f"{mins:02}:{secs:02}"
@@ -83,10 +95,8 @@ def time_counter(source):
 
     return age
 
+
 def chance(num):
-    rng = randint(0,100)
+    rng = randint(0, 100)
     miss = False if rng % num == 0 else True
     return miss
-
-
-
