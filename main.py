@@ -1,6 +1,9 @@
 from obj import Poke
 from threading import Thread
-import time, sched, sys
+import time
+import sched
+import sys
+
 
 def main():
     p = Poke()
@@ -11,7 +14,7 @@ def main():
         p.autosave()
         p.passing_time()
         s.enter(1, 1, run, (sc,))
-        if not p.run: 
+        if not p.run:
             p.autosave()
             sys.exit()
 
