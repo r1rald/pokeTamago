@@ -3,6 +3,22 @@ import os
 import json
 from random import randint
 
+pokes = []
+types = []
+directory = 'Data\\save'
+saves = []
+
+
+def load_settings(self):
+    with open(f'Data\\settings.json', 'r') as settings:
+        data = json.load(settings)
+        self.settings = data
+
+
+def save_settings(self):
+    with open(f"Data\\settings.json", 'w') as settings:
+        json.dump(self.settings, settings, indent=4)
+
 
 def load_saves(self, var):
     load_saves.has_been_called = True
@@ -13,12 +29,7 @@ def load_saves(self, var):
         self.status = data['status']
 
 
-pokes = []
-types = []
-
-
 def open_dex():
-    open_dex.has_been_called = True
     with open('Data\pokedex.json', 'r') as read_file:
         data = json.load(read_file)
         for poke in data:
@@ -27,7 +38,6 @@ def open_dex():
 
 
 def default_player(self):
-    default_player.has_been_called = True
     with open('Data\\default.json', 'r') as player:
         data = json.load(player)
         self.status = data['status']
@@ -35,12 +45,7 @@ def default_player(self):
         self.stats = data['stats']
 
 
-directory = 'Data\\save'
-saves = []
-
-
 def read_save():
-    read_save.has_been_called = True
     for filename in os.listdir(directory):
         f = os.path.join(directory, filename)
         if os.path.isfile(f):
@@ -48,7 +53,6 @@ def read_save():
 
 
 def offline_time(self):
-    offline_time.has_been_called = True
     then = self.status['logoff_time']
     now = round(time.time())
     elapsed_time = now - then
@@ -100,3 +104,4 @@ def chance(num):
     rng = randint(0, 100)
     miss = False if rng % num == 0 else True
     return miss
+
