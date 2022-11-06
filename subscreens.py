@@ -7,7 +7,6 @@ import themes
 
 
 def new_pokemon_screen(self):
-
     pokeName = sg.Window(
         'Name', ui.newPoke(), icon='Data\\img\\logo.ico', grab_anywhere=True)
 
@@ -35,7 +34,6 @@ def new_pokemon_screen(self):
 
 
 def choose_pokemon(self):
-
     pokeChooseWin = sg.Window('Choose', ui.choosePoke(),
                               icon='Data\\img\\pokeball.ico')
 
@@ -59,7 +57,6 @@ def choose_pokemon(self):
 
 
 def loading_screen(self):
-
     loadScreen = sg.Window('Load', ui.load(), icon='Data\\img\\load.ico')
 
     while True:
@@ -86,27 +83,35 @@ def loading_screen(self):
     loadScreen.close()
 
 
-def option_screen():
-
+def option_screen(self):
     OptWindow = sg.Window(
-        'Options', ui.options(), icon='Data\\img\\gear.ico', grab_anywhere=True)
+        'Options', ui.options(self), icon='Data\\img\\gear.ico', grab_anywhere=True)
 
     while True:
-        event, values = OptWindow.read()
+        event, values = OptWindow.read(timeout=100)
         match event:
+            case sg.TIMEOUT_KEY:
+                self.settings['music'] = values['_music_']
+                self.settings['music_playing'] = values['_playing_']
+                self.settings['music_volume'] = values['_music_vol_']
+                self.settings['sound_volume'] = values['_sound_vol_']
+                self.settings['effects_volume'] = values['_effects_vol_']
             case sg.WIN_CLOSED | 'Back':
+                f.save_settings(self)
                 break
             case 'Apply':
-                sg.theme(values["theme"])
+                self.settings['theme'] = values['_theme_']
+                f.save_settings(self)
+                os.execl(sys.executable, sys.executable, *sys.argv)
+                
 
-        OptWindow['theme_txt'].update(f'Current theme:')
-        OptWindow['music_txt'].update(f'Current theme:')
+        OptWindow['_theme_txt_'].update(f"Current theme: {self.settings['theme']}")
+        OptWindow['_music_txt_'].update(f"Current music: {self.settings['music']}")
 
     OptWindow.close()
 
 
 def death_screen(self):
-
     if not self.status["revive"]:
         deathWindow = sg.Window(
             'Passing', ui.dead1(), icon='Data\\img\\death.ico', element_justification="center")
@@ -152,7 +157,6 @@ def death_screen(self):
 
 
 def sleep_screen(self):
-
     sleepWindow = sg.Window(
         'Sleeping', ui.sleeping(self), icon='Data\\img\\sleep.ico', element_justification="center")
 
@@ -175,9 +179,6 @@ def sleep_screen(self):
 
 
 def eat_screen(self):
-    
-    gif_update = 'eat'
-
     eatWindow = sg.Window(
         'Eating', ui.eating(), icon='Data\\img\\eat.ico', element_justification="center")
 
@@ -189,22 +190,22 @@ def eat_screen(self):
             portion -= 1
             if self.condition['food'] <= 90 and f.chance(2):
                 self.condition['food'] += 10
-                gif_update = 'snack'
+                ui.gif_update = 'snack'
             else:
-                gif_update = 'eat_miss'
+                ui.gif_update = 'eat_miss'
         if (event == 'meal'):
             portion -= 1
             if self.condition['food'] <= 75 and f.chance(3):
                 self.condition['food'] += 25
-                gif_update = 'meal'
+                ui.gif_update = 'meal'
             else:
-                gif_update = 'eat_miss'
+                ui.gif_update = 'eat_miss'
 
         eatWindow['image'].UpdateAnimation(
-            f'Data\\img\\{gif_update}.gif', time_between_frames=150)
-        eatWindow['text1'].update(f'You have {portion} portions.')
+            f'Data\\img\\{ui.gif_update}.gif', time_between_frames=150)
+        eatWindow['text1'].update(f'You have {ui.portion} portions.')
 
-        if portion == 0:
+        if ui.portion == 0:
             eatWindow['text2'].update(visible=True)
         if self.condition['food'] > 75:
             eatWindow['meal'].update(disabled=True)
