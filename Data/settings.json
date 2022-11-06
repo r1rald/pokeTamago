@@ -1,0 +1,8 @@
+{
+    "theme": "TamagoDefault",
+    "music": "music1",
+    "music_playing": true,
+    "music_volume": 100,
+    "sound_volume": 100,
+    "effects_volume": 100
+}
