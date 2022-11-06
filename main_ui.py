@@ -35,7 +35,7 @@ def newGame(self):
                 else:
                     continue
             case 'Options':
-                sc.option_screen()
+                sc.option_screen(self)
 
     window1.close()
 
@@ -46,7 +46,6 @@ def mainGame(self):
 
     while True:
         event, value = mainWindow.read(timeout=25)
-
         match event:
             case sg.WIN_CLOSED | 'Exit':
                 self.run = False
