@@ -1,6 +1,6 @@
-import sys
 import json
 import time
+import funct as f
 import main_ui as g
 import PySimpleGUI as sg
 
@@ -9,6 +9,8 @@ class Poke:
     run = True
 
     def __init__(self):
+        f.load_settings(self)
+        sg.theme(self.settings['theme'])
         g.newGame(self)
 
     def eat(self):
