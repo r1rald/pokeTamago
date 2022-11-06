@@ -9,7 +9,7 @@ sg.LOOK_AND_FEEL_TABLE['TamagoDefault'] = {'BACKGROUND': '#64778d',
                                            'PROGRESS': ('#283b5b', '#ebebeb'),
                                            'BORDER': 1,
                                            'SLIDER_DEPTH': 1,
-                                           'PROGRESS_DEPTH': 1}
+                                           'PROGRESS_DEPTH': 0}
 
 sg.LOOK_AND_FEEL_TABLE['TamagoDark'] = {'BACKGROUND': '#202124',
                                         'TEXT': '#f0f0f0',
@@ -21,7 +21,7 @@ sg.LOOK_AND_FEEL_TABLE['TamagoDark'] = {'BACKGROUND': '#202124',
                                         'SLIDER': '#303134',
                                         'BORDER': 1,
                                         'SLIDER_DEPTH': 1,
-                                        'PROGRESS_DEPTH': 1}
+                                        'PROGRESS_DEPTH': 0}
 
 sg.LOOK_AND_FEEL_TABLE['TamagoLight'] = {'BACKGROUND': '#efefde',
                                          'TEXT': '#000000',
@@ -32,4 +32,4 @@ sg.LOOK_AND_FEEL_TABLE['TamagoLight'] = {'BACKGROUND': '#efefde',
                                          'PROGRESS': ('#0052e7', '#ffffff'),
                                          'BORDER': 1,
                                          'SLIDER_DEPTH': 1,
-                                         'PROGRESS_DEPTH': 1}
+                                         'PROGRESS_DEPTH': 0}
