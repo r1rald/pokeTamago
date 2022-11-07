@@ -20,21 +20,27 @@ def newGame():
 
 def mainGame(self):
     condition_layout = [
-        [sg.T("Health", font=('', 10, 'bold'))],
+        [sg.T("Health", font=('', 10, 'bold'),
+              background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T("Age", font=('', 10, 'bold'))],
+        [sg.T("Age", font=('', 10, 'bold'),
+              background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"Food", font=('', 10, 'bold'))],
+        [sg.T(f"Food", font=('', 10, 'bold'),
+              background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"Bored", font=('', 10, 'bold'))],
+        [sg.T(f"Bored", font=('', 10, 'bold'),
+              background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"Exhausted", font=('', 10, 'bold'))]
+        [sg.T(f"Exhausted", font=('', 10, 'bold'),
+              background_color=self.settings['background'])]
     ]
     condition_values = [
         [sg.T(f"{round(self.condition['health'])}", font=(
-            '', 10, 'bold'), k='health')],
+            '', 10, 'bold'), k='health', background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T("", font=('', 10, 'bold'), k='age')],
+        [sg.T("", font=('', 10, 'bold'), k='age',
+              background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
         [sg.ProgressBar(max_value=100, orientation='h',
                         expand_x=True, expand_y=True, p=0, key='food',)],
@@ -46,56 +52,61 @@ def mainGame(self):
                         expand_x=True, expand_y=True, p=0, key='exhausted',)]
     ]
     stats_layout = [
-        [sg.T(f"Attack", font=('', 10, 'bold'))],
+        [sg.T(f"Attack", font=('', 10, 'bold'),
+              background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"Defense", font=('', 10, 'bold'))],
+        [sg.T(f"Defense", font=('', 10, 'bold'),
+              background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"Sp. Attack", font=('', 10, 'bold'))],
+        [sg.T(f"Sp. Attack", font=('', 10, 'bold'),
+              background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"Sp. Defense", font=('', 10, 'bold'))],
+        [sg.T(f"Sp. Defense", font=('', 10, 'bold'),
+              background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"Speed", font=('', 10, 'bold'))]
+        [sg.T(f"Speed", font=('', 10, 'bold'),
+              background_color=self.settings['background'])]
     ]
     stats_values = [
         [sg.T(f"{self.stats['Attack']}", font=('', 10, 'bold'),
-              background_color='#242124', k='Attack')],
+              background_color=self.settings['background'], k='Attack')],
         [sg.HSeparator(color='#3c4754', p=0)],
         [sg.T(f"{self.stats['Defense']}", font=('', 10, 'bold'),
-              background_color='#242124', k='Defense')],
+              background_color=self.settings['background'], k='Defense')],
         [sg.HSeparator(color='#3c4754', p=0)],
         [sg.T(f"{self.stats['Sp. Attack']}", font=('', 10, 'bold'),
-              background_color='#242124', k='Sp. Attack')],
+              background_color=self.settings['background'], k='Sp. Attack')],
         [sg.HSeparator(color='#3c4754', p=0)],
         [sg.T(f"{self.stats['Sp. Defense']}", font=('', 10, 'bold'),
-              background_color='#242124', k='Sp. Defense')],
+              background_color=self.settings['background'], k='Sp. Defense')],
         [sg.HSeparator(color='#3c4754', p=0)],
         [sg.T(f"{self.stats['Speed']}", font=('', 10, 'bold'),
-              background_color='#242124', k='Speed')]
+              background_color=self.settings['background'], k='Speed')]
     ]
     nameLayout = [
-        [sg.T(f"{self.stats['name']}".upper(), font=(
-            '', 15, 'bold'))],
+        [sg.T(f"{self.stats['name']}".upper(), font=('', 15, 'bold'),
+              background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"Level {self.stats['level']}", font=(
-            '', 10))],
-        [sg.ProgressBar(max_value=eval(self.stats['xp_needed']), bar_color=('#28fc03', '#525252'),
+        [sg.T(f"Level {self.stats['level']}", font=('', 10),
+              background_color=self.settings['background'])],
+        [sg.ProgressBar(max_value=eval(self.stats['xp_needed']), bar_color=('#28fc03', '#f2f2f2'),
                         orientation='h', expand_x=True, expand_y=True, relief=sg.RELIEF_RAISED, key='progress_1',)],
     ]
     imageLayout = [
-        [sg.Image(self.stats['portrait'], k='image',
-                  p=0, expand_x=True, expand_y=True)],
+        [sg.Image(self.stats['portrait'], k='image', p=0, expand_x=True,
+                  expand_y=True, background_color=self.settings['background'])]
     ]
 
     if len(self.stats["type"]) < 2:
-        TypeImage2 = [sg.Image(f'Data\\img\\poke\\types\\none.png', k='type2', p=0, size=(
-            30, 24), tooltip=' There is no second type of this Pokemon ')]
+        TypeImage2 = [sg.Image(f'Data\\img\\poke\\types\\none.png', k='type2',
+                               background_color=self.settings['background'], p=0, size=(30, 24), tooltip=' There is no second type of this Pokemon ')]
     else:
-        TypeImage2 = [sg.Image(f'Data\\img\\poke\\types\\{self.stats["type"][1]}_Type_Icon.png', k='type2', p=0, size=(
-            30, 24), tooltip=f' {self.stats["type"][1]} ')]
+        TypeImage2 = [sg.Image(f'Data\\img\\poke\\types\\{self.stats["type"][1]}_Type_Icon.png', k='type2',
+                               background_color=self.settings['background'], p=0, size=(30, 24), tooltip=f' {self.stats["type"][1]} ')]
 
     conditionBar = [
         [sg.Image(f'Data\\img\\poke\\types\\{self.stats["type"][0]}_Type_Icon.png', k='type1',
-                  background_color='#242124', p=0, size=(30, 24), tooltip=f' {self.stats["type"][0]} ')],
+                  background_color=self.settings['background'], p=0, size=(30, 24), tooltip=f' {self.stats["type"][0]} ')],
         [sg.HSeparator(color='#3c4754', p=0)],
         TypeImage2,
         [sg.HSeparator(color='#3c4754', p=0)],
@@ -103,14 +114,14 @@ def mainGame(self):
     ]
 
     Column = [
-        [sg.Frame('', imageLayout, size=(170, 100), element_justification='center', p=((0, 0), (0, 5))), sg.Frame(
-            '', conditionBar, size=(30, 100), element_justification='center', p=((0, 0), (0, 5)))],
-        [sg.Frame('', nameLayout, size=(
-            200, 90), element_justification='center', p=((0, 0), (5, 5)))],
-        [sg.Frame('', condition_layout, size=(100, 142), element_justification='center', p=((0, 0), (5, 5))), sg.Frame(
-            '', condition_values, size=(100, 142), element_justification='center', p=((0, 0), (5, 5)))],
-        [sg.Frame('', stats_layout, size=(100, 142), element_justification='center', p=((0, 0), (5, 0))), sg.Frame(
-            '', stats_values, size=(100, 142), element_justification='center', p=((0, 0), (5, 0)))]
+        [sg.Frame('', imageLayout, size=(170, 100), element_justification='center', p=((0, 0), (0, 5)), background_color=self.settings['background']), sg.Frame(
+            '', conditionBar, size=(30, 100), element_justification='center', p=((0, 0), (0, 5)), background_color=self.settings['background'])],
+        [sg.Frame('', nameLayout, size=(200, 90), element_justification='center', p=(
+            (0, 0), (5, 5)), background_color=self.settings['background'])],
+        [sg.Frame('', condition_layout, size=(100, 142), element_justification='center', p=((0, 0), (5, 5)), background_color=self.settings['background']), sg.Frame(
+            '', condition_values, size=(100, 142), element_justification='center', p=((0, 0), (5, 5)), background_color=self.settings['background'])],
+        [sg.Frame('', stats_layout, size=(100, 142), element_justification='center', p=((0, 0), (5, 0)), background_color=self.settings['background']), sg.Frame(
+            '', stats_values, size=(100, 142), element_justification='center', p=((0, 0), (5, 0)), background_color=self.settings['background'])]
     ]
     buttonColumn = [
         [sg.B('Eat', size=8)],
