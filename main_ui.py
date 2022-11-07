@@ -6,7 +6,6 @@ import PySimpleGUI as sg
 
 
 def newGame(self):
-
     window1 = sg.Window('', ui.newGame(), icon='Data\\img\\logo.ico',
                         element_justification='c', grab_anywhere=True)
 
@@ -41,7 +40,6 @@ def newGame(self):
 
 
 def mainGame(self):
-
     mainWindow = sg.Window('pokéTamago', ui.mainGame(self), icon='Data\\img\\logo.ico')
 
     while True:
