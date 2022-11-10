@@ -1,12 +1,12 @@
 import PySimpleGUI as sg
 
 sg.LOOK_AND_FEEL_TABLE['TamagoDefault'] = {'BACKGROUND': '#64778d',
-                                           'TEXT': '#ebebeb',
-                                           'INPUT': '#dddddd',
+                                           'TEXT': '#ffffff',
+                                           'INPUT': '#ffffff',
                                            'TEXT_INPUT': '#000000',
-                                           'SCROLL': '#ebebeb',
-                                           'BUTTON': ('#ebebeb', '#283b5b'),
-                                           'PROGRESS': ('#283b5b', '#ebebeb'),
+                                           'SCROLL': '#ffffff',
+                                           'BUTTON': ('#ffffff', '#283b5b'),
+                                           'PROGRESS': ('#283b5b', '#ffffff'),
                                            'BORDER': 1,
                                            'SLIDER_DEPTH': 1,
                                            'PROGRESS_DEPTH': 0}

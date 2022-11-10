@@ -7,7 +7,7 @@ def newGame():
     buttonColumn = [
         [sg.Button('New Pokemon', size=12)],
         [sg.Button('Continue', size=12)],
-        [sg.B('Options', size=12)],
+        [sg.B('Settings', size=12)],
         [sg.B('Exit', size=12)]
     ]
     layout = [
@@ -175,7 +175,7 @@ def load():
     return layout
 
 
-def options(self):
+def settings(self):
     listOfThemes = ['TamagoDefault', 'TamagoDark', 'TamagoLight']
     listOfMusic = ['music1', 'music2', 'music3']
 

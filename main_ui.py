@@ -33,8 +33,8 @@ def newGame(self):
                     break
                 else:
                     continue
-            case 'Options':
-                sc.option_screen(self)
+            case 'Settings':
+                sc.settings_screen(self)
 
     window1.close()
 

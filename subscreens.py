@@ -83,9 +83,9 @@ def loading_screen(self):
     loadScreen.close()
 
 
-def option_screen(self):
+def settings_screen(self):
     OptWindow = sg.Window(
-        'Options', ui.options(self), icon='Data\\img\\gear.ico', grab_anywhere=True)
+        'Settings', ui.settings(self), icon='Data\\img\\gear.ico', grab_anywhere=True)
 
     while True:
         event, values = OptWindow.read(timeout=100)

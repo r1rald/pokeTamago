@@ -17,7 +17,7 @@ def load_settings(self):
 
 def save_settings(self):
     if self.settings['theme'] == "TamagoDefault":
-        self.settings['background'] = '#3e4b59'
+        self.settings['background'] = '#516073'
     if self.settings['theme'] == "TamagoDark":
         self.settings['background'] = '#303134'
     if self.settings['theme'] == "TamagoLight":
