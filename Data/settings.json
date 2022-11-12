@@ -1,6 +1,6 @@
 {
-    "theme": "TamagoDefault",
-    "background": "#516073",
+    "theme": "TamagoDark",
+    "background": "#303134",
     "music": "music1",
     "music_playing": true,
     "music_volume": 100.0,
