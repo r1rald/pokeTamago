@@ -1,0 +1,9 @@
+{
+    "theme": "TamagoDark",
+    "background": "#303134",
+    "music": "music1",
+    "music_playing": true,
+    "music_volume": 100.0,
+    "sound_volume": 100.0,
+    "effects_volume": 100.0
+}

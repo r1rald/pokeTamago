@@ -1,9 +1,11 @@
 from obj import Poke
 from threading import Thread
-import time, sched, sys
+import time
+import sched
+import sys
 
 
-if __name__ == "__main__":
+def main():
     p = Poke()
 
     s = sched.scheduler(time.time, time.sleep)
@@ -22,3 +24,7 @@ if __name__ == "__main__":
 
     while p.run:
         p.run()
+
+
+if __name__ == "__main__":
+    main()
