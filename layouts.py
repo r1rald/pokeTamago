@@ -93,8 +93,7 @@ def mainGame(self):
                         orientation='h', expand_x=True, expand_y=True, relief=sg.RELIEF_RAISED, key='progress_1',)],
     ]
     imageLayout = [
-        [sg.Image(self.stats['portrait'], k='image', p=0, expand_x=True,
-                  expand_y=True, background_color=self.settings['background'])]
+        [sg.Graph((170, 100), (0, 100), (170, 0), p=0, key='GRAPH')]
     ]
 
     if len(self.stats["type"]) < 2:

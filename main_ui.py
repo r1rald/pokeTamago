@@ -3,6 +3,9 @@ import funct as f
 import subscreens as sc
 import layouts as ui
 import PySimpleGUI as sg
+from PIL import Image
+from threading import Thread
+from time import sleep
 
 
 def newGame(self):
@@ -40,7 +43,36 @@ def newGame(self):
 
 
 def mainGame(self):
-    mainWindow = sg.Window('pokéTamago', ui.mainGame(self), icon='Data\\img\\logo.ico')
+    global index, frames, size
+
+    def portrait_thread():
+        global index
+        while True:
+            sleep(0.03)
+            index = (index + 1) % frames
+            if not self.run:
+                break
+
+    im = Image.open(self.stats['portrait'])
+    width, height = im.size
+    frames = im.n_frames
+
+    graph_width, graph_height = size = (170, 100)
+
+    mainWindow = sg.Window('pokéTamago', ui.mainGame(
+        self), icon='Data\\img\\logo.ico', finalize=True)
+
+    mainWindow['GRAPH'].draw_image(
+        f'{f.portrait_background(self)}', location=(0, 0))
+
+    index = 0
+    im.seek(index)
+    x, y = location = (graph_width//2-width//2, graph_height//2-height//2)
+    item = mainWindow['GRAPH'].draw_image(
+        data=f.image_to_data(im), location=location)
+
+    thread = Thread(target=portrait_thread, daemon=True)
+    thread.start()
 
     while True:
         event, value = mainWindow.read(timeout=25)
@@ -49,6 +81,11 @@ def mainGame(self):
                 self.run = False
                 break
             case sg.TIMEOUT_KEY:
+                im.seek(index)
+                item_new = mainWindow['GRAPH'].draw_image(
+                    data=f.image_to_data(im), location=location)
+                mainWindow['GRAPH'].delete_figure(item)
+                item = item_new
                 mainWindow.refresh()
             case 'Eat':
                 self.eat()
@@ -101,7 +138,5 @@ def mainGame(self):
         mainWindow['Sp. Attack'].update(self.stats['Sp. Attack'])
         mainWindow['Sp. Defense'].update(self.stats['Sp. Defense'])
         mainWindow['Speed'].update(self.stats['Speed'])
-        mainWindow["image"].UpdateAnimation(
-            self.stats['portrait'], time_between_frames=25)
 
     mainWindow.close()
