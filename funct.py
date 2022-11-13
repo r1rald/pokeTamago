@@ -134,9 +134,8 @@ def time_counter(source):
     hrs, remainder = divmod(h_remainder, 3600)
     mins, secs = divmod(remainder, 60)
 
-    age = f"{secs:02}"
-    if mins > 0:
-        age = f"{mins:02}:{secs:02}"
+    age = f"{mins:02}:{secs:02}"
+    
     if hrs > 0:
         age = f"{hrs:02}:{mins:02}:{secs:02}"
     if days > 0:
