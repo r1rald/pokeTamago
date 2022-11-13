@@ -131,6 +131,7 @@ def mainGame(self):
         [sg.B('Battle', size=8)],
         [sg.B('Shop', size=8)],
         [sg.HSeparator(color='#3c4754', p=((0, 0), (10, 10)))],
+        [sg.B('Main Menu', size=8)],
         [sg.B('Exit', size=8)]
     ]
     layout = [
@@ -175,6 +176,8 @@ def load():
 
 
 def settings(self):
+    status1 = 'Enabled' if self.settings['music_playing'] is True else 'Disabled'
+    status2 = 'Enabled' if self.settings['portrait_anim'] is True else 'Disabled'
     listOfThemes = ['TamagoDefault', 'TamagoDark', 'TamagoLight']
     listOfMusic = ['music1', 'music2', 'music3']
 
@@ -186,21 +189,23 @@ def settings(self):
     sounds = [
         [sg.T(f"Current music: {self.settings['music']}", key='_music_txt_')],
         [sg.Combo(listOfMusic, size=(14, 0), default_value=self.settings['music'],
-                  key='_music_'), sg.Checkbox('Enable', default=self.settings['music_playing'], key='_playing_')],
+                  key='_music_'), sg.Checkbox(text=status1, default=self.settings['music_playing'], key='_playing_')],
         [sg.T(f'Music')],
         [sg.Slider(orientation='h', disable_number_display=True,
                    range=(0, 100), default_value=self.settings['music_volume'], key='_music_vol_')],
         [sg.T(f'Sound')],
         [sg.Slider(orientation='h', disable_number_display=True,
-                   range=(0, 100), default_value=self.settings['sound_volume'], key='_sound_vol_')],
-        [sg.T(f'Effects')],
-        [sg.Slider(orientation='h', disable_number_display=True,
-                   range=(0, 100), default_value=self.settings['effects_volume'], key='_effects_vol_')]
+                   range=(0, 100), default_value=self.settings['sound_volume'], key='_sound_vol_')]
+    ]
+    portrait = [
+        [sg.T('Animated image:'), sg.Checkbox(
+            text=status2, default=self.settings['portrait_anim'], p=((20,0),(0,0)), key='_portrait_')]
     ]
     layout = [
-        [sg.Frame('Theme', theme)],
-        [sg.Frame('Audio', sounds)],
-        [sg.B('Apply', p=((123, 0), (0, 0))), sg.B('Back')]
+        [sg.Frame('Theme', theme, s=(215, 80))],
+        [sg.Frame('Audio', sounds, s=(215, 200))],
+        [sg.Frame('Portrait', portrait, s=(215, 55))],
+        [sg.B('Apply', p=((133, 0), (5, 0))), sg.B('Back', p=((5, 0), (5, 0)))]
     ]
 
     return layout

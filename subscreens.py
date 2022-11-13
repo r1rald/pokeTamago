@@ -95,7 +95,8 @@ def settings_screen(self):
                 self.settings['music_playing'] = values['_playing_']
                 self.settings['music_volume'] = values['_music_vol_']
                 self.settings['sound_volume'] = values['_sound_vol_']
-                self.settings['effects_volume'] = values['_effects_vol_']
+                self.settings['portrait_anim'] = values['_portrait_']
+                OptWindow.refresh()
             case sg.WIN_CLOSED | 'Back':
                 f.save_settings(self)
                 break
@@ -103,8 +104,9 @@ def settings_screen(self):
                 self.settings['theme'] = values['_theme_']
                 f.save_settings(self)
                 os.execl(sys.executable, sys.executable, *sys.argv)
-                
-
+        
+        OptWindow['_playing_'].update(text='Enabled' if self.settings['music_playing'] is True else 'Disabled')
+        OptWindow['_portrait_'].update(text='Enabled' if self.settings['portrait_anim'] is True else 'Disabled')
         OptWindow['_theme_txt_'].update(f"Current theme: {self.settings['theme']}")
         OptWindow['_music_txt_'].update(f"Current music: {self.settings['music']}")
 

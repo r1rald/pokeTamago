@@ -1,4 +1,5 @@
 import sys
+import os
 import funct as f
 import subscreens as sc
 import layouts as ui
@@ -65,14 +66,15 @@ def mainGame(self):
     mainWindow['GRAPH'].draw_image(
         f'{f.portrait_background(self)}', location=(0, 0))
 
-    index = 0
+    index = 0 if self.settings['portrait_anim'] else 10
     im.seek(index)
     x, y = location = (graph_width//2-width//2, graph_height//2-height//2)
     item = mainWindow['GRAPH'].draw_image(
         data=f.image_to_data(im), location=location)
 
     thread = Thread(target=portrait_thread, daemon=True)
-    thread.start()
+    if self.settings['portrait_anim']:
+        thread.start()
 
     while True:
         event, value = mainWindow.read(timeout=25)
@@ -97,6 +99,9 @@ def mainGame(self):
                 self.play()
             case 'Sleep':
                 self.sleep()
+            case 'Main Menu':
+                self.run = False
+                os.execl(sys.executable, sys.executable, *sys.argv)
 
         if not self.status['alive']:
             sc.death_screen(self)
