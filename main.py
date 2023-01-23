@@ -12,11 +12,11 @@ s = sched.scheduler(time.time, time.sleep)
 
 
 def run(sc):
-    p.autosave()
+    mg.autosave(p)
     p.passing_time()
     s.enter(1, 1, run, (sc,))
-    if not p.run:
-        p.autosave()
+    if not mg.run:
+        mg.autosave(p)
         sys.exit()
 
 

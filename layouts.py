@@ -1,7 +1,6 @@
 from random import randint
 import funct as f
 import PySimpleGUI as sg
-from classes import Poke as p
 
 
 def newGame():
@@ -37,7 +36,7 @@ def mainGame(self, player):
               background_color=self.settings['background'])]
     ]
     condition_values = [
-        [sg.T(f"{round(self.condition['health'])}", font=(
+        [sg.T(f"{round(player.condition['health'])}", font=(
             '', 10, 'bold'), k='health', background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
         [sg.T("", font=('', 10, 'bold'), k='age',
@@ -69,44 +68,44 @@ def mainGame(self, player):
               background_color=self.settings['background'])]
     ]
     stats_values = [
-        [sg.T(f"{self.stats['Attack']}", font=('', 10, 'bold'),
+        [sg.T(f"{player.stats['Attack']}", font=('', 10, 'bold'),
               background_color=self.settings['background'], k='Attack')],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"{self.stats['Defense']}", font=('', 10, 'bold'),
+        [sg.T(f"{player.stats['Defense']}", font=('', 10, 'bold'),
               background_color=self.settings['background'], k='Defense')],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"{self.stats['Sp. Attack']}", font=('', 10, 'bold'),
+        [sg.T(f"{player.stats['Sp. Attack']}", font=('', 10, 'bold'),
               background_color=self.settings['background'], k='Sp. Attack')],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"{self.stats['Sp. Defense']}", font=('', 10, 'bold'),
+        [sg.T(f"{player.stats['Sp. Defense']}", font=('', 10, 'bold'),
               background_color=self.settings['background'], k='Sp. Defense')],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"{self.stats['Speed']}", font=('', 10, 'bold'),
+        [sg.T(f"{player.stats['Speed']}", font=('', 10, 'bold'),
               background_color=self.settings['background'], k='Speed')]
     ]
     nameLayout = [
-        [sg.T(f"{self.stats['name']}".upper(), font=('', 15, 'bold'),
+        [sg.T(f"{player.stats['name']}".upper(), font=('', 15, 'bold'),
               background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"Level {self.stats['level']}", font=('', 10),
+        [sg.T(f"Level {player.stats['level']}", font=('', 10),
               background_color=self.settings['background'])],
-        [sg.ProgressBar(max_value=eval(self.stats['xp_needed']), bar_color=('#28fc03', '#f2f2f2'),
+        [sg.ProgressBar(max_value=round((4 * ((player.stats['level']+1) ** 3)) / 5), bar_color=('#28fc03', '#f2f2f2'),
                         orientation='h', expand_x=True, expand_y=True, relief=sg.RELIEF_RAISED, key='progress_1',)],
     ]
     imageLayout = [
         [sg.Graph((170, 100), (0, 100), (170, 0), p=0, key='GRAPH')]
     ]
 
-    if len(self.stats["type"]) < 2:
+    if len(player.stats["type"]) < 2:
         TypeImage2 = [sg.Image(f'Data\\img\\poke\\types\\none.png', k='type2',
                                background_color=self.settings['background'], p=0, size=(30, 24), tooltip=' There is no second type of this Pokemon ')]
     else:
-        TypeImage2 = [sg.Image(f'Data\\img\\poke\\types\\{self.stats["type"][1]}_Type_Icon.png', k='type2',
-                               background_color=self.settings['background'], p=0, size=(30, 24), tooltip=f' {self.stats["type"][1]} ')]
+        TypeImage2 = [sg.Image(f'Data\\img\\poke\\types\\{player.stats["type"][1]}_Type_Icon.png', k='type2',
+                               background_color=self.settings['background'], p=0, size=(30, 24), tooltip=f' {player.stats["type"][1]} ')]
 
     conditionBar = [
-        [sg.Image(f'Data\\img\\poke\\types\\{self.stats["type"][0]}_Type_Icon.png', k='type1',
-                  background_color=self.settings['background'], p=0, size=(30, 24), tooltip=f' {self.stats["type"][0]} ')],
+        [sg.Image(f'Data\\img\\poke\\types\\{player.stats["type"][0]}_Type_Icon.png', k='type1',
+                  background_color=self.settings['background'], p=0, size=(30, 24), tooltip=f' {player.stats["type"][0]} ')],
         [sg.HSeparator(color='#3c4754', p=0)],
         TypeImage2,
         [sg.HSeparator(color='#3c4754', p=0)],
@@ -154,9 +153,9 @@ def newPoke():
     return layout
 
 
-def choosePoke():
+def choosePoke(player):
     layout = [
-        [sg.Listbox(values=[x for x in p.open_dex()[0]], enable_events=True,
+        [sg.Listbox(values=[x for x in player.open_dex()[0]], enable_events=True,
                     size=(25, 15), key="poke", expand_x=True)],
         [sg.B('Choose', p=((98, 0), (0, 0))), sg.B('Back'), sg.Button(
             'Submit', visible=False, bind_return_key=True)]
@@ -165,9 +164,9 @@ def choosePoke():
     return layout
 
 
-def load():
+def load(player):
     layout = [
-        [sg.Listbox(values=[x for x in p.read_save()], enable_events=True,
+        [sg.Listbox(values=[x for x in player.read_save()], enable_events=True,
                     size=(25, 15), key="load", expand_x=True)],
         [sg.B('Load', p=((58, 0), (0, 0))), sg.B('Delete'), sg.B('Back'),
          sg.B('Submit', visible=False, bind_return_key=True)]
@@ -225,12 +224,12 @@ def dead1():
     return layout
 
 
-def dead2(self):
+def dead2(player):
     layout = [
         [sg.Image('Data\\img\\revive.gif', k='image', p=((20, 20), (20, 0)),)],
         [sg.Text('Your pet is about to begin a new life.',
                  k='text1', p=((0, 0), (20, 0)))],
-        [sg.Text(f'The process will take {f.time_counter(self.status["revive_time"])}.', p=(
+        [sg.Text(f'The process will take {f.time_counter(player.status["revive_time"])}.', p=(
             (0, 0), (0, 20)), k='text2')],
         [sg.Button('Revive', size=8, k='r'), sg.Button(
             'Let go', size=8, k='l'), sg.Button('Exit', size=8, p=((50, 0), (0, 0)))]
@@ -259,13 +258,12 @@ def eating():
 
     layout = [
         [sg.Image('Data\\img\\eat.gif', k='image', p=((20, 20), (20, 20)))],
-        [sg.Text(f'You have {portion} portions.',
-                 k='text1', p=((0, 0), (20, 0)))],
+        [sg.Text(f'You have {portion} portions.', k='text1', p=((0, 0), (20, 0)))],
         [sg.Text("You don't have any food for now!", visible=False, k='text2')],
-        [sg.Text("Your pet is full, you can't feed it for now!",
-                 visible=False, k='text3')],
-        [sg.Button('Give a snack', size=10, k='snack', p=((0, 0), (20, 0))), sg.Button(
-            'Serve a meal', size=10, k='meal', p=((0, 0), (20, 0))), sg.Button('Back', size=8, p=((50, 0), (20, 0)))]
+        [sg.Text("Your pet is full, you can't feed it for now!", visible=False, k='text3')],
+        [sg.Button('Give a snack', size=10, k='snack', p=((0, 0), (20, 0))), 
+         sg.Button('Serve a meal', size=10, k='meal', p=((0, 0), (20, 0))), 
+         sg.Button('Back', size=8, p=((50, 0), (20, 0)))]
     ]
 
     return layout

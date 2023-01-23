@@ -16,25 +16,21 @@ def new_pokemon_screen(player):
             case sg.WINDOW_CLOSED | 'Back':
                 break
             case 'Enter' | 'Submit':
-                f.saves.clear()
-                f.read_save()
-        if search('^[A-Za-z0-9]{1,14}$', values['-IN-']) in f.saves:
-            sg.Popup('This Pokemon is already exist!', title='error', keep_on_top=True,
-                     auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
-        elif values['-IN-'] == '':
-            sg.Popup('You must give a name to your Pokemon!', title='error', keep_on_top=True,
-                     auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
-        elif len(values['-IN-']) > 14:
-            sg.Popup('Please try a shorter name!', title='error', keep_on_top=True,
-                     auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
-        else:
-            player.stats["name"] = values['-IN-']
-            break
+                player.read_save()
+                if search('^[A-Za-z0-9]{1,14}$', values['-IN-']) and values['-IN-'] not in player.read_save():
+                    player.stats["name"] = values['-IN-']
+                    break
+                else:
+                    event, values = sg.Window('error', [[sg.T('Invalid name or this Pokemon is already exist!')],
+                    [sg.T('(The name cannot be longer than 14 characters and cannot contain any special character.)')],
+                    [sg.B('OK', s=(10,1), p=(10,10))]], keep_on_top=True, auto_close=True, auto_close_duration=3,
+                    element_justification='c', icon='Data\\img\\warning.ico').read(close=True)
+
     pokeName.close()
 
 
 def choose_pokemon(player):
-    pokeChooseWin = sg.Window('Choose', ui.choosePoke(),
+    pokeChooseWin = sg.Window('Choose', ui.choosePoke(player),
                               icon='Data\\img\\pokeball.ico')
 
     while True:
@@ -43,21 +39,16 @@ def choose_pokemon(player):
             case sg.WINDOW_CLOSED | 'Back':
                 break
             case 'Choose' | 'Submit':
-                index = f.pokes.index(f'{values["poke"][0]}')
-                if ' ' in values["poke"][0]:
-                    name = values["poke"][0].replace(' ', '')
-                elif "'" in values["poke"][0]:
-                    name = values["poke"][0].replace("'", '')
-                else:
-                    name = values["poke"][0]
+                index = player.open_dex()[0].index(f'{values["poke"][0]}')
+                name = sub("\s|[']", '', values["poke"][0])
                 player.stats['portrait'] = f'Data\\img\\poke\\{name}.gif'
-                player.stats['type'] = f.types[index]
+                player.stats['type'] = player.open_dex()[1][index]
                 break
     pokeChooseWin.close()
 
 
-def loading_screen(self):
-    loadScreen = sg.Window('Load', ui.load(), icon='Data\\img\\load.ico')
+def loading_screen(player):
+    loadScreen = sg.Window('Load', ui.load(player), icon='Data\\img\\load.ico')
 
     while True:
         event, values = loadScreen.read()
@@ -69,7 +60,7 @@ def loading_screen(self):
                     sg.Popup('You must choose a save file!', title='error', keep_on_top=True,
                              auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
                 else:
-                    f.load_saves(self, values["load"][0])
+                    f.load_saves(player, values["load"][0])
                     break
             case 'Delete':
                 if not values["load"]:
@@ -77,9 +68,8 @@ def loading_screen(self):
                              auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
                 else:
                     os.remove(f'Data\\save\\{values["load"][0]}.json')
-                    f.saves.clear()
-                    f.read_save()
-                    loadScreen['load'].update(values=[x for x in f.saves])
+                    player.read_save()
+                    loadScreen['load'].update(values=[x for x in player.read_save()])
     loadScreen.close()
 
 
@@ -102,7 +92,7 @@ def settings_screen(self):
                 break
             case 'Apply':
                 self.settings['theme'] = values['_theme_']
-                f.save_settings(self)
+                self.save_settings()
                 os.execl(sys.executable, sys.executable, *sys.argv)
         
         OptWindow['_playing_'].update(text='Enabled' if self.settings['music_playing'] is True else 'Disabled')
@@ -113,13 +103,13 @@ def settings_screen(self):
     OptWindow.close()
 
 
-def death_screen(self):
-    if not self.status["revive"]:
+def death_screen(self, player):
+    if not player.status["revive"]:
         deathWindow = sg.Window(
             'Passing', ui.dead1(), icon='Data\\img\\death.ico', element_justification="center")
     else:
         deathWindow = sg.Window(
-            'Revive', ui.dead2(self), icon='Data\\img\\death.ico', element_justification="center")
+            'Revive', ui.dead2(player), icon='Data\\img\\death.ico', element_justification="center")
 
     while True:
         event, value = deathWindow.read(timeout=150)
@@ -127,40 +117,40 @@ def death_screen(self):
             self.run = False
             sys.exit()
         if (event == 'r'):
-            self.status['revive'] = True
-            self.status['revive_time'] = 604800
+            player.status['revive'] = True
+            player.status['revive_time'] = 604800
         if (event == 'l'):
             os.remove(f'Data\\save\\{self.stats["name"]}.json')
             self.run = False
             sys.exit()
-        if self.status['revive'] and self.status['revive_time'] == 0:
-            self.condition['health'] = self.stats['MaxHP']
-            self.condition['bored'] = 0
-            self.condition['food'] = 100
-            self.condition['exhausted'] = 0
-            self.status['alive'] = True
-            self.status['revive'] = False
+        if player.status['revive'] and player.status['revive_time'] == 0:
+            player.condition['health'] = player.stats['MaxHP']
+            player.condition['bored'] = 0
+            player.condition['food'] = 100
+            player.condition['exhausted'] = 0
+            player.status['alive'] = True
+            player.status['revive'] = False
             break
 
-        if not self.status["revive"]:
+        if not player.status["revive"]:
             deathWindow['image'].UpdateAnimation(
                 'Data\\img\\death.gif', time_between_frames=150)
-        if self.status["revive"]:
+        if player.status["revive"]:
             deathWindow['image'].UpdateAnimation(
                 'Data\\img\\revive.gif', time_between_frames=150)
             deathWindow['text1'].update(
                 'Your pet is about to begin a new life.')
             deathWindow['text2'].update(
-                f'The process will take {f.time_counter(self.status["revive_time"])}.')
+                f'The process will take {f.time_counter(player.status["revive_time"])}.')
             deathWindow['r'].update(disabled=True)
             deathWindow['l'].update(disabled=True)
 
     deathWindow.close()
 
 
-def sleep_screen(self):
+def sleep_screen(self, player):
     sleepWindow = sg.Window(
-        'Sleeping', ui.sleeping(self), icon='Data\\img\\sleep.ico', element_justification="center")
+        'Sleeping', ui.sleeping(player), icon='Data\\img\\sleep.ico', element_justification="center")
 
     while True:
         event, value = sleepWindow.read(timeout=150)
@@ -168,19 +158,19 @@ def sleep_screen(self):
             self.autosave()
             self.run = False
             sys.exit()
-        if self.status['sleeping'] and self.status['sleep_time'] == 0:
-            self.status['sleeping'] = False
+        if player.status['sleeping'] and player.status['sleep_time'] == 0:
+            player.status['sleeping'] = False
             break
 
         sleepWindow['image'].UpdateAnimation(
             'Data\\img\\sleep.gif', time_between_frames=150)
         sleepWindow['text'].update(
-            f'Let it rest for about {f.time_counter(self.status["sleep_time"])}.')
+            f'Let it rest for about {f.time_counter(player.status["sleep_time"])}.')
 
     sleepWindow.close()
 
 
-def eat_screen(self):
+def eat_screen(player):
     eatWindow = sg.Window(
         'Eating', ui.eating(), icon='Data\\img\\eat.ico', element_justification="center")
 
@@ -190,15 +180,15 @@ def eat_screen(self):
             break
         if (event == 'snack'):
             portion -= 1
-            if self.condition['food'] <= 90 and f.chance(2):
-                self.condition['food'] += 10
+            if player.condition['food'] <= 90 and f.chance(2):
+                player.condition['food'] += 10
                 ui.gif_update = 'snack'
             else:
                 ui.gif_update = 'eat_miss'
         if (event == 'meal'):
             portion -= 1
-            if self.condition['food'] <= 75 and f.chance(3):
-                self.condition['food'] += 25
+            if player.condition['food'] <= 75 and f.chance(3):
+                player.condition['food'] += 25
                 ui.gif_update = 'meal'
             else:
                 ui.gif_update = 'eat_miss'
@@ -209,11 +199,11 @@ def eat_screen(self):
 
         if ui.portion == 0:
             eatWindow['text2'].update(visible=True)
-        if self.condition['food'] > 75:
+        if player.condition['food'] > 75:
             eatWindow['meal'].update(disabled=True)
-            if self.condition['food'] > 90:
+            if player.condition['food'] > 90:
                 eatWindow['text3'].update(visible=True)
                 eatWindow['snack'].update(disabled=True)
 
-    self.status['eating'] = False
+    player.status['eating'] = False
     eatWindow.close()

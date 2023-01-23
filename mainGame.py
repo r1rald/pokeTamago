@@ -7,9 +7,10 @@ import layouts as ui
 from classes import Poke as p
 from PIL import Image
 from time import sleep
-import subscreens as sc
+import screens as sc
 import PySimpleGUI as sg
 from threading import Thread
+import Data.themes as t
 
 
 class Gameplay:
@@ -17,8 +18,8 @@ class Gameplay:
 
     def __init__(self):
         self.settings = {
-            "theme": "TamagoDark",
-            "background": "#303134",
+            "theme": "TamagoDefault",
+            "background": "#516073",
             "music": "music1",
             "music_playing": True,
             "music_volume": 100.0,
@@ -29,6 +30,9 @@ class Gameplay:
         with open(f'Data\\settings.json', 'r') as settings:
             data = json.load(settings)
             self.settings = data
+
+        sg.theme(self.settings['theme'])
+
 
     def newGame(self, player):
         window1 = sg.Window('', ui.newGame(), icon='Data\\img\\logo.ico',
@@ -48,7 +52,7 @@ class Gameplay:
                     else:
                         continue
                 case 'Continue':
-                    p.load_saves.has_been_called = False
+                    player.load_saves.has_been_called = False
                     sc.loading_screen(player)
                     if p.load_saves.has_been_called:
                         break
@@ -107,23 +111,23 @@ class Gameplay:
                     item = item_new
                     mainWindow.refresh()
                 case 'Eat':
-                    player.eat(player)
+                    player.eat()
                 case 'Battle':
                     pass
                 case 'Training':
-                    player.training(player)
+                    player.training()
                 case 'Play':
-                    player.play(player)
+                    player.play()
                 case 'Sleep':
-                    player.sleep(player)
+                    player.sleep()
                 case 'Main Menu':
                     self.run = False
                     os.execl(sys.executable, sys.executable, *sys.argv)
 
             if not player.status['alive']:
-                sc.death_screen(player)
+                sc.death_screen(self, player)
             if player.status['sleeping']:
-                sc.sleep_screen(player)
+                sc.sleep_screen(self, player)
             if player.status['eating']:
                 sc.eat_screen(player)
 
@@ -151,12 +155,9 @@ class Gameplay:
             mainWindow['progress_1'].update(player.stats['xp'])
             mainWindow['health'].update(round(player.condition['health']))
             mainWindow['age'].update(f.time_counter(player.condition['age']))
-            mainWindow['food'].update(
-                player.condition['food'], bar_color=fdClr)
-            mainWindow['bored'].update(
-                player.condition['bored'], bar_color=brdClr)
-            mainWindow['exhausted'].update(
-                player.condition['exhausted'], bar_color=xhstdClr)
+            mainWindow['food'].update(player.condition['food'], bar_color=fdClr)
+            mainWindow['bored'].update(player.condition['bored'], bar_color=brdClr)
+            mainWindow['exhausted'].update(player.condition['exhausted'], bar_color=xhstdClr)
             mainWindow['Attack'].update(player.stats['Attack'])
             mainWindow['Defense'].update(player.stats['Defense'])
             mainWindow['Sp. Attack'].update(player.stats['Sp. Attack'])

@@ -2,6 +2,7 @@ import os
 import time
 import json
 import PySimpleGUI as sg
+from nickname_generator import generate
 
 
 class Poke:
@@ -45,6 +46,25 @@ class Poke:
         }
 
 
+class Player(Poke):
+
+    def __init__(self):
+        super().__init__()
+
+
+    def open_dex(self):
+        pokes = []
+        types = []
+
+        with open('Data\pokedex.json', 'r') as read_file:
+            data = json.load(read_file)
+            for poke in data:
+                pokes.append(poke['name'])
+                types.append(poke['type'])
+
+        return pokes, types
+
+
     def read_save(self):
         directory = 'Data\\save'
         saves = []
@@ -64,25 +84,6 @@ class Poke:
             self.stats = data['stats']
             self.condition = data['condition']
             self.status = data['status']
-
-
-    def open_dex(self):
-        pokes = []
-        types = []
-
-        with open('Data\pokedex.json', 'r') as read_file:
-            data = json.load(read_file)
-            for poke in data:
-                pokes.append(poke['name'])
-                types.append(poke['type'])
-
-        return pokes, types
-
-
-class Player(Poke):
-
-    def __init__(self):
-        super().__init__()
 
 
     def level_up(self):
@@ -207,3 +208,4 @@ class Npc(Poke):
 
     def __init__(self):
         super().__init__()
+        self.stats['name'] = generate()
