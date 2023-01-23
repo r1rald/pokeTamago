@@ -1,6 +1,7 @@
 from random import randint
 import funct as f
 import PySimpleGUI as sg
+from classes import Poke as p
 
 
 def newGame():
@@ -18,7 +19,7 @@ def newGame():
     return layout
 
 
-def mainGame(self):
+def mainGame(self, player):
     condition_layout = [
         [sg.T("Health", font=('', 10, 'bold'),
               background_color=self.settings['background'])],
@@ -155,7 +156,7 @@ def newPoke():
 
 def choosePoke():
     layout = [
-        [sg.Listbox(values=[x for x in f.pokes], enable_events=True,
+        [sg.Listbox(values=[x for x in p.open_dex()[0]], enable_events=True,
                     size=(25, 15), key="poke", expand_x=True)],
         [sg.B('Choose', p=((98, 0), (0, 0))), sg.B('Back'), sg.Button(
             'Submit', visible=False, bind_return_key=True)]
@@ -166,7 +167,7 @@ def choosePoke():
 
 def load():
     layout = [
-        [sg.Listbox(values=[x for x in f.saves], enable_events=True,
+        [sg.Listbox(values=[x for x in p.read_save()], enable_events=True,
                     size=(25, 15), key="load", expand_x=True)],
         [sg.B('Load', p=((58, 0), (0, 0))), sg.B('Delete'), sg.B('Back'),
          sg.B('Submit', visible=False, bind_return_key=True)]
@@ -176,8 +177,8 @@ def load():
 
 
 def settings(self):
-    status1 = 'Enabled' if self.settings['music_playing'] is True else 'Disabled'
-    status2 = 'Enabled' if self.settings['portrait_anim'] is True else 'Disabled'
+    status1 = 'Enabled' if self.settings['music_playing'] else 'Disabled'
+    status2 = 'Enabled' if self.settings['portrait_anim'] else 'Disabled'
     listOfThemes = ['TamagoDefault', 'TamagoDark', 'TamagoLight']
     listOfMusic = ['music1', 'music2', 'music3']
 
@@ -238,11 +239,11 @@ def dead2(self):
     return layout
 
 
-def sleeping(self):
+def sleeping(player):
     layout = [
         [sg.Image('Data\\img\\sleep.gif', k='image', p=((20, 20), (0, 0)))],
         [sg.Text('Shhh!!! Your pet is sleeping now.')],
-        [sg.Text(f'Let it rest for about {f.time_counter(self.status["sleep_time"])}.', p=(
+        [sg.Text(f'Let it rest for about {f.time_counter(player.status["sleep_time"])}.', p=(
             (0, 0), (20, 20)), k='text')],
         [sg.Button('Exit', size=8)]
     ]

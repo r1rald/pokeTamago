@@ -1,12 +1,12 @@
 import sys
 import os
+from re import search, sub
 import funct as f
 import layouts as ui
 import PySimpleGUI as sg
-import themes
 
 
-def new_pokemon_screen(self):
+def new_pokemon_screen(player):
     pokeName = sg.Window(
         'Name', ui.newPoke(), icon='Data\\img\\logo.ico', grab_anywhere=True)
 
@@ -18,7 +18,7 @@ def new_pokemon_screen(self):
             case 'Enter' | 'Submit':
                 f.saves.clear()
                 f.read_save()
-        if values['-IN-'] in f.saves:
+        if search('^[A-Za-z0-9]{1,14}$', values['-IN-']) in f.saves:
             sg.Popup('This Pokemon is already exist!', title='error', keep_on_top=True,
                      auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
         elif values['-IN-'] == '':
@@ -28,12 +28,12 @@ def new_pokemon_screen(self):
             sg.Popup('Please try a shorter name!', title='error', keep_on_top=True,
                      auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
         else:
-            self.stats["name"] = values['-IN-']
+            player.stats["name"] = values['-IN-']
             break
     pokeName.close()
 
 
-def choose_pokemon(self):
+def choose_pokemon(player):
     pokeChooseWin = sg.Window('Choose', ui.choosePoke(),
                               icon='Data\\img\\pokeball.ico')
 
@@ -50,8 +50,8 @@ def choose_pokemon(self):
                     name = values["poke"][0].replace("'", '')
                 else:
                     name = values["poke"][0]
-                self.stats['portrait'] = f'Data\\img\\poke\\{name}.gif'
-                self.stats['type'] = f.types[index]
+                player.stats['portrait'] = f'Data\\img\\poke\\{name}.gif'
+                player.stats['type'] = f.types[index]
                 break
     pokeChooseWin.close()
 
