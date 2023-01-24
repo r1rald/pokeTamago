@@ -1,19 +1,18 @@
-import os
-import sys
-import json
-import time
-import funct as f
-import layouts as ui
-from classes import Poke as p
-from PIL import Image
-from time import sleep
-import screens as sc
-import PySimpleGUI as sg
 from threading import Thread
-import Data.themes as t
+import PySimpleGUI as sg
+import ui_screens as sc
+import ui_layout as ui
+from time import sleep
+from PIL import Image
+import Data.themes
+import funct as f
+import time
+import json
+import sys
+import os
 
 
-class Gameplay:
+class Game:
     run = True
 
     def __init__(self):
@@ -32,6 +31,7 @@ class Gameplay:
             self.settings = data
 
         sg.theme(self.settings['theme'])
+        f.randomYieldGroup()
 
 
     def newGame(self, player):
@@ -52,9 +52,9 @@ class Gameplay:
                     else:
                         continue
                 case 'Continue':
-                    player.load_saves.has_been_called = False
+                    player.has_been_called = False
                     sc.loading_screen(player)
-                    if p.load_saves.has_been_called:
+                    if player.has_been_called:
                         break
                     else:
                         continue

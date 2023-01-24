@@ -14,6 +14,8 @@ class Poke:
             "type": [],
             "level": 1,
             "xp": 0,
+            "xp_group": "",
+            "yield": 0,
             "MaxHP": 43,
             "Attack": 50,
             "Defense": 53,
@@ -78,7 +80,7 @@ class Player(Poke):
 
 
     def load_saves(self, var):
-        self.load_saves.has_been_called = True
+        self.has_been_called = True
         with open(f'Data\save\{var}.json', 'r') as player:
             data = json.load(player)
             self.stats = data['stats']
@@ -87,9 +89,23 @@ class Player(Poke):
 
 
     def level_up(self):
-        if self.stats['xp'] >= round((4 * ((self.stats['level']+1) ** 3)) / 5):
+        match self.stats["xp_group"]:
+            case "Fast":
+                need = int((4*(self.stats['level']**3))/5)
+            case "Medium Fast":
+                need = int(self.stats['level']**3)
+            case "Medium Slow":
+                need = int(((6/5)*(self.stats['level']**3))-
+                (15*(self.stats['level']**2))+(100*self.stats['level'])-140)
+            case "Slow":
+                need = int((5*(self.stats['level']**3))/4)
+        
+        if self.stats['xp'] >= need:
             self.stats['xp'] = 0
             self.stats['level'] += 1
+
+        return need
+
 
 
     def eat(self):

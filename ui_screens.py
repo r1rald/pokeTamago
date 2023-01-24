@@ -2,7 +2,7 @@ import sys
 import os
 from re import search, sub
 import funct as f
-import layouts as ui
+import ui_layout as ui
 import PySimpleGUI as sg
 
 
@@ -60,7 +60,7 @@ def loading_screen(player):
                     sg.Popup('You must choose a save file!', title='error', keep_on_top=True,
                              auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
                 else:
-                    f.load_saves(player, values["load"][0])
+                    player.load_saves(player, values["load"][0])
                     break
             case 'Delete':
                 if not values["load"]:

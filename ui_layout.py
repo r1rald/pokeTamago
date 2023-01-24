@@ -89,7 +89,7 @@ def mainGame(self, player):
         [sg.HSeparator(color='#3c4754', p=0)],
         [sg.T(f"Level {player.stats['level']}", font=('', 10),
               background_color=self.settings['background'])],
-        [sg.ProgressBar(max_value=round((4 * ((player.stats['level']+1) ** 3)) / 5), bar_color=('#28fc03', '#f2f2f2'),
+        [sg.ProgressBar(max_value=player.level_up(), bar_color=('#28fc03', '#f2f2f2'),
                         orientation='h', expand_x=True, expand_y=True, relief=sg.RELIEF_RAISED, key='progress_1',)],
     ]
     imageLayout = [

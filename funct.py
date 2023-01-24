@@ -1,5 +1,21 @@
 from io import BytesIO
 import datetime
+import random
+import json
+
+
+def randomYieldGroup():
+    xp_group = ['Medium Slow', 'Medium Fast', 'Fast', 'Slow']
+
+    with open("Data\\pokedex.json", "r") as read_file:
+        data = json.load(read_file)
+
+        for i in data:
+            a = {"xp_group": random.choice(xp_group), "yield": random.randint(36,340)}
+            i.update(a)
+
+    with open("Data\\pokedex.json", "w") as write_file:
+        json.dump(data, write_file)
 
 
 def image_to_data(im):
