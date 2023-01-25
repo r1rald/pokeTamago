@@ -34,15 +34,15 @@ def portrait_background(player):
         current_time = datetime.datetime.now().hour
         return 'day' if 5 <= current_time <= 14 else 'afternoon' if 15 <= current_time <= 20 else 'night'
 
-    if player.stats['type'][0] in grassland :
+    if player.properties['type'][0] in grassland :
         bg = f'Data\\img\\poke\\BG\\grassland-feild-{partOfAday()}.png'
-    elif player.stats['type'][0] in forest:
+    elif player.properties['type'][0] in forest:
          bg = f'Data\\img\\poke\\BG\\forest-grassy-{partOfAday()}.png'
-    elif player.stats['type'][0] in mountaintop:
+    elif player.properties['type'][0] in mountaintop:
          bg = f'Data\\img\\poke\\BG\\mountaintop-high-{partOfAday()}.png'
-    elif player.stats['type'][0] == 'Water':
+    elif player.properties['type'][0] == 'Water':
          bg = f'Data\\img\\poke\\BG\\ocean-water-{partOfAday()}.png'
-    elif player.stats['type'][0] == 'Ice':
+    elif player.properties['type'][0] == 'Ice':
          bg = f'Data\\img\\poke\\BG\\snowy-{partOfAday()}.png'
     else:
         if partOfAday() == 'day' or partOfAday() == 'afternoon':

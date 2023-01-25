@@ -44,17 +44,17 @@ class Game:
                 case sg.WIN_CLOSED | 'Exit':
                     sys.exit()
                 case 'New Pokemon':
-                    sc.new_pokemon_screen(player)
-                    if player.stats['name']:
-                        sc.choose_pokemon(player)
-                        if player.stats['portrait']:
+                    sc.new_pokemon_screen(self, player)
+                    if player.properties['name']:
+                        sc.choose_pokemon(self, player)
+                        if player.properties['portrait']:
                             break
                     else:
                         continue
                 case 'Continue':
-                    player.has_been_called = False
+                    self.has_been_called = False
                     sc.loading_screen(player)
-                    if player.has_been_called:
+                    if self.has_been_called:
                         break
                     else:
                         continue
@@ -75,7 +75,7 @@ class Game:
                 if not self.run:
                     break
 
-        im = Image.open(player.stats['portrait'])
+        im = Image.open(player.properties['portrait'])
         width, height = im.size
         frames = im.n_frames
 
@@ -152,29 +152,30 @@ class Game:
             else:
                 xhstdClr = ('red', 'white')
 
-            mainWindow['progress_1'].update(player.stats['xp'])
+            mainWindow['progress_1'].update(player.properties['xp'])
             mainWindow['health'].update(round(player.condition['health']))
             mainWindow['age'].update(f.time_counter(player.condition['age']))
             mainWindow['food'].update(player.condition['food'], bar_color=fdClr)
             mainWindow['bored'].update(player.condition['bored'], bar_color=brdClr)
             mainWindow['exhausted'].update(player.condition['exhausted'], bar_color=xhstdClr)
-            mainWindow['Attack'].update(player.stats['Attack'])
-            mainWindow['Defense'].update(player.stats['Defense'])
-            mainWindow['Sp. Attack'].update(player.stats['Sp. Attack'])
-            mainWindow['Sp. Defense'].update(player.stats['Sp. Defense'])
-            mainWindow['Speed'].update(player.stats['Speed'])
+            mainWindow['Attack'].update(player.base['Attack'])
+            mainWindow['Defense'].update(player.base['Defense'])
+            mainWindow['Sp. Attack'].update(player.base['Sp. Attack'])
+            mainWindow['Sp. Defense'].update(player.base['Sp. Defense'])
+            mainWindow['Speed'].update(player.base['Speed'])
 
         mainWindow.close()
 
     def autosave(self, player):
         save = {}
 
-        save['stats'] = player.stats
+        save['properties'] = player.properties
+        save['base'] = player.base
         save['condition'] = player.condition
         save['status'] = player.status
         player.status['logoff_time'] = round(time.time())
 
-        with open(f"Data\\save\\{player.stats['name']}.json", 'w') as outfile:
+        with open(f"Data\\save\\{player.properties['name']}.json", 'w') as outfile:
             json.dump(save, outfile, indent=4)
 
     def save_settings(self):
@@ -187,3 +188,41 @@ class Game:
 
         with open(f"Data\\settings.json", 'w') as settings:
             json.dump(self.settings, settings, indent=4)
+
+
+    def open_dex(self):
+        pokes = [[],[],[],[]]
+
+        with open('Data\pokedex.json', 'r') as read_file:
+            data = json.load(read_file)
+            for poke in data:
+                pokes[0].append(poke['name'])
+                pokes[1].append(poke['type'])
+                pokes[2].append(poke['xp_group'])
+                pokes[3].append(poke['yield'])
+
+        return pokes
+
+
+    def read_save(self):
+        directory = 'Data\\save'
+        saves = []
+
+        for filename in os.listdir(directory):
+            f = os.path.join(directory, filename)
+            if os.path.isfile(f):
+                saves.append(f.replace('.json', '').replace('Data\\save\\', ''))
+
+        return saves
+
+
+    def load_saves(self, player, var):
+        self.has_been_called = True
+
+        with open(f'Data\save\{var}.json', 'r') as player:
+            data = json.load(player)
+            
+            player.properties = data['properties']
+            player.base = data['base']
+            player.condition = data['condition']
+            player.status = data['status']
