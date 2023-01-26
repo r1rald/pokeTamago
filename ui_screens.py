@@ -2,13 +2,12 @@ import sys
 import os
 from re import search, sub
 import funct as f
-import layouts as ui
+import ui_layout as ui
 import PySimpleGUI as sg
 
 
-def new_pokemon_screen(player):
-    pokeName = sg.Window(
-        'Name', ui.newPoke(), icon='Data\\img\\logo.ico', grab_anywhere=True)
+def new_pokemon_screen(self, player):
+    pokeName = sg.Window('Name', ui.newPoke(), icon='Data\\img\\logo.ico', grab_anywhere=True)
 
     while True:
         event, values = pokeName.read()
@@ -16,9 +15,9 @@ def new_pokemon_screen(player):
             case sg.WINDOW_CLOSED | 'Back':
                 break
             case 'Enter' | 'Submit':
-                player.read_save()
-                if search('^[A-Za-z0-9]{1,14}$', values['-IN-']) and values['-IN-'] not in player.read_save():
-                    player.stats["name"] = values['-IN-']
+                self.read_save()
+                if search('^[A-Za-z0-9]{1,14}$', values['-IN-']) and values['-IN-'] not in self.read_save():
+                    player.properties["name"] = values['-IN-']
                     break
                 else:
                     event, values = sg.Window('error', [[sg.T('Invalid name or this Pokemon is already exist!')],
@@ -29,8 +28,8 @@ def new_pokemon_screen(player):
     pokeName.close()
 
 
-def choose_pokemon(player):
-    pokeChooseWin = sg.Window('Choose', ui.choosePoke(player),
+def choose_pokemon(self, player):
+    pokeChooseWin = sg.Window('Choose', ui.choosePoke(self),
                               icon='Data\\img\\pokeball.ico')
 
     while True:
@@ -39,16 +38,18 @@ def choose_pokemon(player):
             case sg.WINDOW_CLOSED | 'Back':
                 break
             case 'Choose' | 'Submit':
-                index = player.open_dex()[0].index(f'{values["poke"][0]}')
+                index = self.open_dex()[0].index(f'{values["poke"][0]}')
                 name = sub("\s|[']", '', values["poke"][0])
-                player.stats['portrait'] = f'Data\\img\\poke\\{name}.gif'
-                player.stats['type'] = player.open_dex()[1][index]
+                player.properties['portrait'] = f'Data\\img\\poke\\{name}.gif'
+                player.properties['type'] = self.open_dex()[1][index]
+                player.properties['xp_group'] = self.open_dex()[2][index]
+                player.properties['yield'] = self.open_dex()[3][index]
                 break
     pokeChooseWin.close()
 
 
-def loading_screen(player):
-    loadScreen = sg.Window('Load', ui.load(player), icon='Data\\img\\load.ico')
+def loading_screen(self, player):
+    loadScreen = sg.Window('Load', ui.load(self), icon='Data\\img\\load.ico')
 
     while True:
         event, values = loadScreen.read()
@@ -60,7 +61,7 @@ def loading_screen(player):
                     sg.Popup('You must choose a save file!', title='error', keep_on_top=True,
                              auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
                 else:
-                    f.load_saves(player, values["load"][0])
+                    self.load_saves(player, values["load"][0])
                     break
             case 'Delete':
                 if not values["load"]:
@@ -68,8 +69,9 @@ def loading_screen(player):
                              auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
                 else:
                     os.remove(f'Data\\save\\{values["load"][0]}.json')
-                    player.read_save()
-                    loadScreen['load'].update(values=[x for x in player.read_save()])
+                    self.read_save()
+                    loadScreen['load'].update(values=[x for x in self.read_save()])
+
     loadScreen.close()
 
 
@@ -155,7 +157,7 @@ def sleep_screen(self, player):
     while True:
         event, value = sleepWindow.read(timeout=150)
         if (event == sg.WIN_CLOSED) or (event == 'Exit'):
-            self.autosave()
+            self.autosave(player)
             self.run = False
             sys.exit()
         if player.status['sleeping'] and player.status['sleep_time'] == 0:

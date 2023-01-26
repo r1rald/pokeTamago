@@ -1,14 +1,14 @@
 from threading import Thread
-from classes import Player
-import mainGame
-import time
+from player import Player
 import sched
+import game
+import time
 import sys
 
 
-p = Player()
-mg = mainGame.Gameplay()
 s = sched.scheduler(time.time, time.sleep)
+mg = game.Game()
+p = Player()
 
 
 def run(sc):
@@ -21,7 +21,6 @@ def run(sc):
 
 
 if __name__ == "__main__":
-
     mg.newGame(p)
 
     s.enter(1, 1, run, (s,))

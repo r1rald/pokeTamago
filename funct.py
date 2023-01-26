@@ -1,5 +1,21 @@
 from io import BytesIO
 import datetime
+import random
+import json
+
+
+def randomYieldGroup():
+    xp_group = ['Medium Slow', 'Medium Fast', 'Fast', 'Slow']
+
+    with open("Data\\pokedex.json", "r") as read_file:
+        data = json.load(read_file)
+
+        for i in data:
+            a = {"xp_group": random.choice(xp_group), "yield": random.randint(36,340)}
+            i.update(a)
+
+    with open("Data\\pokedex.json", "w") as write_file:
+        json.dump(data, write_file)
 
 
 def image_to_data(im):
@@ -18,15 +34,15 @@ def portrait_background(player):
         current_time = datetime.datetime.now().hour
         return 'day' if 5 <= current_time <= 14 else 'afternoon' if 15 <= current_time <= 20 else 'night'
 
-    if player.stats['type'][0] in grassland :
+    if player.properties['type'][0] in grassland :
         bg = f'Data\\img\\poke\\BG\\grassland-feild-{partOfAday()}.png'
-    elif player.stats['type'][0] in forest:
+    elif player.properties['type'][0] in forest:
          bg = f'Data\\img\\poke\\BG\\forest-grassy-{partOfAday()}.png'
-    elif player.stats['type'][0] in mountaintop:
+    elif player.properties['type'][0] in mountaintop:
          bg = f'Data\\img\\poke\\BG\\mountaintop-high-{partOfAday()}.png'
-    elif player.stats['type'][0] == 'Water':
+    elif player.properties['type'][0] == 'Water':
          bg = f'Data\\img\\poke\\BG\\ocean-water-{partOfAday()}.png'
-    elif player.stats['type'][0] == 'Ice':
+    elif player.properties['type'][0] == 'Ice':
          bg = f'Data\\img\\poke\\BG\\snowy-{partOfAday()}.png'
     else:
         if partOfAday() == 'day' or partOfAday() == 'afternoon':

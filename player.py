@@ -1,20 +1,24 @@
-import os
+from nickname_generator import generate
+import PySimpleGUI as sg
+from random import choice
 import time
 import json
-import PySimpleGUI as sg
-from nickname_generator import generate
 
 
 class Poke:
 
     def __init__(self):
-        self.stats = {
+        self.properties = {
             "name": "default",
             "portrait": "Data\\img\\poke\\default.gif",
             "type": [],
             "level": 1,
             "xp": 0,
-            "MaxHP": 43,
+            "xp_group": "",
+            "yield": 0
+        }
+        
+        self.base = {
             "Attack": 50,
             "Defense": 53,
             "Sp. Attack": 58,
@@ -23,6 +27,7 @@ class Poke:
         }
 
         self.condition = {
+            "MaxHP" : 43,
             "health": 43,
             "age": 0,
             "bored": 0,
@@ -52,44 +57,26 @@ class Player(Poke):
         super().__init__()
 
 
-    def open_dex(self):
-        pokes = []
-        types = []
-
-        with open('Data\pokedex.json', 'r') as read_file:
-            data = json.load(read_file)
-            for poke in data:
-                pokes.append(poke['name'])
-                types.append(poke['type'])
-
-        return pokes, types
-
-
-    def read_save(self):
-        directory = 'Data\\save'
-        saves = []
-
-        for filename in os.listdir(directory):
-            f = os.path.join(directory, filename)
-            if os.path.isfile(f):
-                saves.append(f.replace('.json', '').replace('Data\\save\\', ''))
-
-        return saves
-
-
-    def load_saves(self, var):
-        self.load_saves.has_been_called = True
-        with open(f'Data\save\{var}.json', 'r') as player:
-            data = json.load(player)
-            self.stats = data['stats']
-            self.condition = data['condition']
-            self.status = data['status']
-
-
     def level_up(self):
-        if self.stats['xp'] >= round((4 * ((self.stats['level']+1) ** 3)) / 5):
-            self.stats['xp'] = 0
-            self.stats['level'] += 1
+        need = 0
+
+        match self.properties["xp_group"]:
+            case "Fast":
+                need = int((4*(self.properties['level']**3))/5)
+            case "Medium Fast":
+                need = int(self.properties['level']**3)
+            case "Medium Slow":
+                need = int(((6/5)*(self.properties['level']**3))-
+                (15*(self.properties['level']**2))+(100*self.properties['level'])-140)
+            case "Slow":
+                need = int((5*(self.properties['level']**3))/4)
+        
+        if self.properties['xp'] >= need and self.properties['level'] < 100:
+            self.properties['xp'] = 0
+            self.properties['level'] += 1
+
+        return need
+
 
 
     def eat(self):
@@ -106,22 +93,26 @@ class Player(Poke):
             self.status['training_time'] = 86400
             self.condition['food'] -= 5
             self.condition['exhausted'] += 20
-            self.stats['xp'] += 5
+            self.properties['xp'] += 5
             if self.condition['bored'] <= 10:
                 self.condition['bored'] == 0
             else:
                 self.condition['bored'] -= 10
+
+        self.level_up()
 
 
     def play(self):
         if self.status['play_time'] == 0:
             self.condition['food'] -= 2
             self.condition['exhausted'] += 10
-            self.stats['xp'] += 1
+            self.properties['xp'] += 1
             if self.condition['bored'] <= 20:
                 self.condition['bored'] == 0
             else:
                 self.condition['bored'] -= 20
+
+        self.level_up()
 
 
     def sleep(self):
@@ -208,4 +199,19 @@ class Npc(Poke):
 
     def __init__(self):
         super().__init__()
-        self.stats['name'] = generate()
+        self.properties["name"] = generate()
+        self.properties["level"] = Player().properties["level"]
+        self.xp = int(((self.properties["yield"]*self.properties["level"])/7))
+    
+    
+    def open_dex():
+        player = sum(Player().base.values())
+        pokes = []
+
+        with open('Data\pokedex.json', 'r') as read_file:
+            data = json.load(read_file)
+            for poke in data:
+                if (player-10) < sum(poke['base'].values()) < (player+10):
+                    pokes.append(poke["name"])
+
+        return choice(pokes)
