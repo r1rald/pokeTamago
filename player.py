@@ -204,14 +204,14 @@ class Npc(Poke):
         self.xp = int(((self.properties["yield"]*self.properties["level"])/7))
     
     
-def open_dex():
-    player = sum(Player().base.values())
-    pokes = []
+    def open_dex():
+        player = sum(Player().base.values())
+        pokes = []
 
-    with open('Data\pokedex.json', 'r') as read_file:
-        data = json.load(read_file)
-        for poke in data:
-            if (player-10) < sum(poke['base'].values()) < (player+10):
-                pokes.append(poke["name"])
+        with open('Data\pokedex.json', 'r') as read_file:
+            data = json.load(read_file)
+            for poke in data:
+                if (player-10) < sum(poke['base'].values()) < (player+10):
+                    pokes.append(poke["name"])
 
-    return choice(pokes)
+        return choice(pokes)
