@@ -1,6 +1,8 @@
 from nickname_generator import generate
 import PySimpleGUI as sg
+from random import choice
 import time
+import json
 
 
 class Poke:
@@ -69,7 +71,7 @@ class Player(Poke):
             case "Slow":
                 need = int((5*(self.properties['level']**3))/4)
         
-        if self.properties['xp'] >= need:
+        if self.properties['xp'] >= need and self.properties['level'] < 100:
             self.properties['xp'] = 0
             self.properties['level'] += 1
 
@@ -91,22 +93,26 @@ class Player(Poke):
             self.status['training_time'] = 86400
             self.condition['food'] -= 5
             self.condition['exhausted'] += 20
-            self.stats['xp'] += 5
+            self.properties['xp'] += 5
             if self.condition['bored'] <= 10:
                 self.condition['bored'] == 0
             else:
                 self.condition['bored'] -= 10
+
+        self.level_up()
 
 
     def play(self):
         if self.status['play_time'] == 0:
             self.condition['food'] -= 2
             self.condition['exhausted'] += 10
-            self.stats['xp'] += 1
+            self.properties['xp'] += 1
             if self.condition['bored'] <= 20:
                 self.condition['bored'] == 0
             else:
                 self.condition['bored'] -= 20
+
+        self.level_up()
 
 
     def sleep(self):
@@ -193,4 +199,19 @@ class Npc(Poke):
 
     def __init__(self):
         super().__init__()
-        self.name = generate()
+        self.properties["name"] = generate()
+        self.properties["level"] = Player().properties["level"]
+        self.xp = int(((self.properties["yield"]*self.properties["level"])/7))
+    
+    
+def open_dex():
+    player = sum(Player().base.values())
+    pokes = []
+
+    with open('Data\pokedex.json', 'r') as read_file:
+        data = json.load(read_file)
+        for poke in data:
+            if (player-10) < sum(poke['base'].values()) < (player+10):
+                pokes.append(poke["name"])
+
+    return choice(pokes)

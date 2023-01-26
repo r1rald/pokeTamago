@@ -4,6 +4,7 @@ import ui_screens as sc
 import ui_layout as ui
 from time import sleep
 from PIL import Image
+from re import sub
 import Data.themes
 import funct as f
 import time
@@ -49,11 +50,13 @@ class Game:
                         sc.choose_pokemon(self, player)
                         if player.properties['portrait']:
                             break
+                        else:
+                            continue
                     else:
                         continue
                 case 'Continue':
                     self.has_been_called = False
-                    sc.loading_screen(player)
+                    sc.loading_screen(self, player)
                     if self.has_been_called:
                         break
                     else:
@@ -113,11 +116,14 @@ class Game:
                 case 'Eat':
                     player.eat()
                 case 'Battle':
+                    mainWindow['progress_1'].update(current_count = 0, max=player.level_up())  
                     pass
                 case 'Training':
                     player.training()
+                    mainWindow['progress_1'].update(current_count = 0, max=player.level_up())  
                 case 'Play':
                     player.play()
+                    mainWindow['progress_1'].update(current_count = 0, max=player.level_up())
                 case 'Sleep':
                     player.sleep()
                 case 'Main Menu':
@@ -152,7 +158,8 @@ class Game:
             else:
                 xhstdClr = ('red', 'white')
 
-            mainWindow['progress_1'].update(player.properties['xp'])
+            mainWindow['progress_1'].update(player.properties['xp'])    
+            mainWindow['level'].update(f"Level {player.properties['level']}")
             mainWindow['health'].update(round(player.condition['health']))
             mainWindow['age'].update(f.time_counter(player.condition['age']))
             mainWindow['food'].update(player.condition['food'], bar_color=fdClr)
@@ -219,8 +226,8 @@ class Game:
     def load_saves(self, player, var):
         self.has_been_called = True
 
-        with open(f'Data\save\{var}.json', 'r') as player:
-            data = json.load(player)
+        with open(f'Data\save\{var}.json', 'r') as load:
+            data = json.load(load)
             
             player.properties = data['properties']
             player.base = data['base']

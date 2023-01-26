@@ -42,6 +42,8 @@ def choose_pokemon(self, player):
                 name = sub("\s|[']", '', values["poke"][0])
                 player.properties['portrait'] = f'Data\\img\\poke\\{name}.gif'
                 player.properties['type'] = self.open_dex()[1][index]
+                player.properties['xp_group'] = self.open_dex()[2][index]
+                player.properties['yield'] = self.open_dex()[3][index]
                 break
     pokeChooseWin.close()
 
@@ -59,7 +61,7 @@ def loading_screen(self, player):
                     sg.Popup('You must choose a save file!', title='error', keep_on_top=True,
                              auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
                 else:
-                    player.load_saves(player, values["load"][0])
+                    self.load_saves(player, values["load"][0])
                     break
             case 'Delete':
                 if not values["load"]:
@@ -155,7 +157,7 @@ def sleep_screen(self, player):
     while True:
         event, value = sleepWindow.read(timeout=150)
         if (event == sg.WIN_CLOSED) or (event == 'Exit'):
-            self.autosave()
+            self.autosave(player)
             self.run = False
             sys.exit()
         if player.status['sleeping'] and player.status['sleep_time'] == 0:

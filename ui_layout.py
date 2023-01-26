@@ -88,9 +88,10 @@ def mainGame(self, player):
               background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
         [sg.T(f"Level {player.properties['level']}", font=('', 10),
-              background_color=self.settings['background'])],
+              background_color=self.settings['background'], key='level')],
         [sg.ProgressBar(max_value=player.level_up(), bar_color=('#28fc03', '#f2f2f2'),
-                        orientation='h', expand_x=True, expand_y=True, relief=sg.RELIEF_RAISED, key='progress_1',)],
+                        orientation='h', expand_x=True, expand_y=True, relief=sg.RELIEF_RAISED, 
+                        key='progress_1',)],
     ]
     imageLayout = [
         [sg.Graph((170, 100), (0, 100), (170, 0), p=0, key='GRAPH')]
