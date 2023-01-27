@@ -50,8 +50,6 @@ class Game:
                         sc.choose_pokemon(self, player)
                         if player.properties['portrait']:
                             break
-                        else:
-                            continue
                     else:
                         continue
                 case 'Continue':
@@ -103,7 +101,7 @@ class Game:
         while True:
             event, value = mainWindow.read(timeout=25)
             match event:
-                case sg.WIN_CLOSED | 'Exit':
+                case sg.WIN_CLOSED:
                     self.run = False
                     break
                 case sg.TIMEOUT_KEY:

@@ -9,8 +9,8 @@ class Poke:
 
     def __init__(self):
         self.properties = {
-            "name": "default",
-            "portrait": "Data\\img\\poke\\default.gif",
+            "name": "",
+            "portrait": "",
             "type": [],
             "level": 1,
             "xp": 0,
