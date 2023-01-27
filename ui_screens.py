@@ -7,7 +7,8 @@ import PySimpleGUI as sg
 
 
 def new_pokemon_screen(self, player):
-    pokeName = sg.Window('Name', ui.newPoke(), icon='Data\\img\\logo.ico', grab_anywhere=True)
+    pokeName = sg.Window('Name', ui.newPoke(),
+                         icon='Data\\img\\logo.ico', grab_anywhere=True)
 
     while True:
         event, values = pokeName.read()
@@ -16,14 +17,14 @@ def new_pokemon_screen(self, player):
                 break
             case 'Enter' | 'Submit':
                 self.read_save()
-                if search('^[A-Za-z0-9]{1,14}$', values['-IN-']) and values['-IN-'] not in self.read_save():
+                if 1 <= len(values['-IN-']) <= 14 and values['-IN-'] not in self.read_save():
                     player.properties["name"] = values['-IN-']
                     break
                 else:
                     event, values = sg.Window('error', [[sg.T('Invalid name or this Pokemon is already exist!')],
-                    [sg.T('(The name cannot be longer than 14 characters and cannot contain any special character.)')],
-                    [sg.B('OK', s=(10,1), p=(10,10))]], keep_on_top=True, auto_close=True, auto_close_duration=3,
-                    element_justification='c', icon='Data\\img\\warning.ico').read(close=True)
+                                                        [sg.T('(The name cannot be longer than 14 characters)')], [sg.B('OK', s=(10, 1), p=(10, 10),
+                                                                                                                        bind_return_key=True, focus=True)]], keep_on_top=True, auto_close=True, auto_close_duration=3,
+                                              element_justification='c', icon='Data\\img\\warning.ico').read(close=True)
 
     pokeName.close()
 
@@ -70,7 +71,8 @@ def loading_screen(self, player):
                 else:
                     os.remove(f'Data\\save\\{values["load"][0]}.json')
                     self.read_save()
-                    loadScreen['load'].update(values=[x for x in self.read_save()])
+                    loadScreen['load'].update(
+                        values=[x for x in self.read_save()])
 
     loadScreen.close()
 
@@ -89,18 +91,33 @@ def settings_screen(self):
                 self.settings['sound_volume'] = values['_sound_vol_']
                 self.settings['portrait_anim'] = values['_portrait_']
                 OptWindow.refresh()
+            case 'Default':
+                self.settings = {
+                    "theme": "TamagoDefault",
+                    "background": "#516073",
+                    "music": "music1",
+                    "music_playing": True,
+                    "music_volume": 100.0,
+                    "sound_volume": 100.0,
+                    "portrait_anim": True
+                }
+                self.save_settings()
+                os.execl(sys.executable, sys.executable, *sys.argv)
             case sg.WIN_CLOSED | 'Back':
-                f.save_settings(self)
                 break
             case 'Apply':
                 self.settings['theme'] = values['_theme_']
                 self.save_settings()
                 os.execl(sys.executable, sys.executable, *sys.argv)
-        
-        OptWindow['_playing_'].update(text='Enabled' if self.settings['music_playing'] is True else 'Disabled')
-        OptWindow['_portrait_'].update(text='Enabled' if self.settings['portrait_anim'] is True else 'Disabled')
-        OptWindow['_theme_txt_'].update(f"Current theme: {self.settings['theme']}")
-        OptWindow['_music_txt_'].update(f"Current music: {self.settings['music']}")
+
+        OptWindow['_playing_'].update(
+            text='Enabled' if self.settings['music_playing'] is True else 'Disabled')
+        OptWindow['_portrait_'].update(
+            text='Enabled' if self.settings['portrait_anim'] is True else 'Disabled')
+        OptWindow['_theme_txt_'].update(
+            f"Current theme: {self.settings['theme']}")
+        OptWindow['_music_txt_'].update(
+            f"Current music: {self.settings['music']}")
 
     OptWindow.close()
 
@@ -126,7 +143,7 @@ def death_screen(self, player):
             self.run = False
             sys.exit()
         if player.status['revive'] and player.status['revive_time'] == 0:
-            player.condition['health'] = player.stats['MaxHP']
+            player.condition['health'] = player.condition['MaxHP']
             player.condition['bored'] = 0
             player.condition['food'] = 100
             player.condition['exhausted'] = 0

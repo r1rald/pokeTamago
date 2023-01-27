@@ -35,6 +35,7 @@ def mainGame(self, player):
         [sg.T(f"Exhausted", font=('', 10, 'bold'),
               background_color=self.settings['background'])]
     ]
+    
     condition_values = [
         [sg.T(f"{round(player.condition['health'])}", font=(
             '', 10, 'bold'), k='health', background_color=self.settings['background'])],
@@ -51,6 +52,7 @@ def mainGame(self, player):
         [sg.ProgressBar(max_value=100, orientation='h',
                         expand_x=True, expand_y=True, p=0, key='exhausted',)]
     ]
+
     stats_layout = [
         [sg.T(f"Attack", font=('', 10, 'bold'),
               background_color=self.settings['background'])],
@@ -67,6 +69,7 @@ def mainGame(self, player):
         [sg.T(f"Speed", font=('', 10, 'bold'),
               background_color=self.settings['background'])]
     ]
+
     stats_values = [
         [sg.T(f"{player.base['Attack']}", font=('', 10, 'bold'),
               background_color=self.settings['background'], k='Attack')],
@@ -83,6 +86,7 @@ def mainGame(self, player):
         [sg.T(f"{player.base['Speed']}", font=('', 10, 'bold'),
               background_color=self.settings['background'], k='Speed')]
     ]
+
     nameLayout = [
         [sg.T(f"{player.properties['name']}".upper(), font=('', 15, 'bold'),
               background_color=self.settings['background'])],
@@ -93,6 +97,7 @@ def mainGame(self, player):
                         orientation='h', expand_x=True, expand_y=True, relief=sg.RELIEF_RAISED, 
                         key='progress_1',)],
     ]
+
     imageLayout = [
         [sg.Graph((170, 100), (0, 100), (170, 0), p=0, key='GRAPH')]
     ]
@@ -123,6 +128,7 @@ def mainGame(self, player):
         [sg.Frame('', stats_layout, size=(100, 142), element_justification='center', p=((0, 0), (5, 0)), background_color=self.settings['background']), sg.Frame(
             '', stats_values, size=(100, 142), element_justification='center', p=((0, 0), (5, 0)), background_color=self.settings['background'])]
     ]
+
     buttonColumn = [
         [sg.B('Eat', size=8)],
         [sg.B('Play', size=8)],
@@ -133,8 +139,8 @@ def mainGame(self, player):
         [sg.B('Shop', size=8)],
         [sg.HSeparator(color='#3c4754', p=((0, 0), (10, 10)))],
         [sg.B('Main Menu', size=8)],
-        [sg.B('Exit', size=8)]
     ]
+
     layout = [
         [sg.Column(buttonColumn), sg.Column(
             Column, element_justification='c')],
@@ -206,7 +212,7 @@ def settings(self):
         [sg.Frame('Theme', theme, s=(215, 80))],
         [sg.Frame('Audio', sounds, s=(215, 200))],
         [sg.Frame('Portrait', portrait, s=(215, 55))],
-        [sg.B('Apply', p=((133, 0), (5, 0))), sg.B('Back', p=((5, 0), (5, 0)))]
+        [sg.B('Default', p=((5,0),(10,5))), sg.B('Apply', p=((73,0),(10,5))), sg.B('Back', p=((10,0),(10,5)))]
     ]
 
     return layout
