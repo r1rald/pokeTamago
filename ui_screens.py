@@ -14,6 +14,7 @@ def new_pokemon_screen(self, player):
         event, values = pokeName.read()
         match event:
             case sg.WINDOW_CLOSED | 'Back':
+                self.cancel = True
                 break
             case 'Enter' | 'Submit':
                 self.read_save()
@@ -22,10 +23,11 @@ def new_pokemon_screen(self, player):
                     break
                 else:
                     event, values = sg.Window('error', [[sg.T('Invalid name or this Pokemon is already exist!')],
-                                                        [sg.T('(The name cannot be longer than 14 characters)')], [sg.B('OK', s=(10, 1), p=(10, 10),
-                                                                                                                        bind_return_key=True, focus=True)]], keep_on_top=True, auto_close=True, auto_close_duration=3,
-                                              element_justification='c', icon='Data\\img\\warning.ico').read(close=True)
-
+                                                        [sg.T('(The name cannot be longer than 14 characters)')], 
+                                                        [sg.B('OK', s=(10, 1), p=(10, 10), bind_return_key=True, 
+                                                        focus=True)]], keep_on_top=True, auto_close=True, 
+                                                        auto_close_duration=3, element_justification='c', 
+                                                        icon='Data\\img\\warning.ico').read(close=True)
     pokeName.close()
 
 
@@ -35,17 +37,21 @@ def choose_pokemon(self, player):
 
     while True:
         event, values = pokeChooseWin.read()
+        pokeChooseWin["poke"].bind('<Double-Button-1>' , "+-double click-")
         match event:
             case sg.WINDOW_CLOSED | 'Back':
+                player.properties['name'] = ""
                 break
-            case 'Choose' | 'Submit':
+            case 'Choose' | 'poke+-double click-' :
                 index = self.open_dex()[0].index(f'{values["poke"][0]}')
                 name = sub("\s|[']", '', values["poke"][0])
                 player.properties['portrait'] = f'Data\\img\\poke\\{name}.gif'
                 player.properties['type'] = self.open_dex()[1][index]
                 player.properties['xp_group'] = self.open_dex()[2][index]
                 player.properties['yield'] = self.open_dex()[3][index]
+                self.cancel = True
                 break
+
     pokeChooseWin.close()
 
 

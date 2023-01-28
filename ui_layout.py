@@ -162,10 +162,9 @@ def newPoke():
 
 def choosePoke(self):
     layout = [
-        [sg.Listbox(values=[x for x in self.open_dex()[0]], enable_events=True,
-                    size=(25, 15), key="poke", expand_x=True)],
-        [sg.B('Choose', p=((98, 0), (0, 0))), sg.B('Back'), sg.Button(
-            'Submit', visible=False, bind_return_key=True)]
+        [sg.Listbox(values=[x for x in self.open_dex()[0]], enable_events=True, size=(25, 15), key="poke",
+         expand_x=True,)],
+        [sg.B('Choose', p=((98, 0), (0, 0))), sg.B('Back')]
     ]
 
     return layout
@@ -173,10 +172,10 @@ def choosePoke(self):
 
 def load(self):
     layout = [
-        [sg.Listbox(values=[x for x in self.read_save()], enable_events=True,
-                    size=(25, 15), key="load", expand_x=True)],
-        [sg.B('Load', p=((58, 0), (0, 0))), sg.B('Delete'), sg.B('Back'),
-         sg.B('Submit', visible=False, bind_return_key=True)]
+        [sg.Listbox(values=[x for x in self.read_save()], enable_events=True, size=(25, 15), key="load",
+         expand_x=True)],
+        [sg.B('Load', p=((58, 0), (0, 0))), sg.B('Delete'), sg.B('Back'), sg.B('Submit', visible=False,
+         bind_return_key=True)]
     ]
 
     return layout

@@ -15,6 +15,7 @@ import os
 
 class Game:
     run = True
+    cancel = False
 
     def __init__(self):
         self.settings = {
@@ -34,24 +35,30 @@ class Game:
         sg.theme(self.settings['theme'])
         f.randomYieldGroup()
 
-
     def newGame(self, player):
-        window1 = sg.Window('', ui.newGame(), icon='Data\\img\\logo.ico',
-                            element_justification='c', grab_anywhere=True)
+        window1 = sg.Window('', ui.newGame(), icon='Data\\img\\logo.ico',element_justification='c',
+                            grab_anywhere=True)
 
         while True:
             event, values = window1.read()
             match event:
+
                 case sg.WIN_CLOSED | 'Exit':
                     sys.exit()
+
                 case 'New Pokemon':
-                    sc.new_pokemon_screen(self, player)
-                    if player.properties['name']:
-                        sc.choose_pokemon(self, player)
-                        if player.properties['portrait']:
-                            break
+                    self.cancel = False
+
+                    while not self.cancel:
+                        sc.new_pokemon_screen(self, player)
+                        if player.properties['name']:
+                            sc.choose_pokemon(self, player)
+
+                    if player.properties['portrait']:
+                        break
                     else:
                         continue
+
                 case 'Continue':
                     self.has_been_called = False
                     sc.loading_screen(self, player)
@@ -63,7 +70,6 @@ class Game:
                     sc.settings_screen(self)
 
         window1.close()
-
 
     def mainGame(self, player):
         global index, frames, size
@@ -114,14 +120,17 @@ class Game:
                 case 'Eat':
                     player.eat()
                 case 'Battle':
-                    mainWindow['progress_1'].update(current_count = 0, max=player.level_up())  
+                    mainWindow['progress_1'].update(
+                        current_count=0, max=player.level_up())
                     pass
                 case 'Training':
                     player.training()
-                    mainWindow['progress_1'].update(current_count = 0, max=player.level_up())  
+                    mainWindow['progress_1'].update(
+                        current_count=0, max=player.level_up())
                 case 'Play':
                     player.play()
-                    mainWindow['progress_1'].update(current_count = 0, max=player.level_up())
+                    mainWindow['progress_1'].update(
+                        current_count=0, max=player.level_up())
                 case 'Sleep':
                     player.sleep()
                 case 'Main Menu':
@@ -156,13 +165,16 @@ class Game:
             else:
                 xhstdClr = ('red', 'white')
 
-            mainWindow['progress_1'].update(player.properties['xp'])    
+            mainWindow['progress_1'].update(player.properties['xp'])
             mainWindow['level'].update(f"Level {player.properties['level']}")
             mainWindow['health'].update(round(player.condition['health']))
             mainWindow['age'].update(f.time_counter(player.condition['age']))
-            mainWindow['food'].update(player.condition['food'], bar_color=fdClr)
-            mainWindow['bored'].update(player.condition['bored'], bar_color=brdClr)
-            mainWindow['exhausted'].update(player.condition['exhausted'], bar_color=xhstdClr)
+            mainWindow['food'].update(
+                player.condition['food'], bar_color=fdClr)
+            mainWindow['bored'].update(
+                player.condition['bored'], bar_color=brdClr)
+            mainWindow['exhausted'].update(
+                player.condition['exhausted'], bar_color=xhstdClr)
             mainWindow['Attack'].update(player.base['Attack'])
             mainWindow['Defense'].update(player.base['Defense'])
             mainWindow['Sp. Attack'].update(player.base['Sp. Attack'])
@@ -191,12 +203,11 @@ class Game:
         if self.settings['theme'] == "TamagoLight":
             self.settings['background'] = '#bfbfb2'
 
-        with open(f"Data\\settings.json", 'w') as settings:
+        with open(f"Data\\settings.json", 'w') as settings: 
             json.dump(self.settings, settings, indent=4)
 
-
     def open_dex(self):
-        pokes = [[],[],[],[]]
+        pokes = [[], [], [], []]
 
         with open('Data\pokedex.json', 'r') as read_file:
             data = json.load(read_file)
@@ -208,7 +219,6 @@ class Game:
 
         return pokes
 
-
     def read_save(self):
         directory = 'Data\\save'
         saves = []
@@ -216,17 +226,17 @@ class Game:
         for filename in os.listdir(directory):
             f = os.path.join(directory, filename)
             if os.path.isfile(f):
-                saves.append(f.replace('.json', '').replace('Data\\save\\', ''))
+                saves.append(f.replace('.json', '').replace(
+                    'Data\\save\\', ''))
 
         return saves
-
 
     def load_saves(self, player, var):
         self.has_been_called = True
 
         with open(f'Data\save\{var}.json', 'r') as load:
             data = json.load(load)
-            
+
             player.properties = data['properties']
             player.base = data['base']
             player.condition = data['condition']
