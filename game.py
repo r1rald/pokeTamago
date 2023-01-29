@@ -36,8 +36,8 @@ class Game:
         f.randomYieldGroup()
 
     def newGame(self, player):
-        window1 = sg.Window('', ui.newGame(), icon='Data\\img\\logo.ico',element_justification='c',
-                            grab_anywhere=True)
+        window1 = sg.Window('', ui.newGame(), icon='Data\\img\\logo.ico',
+                            element_justification='c', grab_anywhere=True)
 
         while True:
             event, values = window1.read()
@@ -75,7 +75,7 @@ class Game:
         global index, frames, size
 
         def portrait_thread():
-            global index
+            global index, frames
             while True:
                 sleep(0.03)
                 index = (index + 1) % frames
@@ -89,50 +89,56 @@ class Game:
         graph_width, graph_height = size = (170, 100)
 
         mainWindow = sg.Window('pokéTamago', ui.mainGame(self, player),
-                               icon='Data\\img\\logo.ico', finalize=True)
+        icon='Data\\img\\logo.ico', finalize=True)
 
-        mainWindow['GRAPH'].draw_image(
-            f'{f.portrait_background(player)}', location=(0, 0))
+        mainWindow['GRAPH'].draw_image(f'{f.portrait_background(player)}', 
+        location=(0, 0))
 
         index = 0 if self.settings['portrait_anim'] else 10
+
         im.seek(index)
-        x, y = location = (graph_width//2-width//2, graph_height//2-height//2)
-        item = mainWindow['GRAPH'].draw_image(
-            data=f.image_to_data(im), location=location)
+
+        location = (graph_width//2-width//2, graph_height//2-height//2)
+
+        item = mainWindow['GRAPH'].draw_image(data=f.image_to_data(im),
+        location=location)
 
         thread = Thread(target=portrait_thread, daemon=True)
         if self.settings['portrait_anim']:
             thread.start()
 
         while True:
-            event, value = mainWindow.read(timeout=25)
+            event, value = mainWindow.read(timeout=30)
             match event:
                 case sg.WIN_CLOSED:
                     self.run = False
                     break
+
                 case sg.TIMEOUT_KEY:
+                    mainWindow['progress_1'].update(current_count=0,
+                    max=player.level_up())
                     im.seek(index)
-                    item_new = mainWindow['GRAPH'].draw_image(
-                        data=f.image_to_data(im), location=location)
+                    item_new = mainWindow['GRAPH'].draw_image(data=f.image_to_data(im),
+                    location=location)
                     mainWindow['GRAPH'].delete_figure(item)
                     item = item_new
                     mainWindow.refresh()
+
                 case 'Eat':
-                    player.eat()
+                    sc.eat_screen(player)
+
                 case 'Battle':
-                    mainWindow['progress_1'].update(
-                        current_count=0, max=player.level_up())
                     pass
+
                 case 'Training':
-                    player.training()
-                    mainWindow['progress_1'].update(
-                        current_count=0, max=player.level_up())
+                    sc.train_screen(self, player)
+
                 case 'Play':
                     player.play()
-                    mainWindow['progress_1'].update(
-                        current_count=0, max=player.level_up())
+
                 case 'Sleep':
                     player.sleep()
+                    
                 case 'Main Menu':
                     self.run = False
                     os.execl(sys.executable, sys.executable, *sys.argv)
@@ -141,8 +147,6 @@ class Game:
                 sc.death_screen(self, player)
             if player.status['sleeping']:
                 sc.sleep_screen(self, player)
-            if player.status['eating']:
-                sc.eat_screen(player)
 
             if 40 < player.condition["food"]:
                 fdClr = (None)
@@ -169,12 +173,12 @@ class Game:
             mainWindow['level'].update(f"Level {player.properties['level']}")
             mainWindow['health'].update(round(player.condition['health']))
             mainWindow['age'].update(f.time_counter(player.condition['age']))
-            mainWindow['food'].update(
-                player.condition['food'], bar_color=fdClr)
-            mainWindow['bored'].update(
-                player.condition['bored'], bar_color=brdClr)
-            mainWindow['exhausted'].update(
-                player.condition['exhausted'], bar_color=xhstdClr)
+            mainWindow['food'].update(player.condition['food'], 
+            bar_color=fdClr)
+            mainWindow['bored'].update(player.condition['bored'], 
+            bar_color=brdClr)
+            mainWindow['exhausted'].update(player.condition['exhausted'], 
+            bar_color=xhstdClr)
             mainWindow['Attack'].update(player.base['Attack'])
             mainWindow['Defense'].update(player.base['Defense'])
             mainWindow['Sp. Attack'].update(player.base['Sp. Attack'])
@@ -207,7 +211,7 @@ class Game:
             json.dump(self.settings, settings, indent=4)
 
     def open_dex(self):
-        pokes = [[], [], [], []]
+        pokes = ([], [], [], [])
 
         with open('Data\pokedex.json', 'r') as read_file:
             data = json.load(read_file)

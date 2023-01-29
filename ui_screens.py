@@ -1,9 +1,12 @@
+from threading import Thread
+from re import search, sub
+import PySimpleGUI as sg
+import ui_layout as ui
+from time import sleep
+from PIL import Image
+import funct as f
 import sys
 import os
-from re import search, sub
-import funct as f
-import ui_layout as ui
-import PySimpleGUI as sg
 
 
 def new_pokemon_screen(self, player):
@@ -23,11 +26,12 @@ def new_pokemon_screen(self, player):
                     break
                 else:
                     event, values = sg.Window('error', [[sg.T('Invalid name or this Pokemon is already exist!')],
-                                                        [sg.T('(The name cannot be longer than 14 characters)')], 
-                                                        [sg.B('OK', s=(10, 1), p=(10, 10), bind_return_key=True, 
-                                                        focus=True)]], keep_on_top=True, auto_close=True, 
-                                                        auto_close_duration=3, element_justification='c', 
-                                                        icon='Data\\img\\warning.ico').read(close=True)
+                                                        [sg.T(
+                                                            '(The name cannot be longer than 14 characters)')],
+                                                        [sg.B('OK', s=(10, 1), p=(10, 10), bind_return_key=True,
+                                                              focus=True)]], keep_on_top=True, auto_close=True,
+                                              auto_close_duration=3, element_justification='c',
+                                              icon='Data\\img\\warning.ico').read(close=True)
     pokeName.close()
 
 
@@ -37,12 +41,12 @@ def choose_pokemon(self, player):
 
     while True:
         event, values = pokeChooseWin.read()
-        pokeChooseWin["poke"].bind('<Double-Button-1>' , "+-double click-")
+        pokeChooseWin["poke"].bind('<Double-Button-1>', "+-double click-")
         match event:
             case sg.WINDOW_CLOSED | 'Back':
                 player.properties['name'] = ""
                 break
-            case 'Choose' | 'poke+-double click-' :
+            case 'Choose' | 'poke+-double click-':
                 index = self.open_dex()[0].index(f'{values["poke"][0]}')
                 name = sub("\s|[']", '', values["poke"][0])
                 player.properties['portrait'] = f'Data\\img\\poke\\{name}.gif'
@@ -60,10 +64,11 @@ def loading_screen(self, player):
 
     while True:
         event, values = loadScreen.read()
+        loadScreen["load"].bind('<Double-Button-1>', "+-double click-")
         match event:
             case sg.WINDOW_CLOSED | 'Back':
                 break
-            case 'Load' | 'Submit':
+            case 'Load' | 'load+-double click-':
                 if not values["load"]:
                     sg.Popup('You must choose a save file!', title='error', keep_on_top=True,
                              auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
@@ -131,10 +136,10 @@ def settings_screen(self):
 def death_screen(self, player):
     if not player.status["revive"]:
         deathWindow = sg.Window(
-            'Passing', ui.dead1(), icon='Data\\img\\death.ico', element_justification="center")
+            'Passing', ui.dead(player)[0], icon='Data\\img\\death.ico', element_justification="center")
     else:
         deathWindow = sg.Window(
-            'Revive', ui.dead2(player), icon='Data\\img\\death.ico', element_justification="center")
+            'Revive', ui.dead(player)[1], icon='Data\\img\\death.ico', element_justification="center")
 
     while True:
         event, value = deathWindow.read(timeout=150)
@@ -173,16 +178,111 @@ def death_screen(self, player):
     deathWindow.close()
 
 
+def train_screen(self, player):
+    global index1, index2, index3, frames1, frames2, frames3, size
+
+    train = True
+
+    def portrait_thread():
+        global index1, index2, index3, frames1, frames2, frames3
+        while True:
+            sleep(0.03)
+            index1 = (index1 + 1) % frames1
+            index2 = (index2 + 1) % frames2
+            index3 = (index3 + 1) % frames3
+            if not train:
+                break
+
+    im1 = Image.open(player.properties['portrait'])
+    im2 = Image.open('Data\\img\\sweat1.gif')
+    im3 = Image.open('Data\\img\\sweat2.gif')
+
+    width1, height1 = im1.size
+    width2, height2 = im2.size
+    width3, height3 = im3.size
+
+    frames1 = im1.n_frames
+    frames2 = im2.n_frames
+    frames3 = im3.n_frames
+
+    graph_width, graph_height = size = (300, 260)
+
+    trainWindow = sg.Window('Training', ui.training(player), icon='Data\\img\\gym.ico', element_justification="c",
+                            size=(320, 365), finalize=True)
+
+    trainWindow['train_graph'].draw_image(
+        'Data\\img\\gym_training.png', location=(0, 0))
+
+    index1 = 0 if self.settings['portrait_anim'] else 10
+    index2 = 0 if self.settings['portrait_anim'] else 5
+    index3 = 0 if self.settings['portrait_anim'] else 5
+    im1.seek(index1)
+    im2.seek(index2)
+    im3.seek(index3)
+    location1 = (graph_width//2-width1//2, graph_height//1.65-height1//1.65)
+    location2 = (graph_width//1.25-width2//1.25,
+                 graph_height//1.75-height2//1.75)
+    location3 = (graph_width//4.25-width3//4.25,
+                 graph_height//1.75-height3//1.75)
+    item1 = trainWindow['train_graph'].draw_image(
+        data=f.image_to_data(im1), location=location1)
+    item2 = trainWindow['train_graph'].draw_image(
+        data=f.image_to_data(im2), location=location2)
+    item3 = trainWindow['train_graph'].draw_image(
+        data=f.image_to_data(im3), location=location3)
+
+    thread = Thread(target=portrait_thread, daemon=True)
+    if self.settings['portrait_anim']:
+        thread.start()
+
+    while True:
+        event, value = trainWindow.read(timeout=25)
+        match event:
+            case sg.TIMEOUT_KEY:
+                im1.seek(index1)
+                im2.seek(index2)
+                im3.seek(index3)
+                item_new1 = trainWindow['train_graph'].draw_image(
+                    data=f.image_to_data(im1), location=location1)
+                item_new2 = trainWindow['train_graph'].draw_image(
+                    data=f.image_to_data(im2), location=location2)
+                item_new3 = trainWindow['train_graph'].draw_image(
+                    data=f.image_to_data(im3), location=location3)
+                trainWindow['train_graph'].delete_figure(item1)
+                trainWindow['train_graph'].delete_figure(item2)
+                trainWindow['train_graph'].delete_figure(item3)
+                item1 = item_new1
+                item2 = item_new2
+                item3 = item_new3
+                trainWindow.refresh()
+
+            case sg.WIN_CLOSED | 'Back':
+                train = False
+                player.status['training'] = False
+                break
+
+            case "Let's begin":
+                player.training()
+
+        if player.status['training_time'] > 0:
+            trainWindow['train'].update('Your pokemon is already trained!\n' +
+                                        f'It needs to rest for about {f.time_counter(player.status["training_time"])}')
+
+    trainWindow.close()
+
+
 def sleep_screen(self, player):
     sleepWindow = sg.Window(
         'Sleeping', ui.sleeping(player), icon='Data\\img\\sleep.ico', element_justification="center")
 
     while True:
         event, value = sleepWindow.read(timeout=150)
-        if (event == sg.WIN_CLOSED) or (event == 'Exit'):
-            self.autosave(player)
+        if event == sg.WIN_CLOSED:
             self.run = False
             sys.exit()
+        if event == 'Main Menu':
+            self.run = False
+            os.execl(sys.executable, sys.executable, *sys.argv)
         if player.status['sleeping'] and player.status['sleep_time'] == 0:
             player.status['sleeping'] = False
             break

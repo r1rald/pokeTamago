@@ -89,10 +89,11 @@ class Player(Poke):
 
 
     def training(self):
+        self.status['training'] = True
         if self.status['training_time'] == 0:
-            self.status['training_time'] = 86400
-            self.condition['food'] -= 5
-            self.condition['exhausted'] += 20
+            self.status['training_time'] = 28800
+            self.condition['food'] -= 25
+            self.condition['exhausted'] += 25
             self.properties['xp'] += 5
             if self.condition['bored'] <= 10:
                 self.condition['bored'] == 0
@@ -103,6 +104,7 @@ class Player(Poke):
 
 
     def play(self):
+        self.status['playing'] = True
         if self.status['play_time'] == 0:
             self.condition['food'] -= 2
             self.condition['exhausted'] += 10
@@ -117,10 +119,11 @@ class Player(Poke):
 
     def sleep(self):
         self.status['sleeping'] = True
-        self.status['sleep_time'] = 28800
-        self.condition['exhausted'] = 0
-        self.condition['bored'] = 0
-        self.condition['food'] = 20
+        if self.status['sleep_time'] == 0:
+            self.status['sleep_time'] = 28800
+            self.condition['exhausted'] = 0
+            self.condition['bored'] = 0
+            self.condition['food'] = 20
 
 
     def passing_time(self):
