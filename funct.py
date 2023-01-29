@@ -11,7 +11,8 @@ def randomYieldGroup():
         data = json.load(read_file)
 
         for i in data:
-            a = {"xp_group": random.choice(xp_group), "yield": random.randint(36,340)}
+            a = {"xp_group": random.choice(xp_group),
+            "yield": random.randint(36,340)}
             i.update(a)
 
     with open("Data\\pokedex.json", "w") as write_file:

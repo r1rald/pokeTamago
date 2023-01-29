@@ -1,9 +1,10 @@
 from threading import Thread
-from re import search, sub
+from random import randint
 import PySimpleGUI as sg
 import ui_layout as ui
 from time import sleep
 from PIL import Image
+from re import sub
 import funct as f
 import sys
 import os
@@ -25,13 +26,13 @@ def new_pokemon_screen(self, player):
                     player.properties["name"] = values['-IN-']
                     break
                 else:
-                    event, values = sg.Window('error', [[sg.T('Invalid name or this Pokemon is already exist!')],
-                                                        [sg.T(
-                                                            '(The name cannot be longer than 14 characters)')],
-                                                        [sg.B('OK', s=(10, 1), p=(10, 10), bind_return_key=True,
-                                                              focus=True)]], keep_on_top=True, auto_close=True,
-                                              auto_close_duration=3, element_justification='c',
-                                              icon='Data\\img\\warning.ico').read(close=True)
+                    event, values = sg.Window('error',
+                    [[sg.T('Invalid name or this Pokemon is already exist!')],
+                    [sg.T('(The name cannot be longer than 14 characters)')],
+                    [sg.B('OK', s=(10, 1), p=(10, 10), bind_return_key=True,
+                    focus=True)]], keep_on_top=True, auto_close=True, 
+                    auto_close_duration=3, element_justification='c',
+                    icon='Data\\img\\warning.ico').read(close=True)
     pokeName.close()
 
 
@@ -135,11 +136,11 @@ def settings_screen(self):
 
 def death_screen(self, player):
     if not player.status["revive"]:
-        deathWindow = sg.Window(
-            'Passing', ui.dead(player)[0], icon='Data\\img\\death.ico', element_justification="center")
+        deathWindow = sg.Window('Passing', ui.dead(player)[0],
+        icon='Data\\img\\death.ico', element_justification="center")
     else:
-        deathWindow = sg.Window(
-            'Revive', ui.dead(player)[1], icon='Data\\img\\death.ico', element_justification="center")
+        deathWindow = sg.Window('Revive', ui.dead(player)[1], 
+        icon='Data\\img\\death.ico', element_justification="center")
 
     while True:
         event, value = deathWindow.read(timeout=150)
@@ -207,8 +208,8 @@ def train_screen(self, player):
 
     graph_width, graph_height = size = (300, 260)
 
-    trainWindow = sg.Window('Training', ui.training(player), icon='Data\\img\\gym.ico', element_justification="c",
-                            size=(320, 365), finalize=True)
+    trainWindow = sg.Window('Training', ui.training(player), size=(320, 365),
+    icon='Data\\img\\gym.ico', element_justification="c", finalize=True)
 
     trainWindow['train_graph'].draw_image(
         'Data\\img\\gym_training.png', location=(0, 0))
@@ -266,14 +267,15 @@ def train_screen(self, player):
 
         if player.status['training_time'] > 0:
             trainWindow['train'].update('Your pokemon is already trained!\n' +
-                                        f'It needs to rest for about {f.time_counter(player.status["training_time"])}')
+            f'It needs to rest for about {f.time_counter(player.status["training_time"])}')
+            trainWindow['begin'].update(disabled=True)
 
     trainWindow.close()
 
 
 def sleep_screen(self, player):
-    sleepWindow = sg.Window(
-        'Sleeping', ui.sleeping(player), icon='Data\\img\\sleep.ico', element_justification="center")
+    sleepWindow = sg.Window('Sleeping', ui.sleeping(player), 
+    icon='Data\\img\\sleep.ico', element_justification="center")
 
     while True:
         event, value = sleepWindow.read(timeout=150)
@@ -287,17 +289,20 @@ def sleep_screen(self, player):
             player.status['sleeping'] = False
             break
 
-        sleepWindow['image'].UpdateAnimation(
-            'Data\\img\\sleep.gif', time_between_frames=150)
-        sleepWindow['text'].update(
-            f'Let it rest for about {f.time_counter(player.status["sleep_time"])}.')
+        sleepWindow['image'].UpdateAnimation('Data\\img\\sleep.gif',
+        time_between_frames=150)
+        sleepWindow['text'].update('Shhh!!! Your pet is sleeping now.\n' + 
+        f'Let it rest for about {f.time_counter(player.status["sleep_time"])}.')
 
     sleepWindow.close()
 
 
 def eat_screen(player):
+    portion = 5
+    gif_update = 'eat'
+
     eatWindow = sg.Window(
-        'Eating', ui.eating(), icon='Data\\img\\eat.ico', element_justification="center")
+        'Eating', ui.eating(portion), icon='Data\\img\\eat.ico', element_justification="center")
 
     while True:
         event, value = eatWindow.read(timeout=150)
@@ -305,24 +310,24 @@ def eat_screen(player):
             break
         if (event == 'snack'):
             portion -= 1
-            if player.condition['food'] <= 90 and f.chance(2):
+            if player.condition['food'] <= 90 and randint(0,100) % 2 == 0:
                 player.condition['food'] += 10
-                ui.gif_update = 'snack'
+                gif_update = 'snack'
             else:
-                ui.gif_update = 'eat_miss'
+                gif_update = 'eat_miss'
         if (event == 'meal'):
             portion -= 1
-            if player.condition['food'] <= 75 and f.chance(3):
+            if player.condition['food'] <= 75 and randint(0,100) % 3 == 0:
                 player.condition['food'] += 25
-                ui.gif_update = 'meal'
+                gif_update = 'meal'
             else:
-                ui.gif_update = 'eat_miss'
+                gif_update = 'eat_miss'
 
         eatWindow['image'].UpdateAnimation(
-            f'Data\\img\\{ui.gif_update}.gif', time_between_frames=150)
-        eatWindow['text1'].update(f'You have {ui.portion} portions.')
+            f'Data\\img\\{gif_update}.gif', time_between_frames=150)
+        eatWindow['text1'].update(f'You have {portion} portions.')
 
-        if ui.portion == 0:
+        if portion == 0:
             eatWindow['text2'].update(visible=True)
         if player.condition['food'] > 75:
             eatWindow['meal'].update(disabled=True)

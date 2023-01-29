@@ -66,8 +66,9 @@ class Player(Poke):
             case "Medium Fast":
                 need = int(self.properties['level']**3)
             case "Medium Slow":
-                need = int(((6/5)*(self.properties['level']**3))-
-                (15*(self.properties['level']**2))+(100*self.properties['level'])-140)
+                need = int(((6 / 5) * (self.properties['level'] ** 3)) - 
+                (15 * (self.properties['level'] ** 2)) +
+                (100 * self.properties['level'])-140)
             case "Slow":
                 need = int((5*(self.properties['level']**3))/4)
         
@@ -84,8 +85,9 @@ class Player(Poke):
             self.status['eating'] = True
             self.status['eat_time'] = 28800
         else:
-            sg.popup("You can't feed your pet for now!", title='', keep_on_top=True, auto_close=True,
-                     auto_close_duration=3, any_key_closes=True, icon='Data\\img\\warning.ico')
+            sg.popup("You can't feed your pet for now!", title='', 
+            keep_on_top=True, auto_close=True, auto_close_duration=3,
+            any_key_closes=True, icon='Data\\img\\warning.ico')
 
 
     def training(self):
@@ -105,7 +107,7 @@ class Player(Poke):
 
     def play(self):
         self.status['playing'] = True
-        if self.status['play_time'] == 0:
+        if self.condition['exhausted'] < 90:
             self.condition['food'] -= 2
             self.condition['exhausted'] += 10
             self.properties['xp'] += 1
@@ -113,6 +115,10 @@ class Player(Poke):
                 self.condition['bored'] == 0
             else:
                 self.condition['bored'] -= 20
+        else:
+            sg.popup("You can't play with your pet for now!", title='', 
+            keep_on_top=True, auto_close=True, auto_close_duration=3,
+            any_key_closes=True, icon='Data\\img\\warning.ico')
 
         self.level_up()
 
