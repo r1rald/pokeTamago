@@ -93,7 +93,7 @@ def mainGame(self, player):
         [sg.HSeparator(color='#3c4754', p=0)],
         [sg.T(f"Level {player.properties['level']}", font=('', 10), 
         key='level', background_color=self.settings['background'])],
-        [sg.ProgressBar(max_value=player.level_up(), expand_x=True, expand_y=True, 
+        [sg.ProgressBar(max_value=player.xp_need(), expand_x=True, expand_y=True, 
         bar_color=('#28fc03','#f2f2f2'),key='progress_1',orientation='h',
         relief=sg.RELIEF_RAISED)],
     ]

@@ -57,27 +57,34 @@ class Player(Poke):
         super().__init__()
 
 
-    def level_up(self):
-        need = 0
+    def xp_need(self):
+        level = self.properties['level']
 
         match self.properties["xp_group"]:
             case "Fast":
-                need = int((4*(self.properties['level']**3))/5)
+                need = int((4*(level**3))/5)
+
             case "Medium Fast":
-                need = int(self.properties['level']**3)
+                need = int(level**3)
+
             case "Medium Slow":
-                need = int(((6 / 5) * (self.properties['level'] ** 3)) - 
-                (15 * (self.properties['level'] ** 2)) +
-                (100 * self.properties['level'])-140)
+                need = int(((6 / 5) * (level ** 3)) - (15 * (level ** 2)) +
+                (100 * level)-140)
+                
             case "Slow":
-                need = int((5*(self.properties['level']**3))/4)
-        
-        if self.properties['xp'] >= need and self.properties['level'] < 100:
-            self.properties['xp'] = 0
-            self.properties['level'] += 1
+                need = int((5*(level**3))/4)
 
         return need
 
+
+
+    def level_up(self):   
+        level = self.properties['level']
+        xp = self.properties['xp']
+
+        if xp >= self.xp_need() and level < 100:
+            self.properties['xp'] = 0
+            self.properties['level'] += 1
 
 
     def eat(self):

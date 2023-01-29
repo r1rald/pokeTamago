@@ -116,7 +116,7 @@ class Game:
 
                 case sg.TIMEOUT_KEY:
                     mainWindow['progress_1'].update(current_count=0,
-                    max=player.level_up())
+                    max=player.xp_need())
                     im.seek(index)
                     item_new = mainWindow['GRAPH'].draw_image(data=f.image_to_data(im),
                     location=location)
