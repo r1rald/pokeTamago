@@ -166,8 +166,9 @@ def newPoke():
     layout = [
         [sg.Text('What is the name of your Pokemon?')],
         [sg.Input(key='-IN-')],
-        [sg.Button('Enter', p=((238, 0), (0, 0))), sg.Button('Back'),
-         sg.Button('Submit', visible=False, bind_return_key=True)]
+        [sg.B('Random'), sg.Button('Enter', p=((170, 0), (0, 0))), 
+        sg.Button('Back'),sg.Button('Submit', visible=False, bind_return_key=
+        True)]
     ]
 
     return layout

@@ -108,21 +108,23 @@ class Game:
             thread.start()
 
         while True:
-            event, value = mainWindow.read(timeout=30)
-            match event:
-                case sg.WIN_CLOSED:
-                    self.run = False
-                    break
 
+            event, value = mainWindow.read(timeout=30)
+
+            match event:
                 case sg.TIMEOUT_KEY:
                     mainWindow['progress_1'].update(current_count=0,
                     max=player.xp_need())
                     im.seek(index)
-                    item_new = mainWindow['GRAPH'].draw_image(data=f.image_to_data(im),
-                    location=location)
+                    item_new = mainWindow['GRAPH'].draw_image(data=
+                    f.image_to_data(im), location=location)
                     mainWindow['GRAPH'].delete_figure(item)
                     item = item_new
                     mainWindow.refresh()
+
+                case sg.WIN_CLOSED:
+                    self.run = False
+                    break
 
                 case 'Eat':
                     sc.eat_screen(player)

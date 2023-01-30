@@ -1,10 +1,11 @@
+from nickname_generator import generate
 from threading import Thread
 from random import randint
 import PySimpleGUI as sg
 import ui_layout as ui
 from time import sleep
 from PIL import Image
-from re import sub
+from re import sub, search
 import funct as f
 import sys
 import os
@@ -15,11 +16,20 @@ def new_pokemon_screen(self, player):
                          icon='Data\\img\\logo.ico', grab_anywhere=True)
 
     while True:
-        event, values = pokeName.read()
+
+        event, values = pokeName.read(timeout=1000)
+
         match event:
+            case sg.TIMEOUT_KEY:
+                pokeName.refresh()
+
             case sg.WINDOW_CLOSED | 'Back':
                 self.cancel = True
                 break
+            
+            case 'Random':
+                pokeName['-IN-'].update(value=generate())
+
             case 'Enter' | 'Submit':
                 self.read_save()
                 if 1 <= len(values['-IN-']) <= 14 and values['-IN-'] not in self.read_save():
@@ -64,22 +74,28 @@ def loading_screen(self, player):
     loadScreen = sg.Window('Load', ui.load(self), icon='Data\\img\\load.ico')
 
     while True:
+
         event, values = loadScreen.read()
         loadScreen["load"].bind('<Double-Button-1>', "+-double click-")
+
         match event:
             case sg.WINDOW_CLOSED | 'Back':
                 break
+
             case 'Load' | 'load+-double click-':
                 if not values["load"]:
-                    sg.Popup('You must choose a save file!', title='error', keep_on_top=True,
-                             auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
+                    sg.Popup('You must choose a save file!', title='error', 
+                    keep_on_top=True, auto_close=True, auto_close_duration=3, 
+                    icon='Data\\img\\warning.ico')
                 else:
                     self.load_saves(player, values["load"][0])
                     break
+
             case 'Delete':
                 if not values["load"]:
-                    sg.Popup('You must choose a save file!', title='error', keep_on_top=True,
-                             auto_close=True, auto_close_duration=3, icon='Data\\img\\warning.ico')
+                    sg.Popup('You must choose a save file!', title='error', 
+                    keep_on_top=True, auto_close=True, auto_close_duration=3, 
+                    icon='Data\\img\\warning.ico')
                 else:
                     os.remove(f'Data\\save\\{values["load"][0]}.json')
                     self.read_save()
@@ -259,16 +275,21 @@ def train_screen(self, player):
 
             case sg.WIN_CLOSED | 'Back':
                 train = False
-                player.status['training'] = False
                 break
 
-            case "Let's begin":
+            case 'begin':
                 player.training()
 
-        if player.status['training_time'] > 0:
+        if player.status['training'] == True:
             trainWindow['train'].update('Your pokemon is already trained!\n' +
             f'It needs to rest for about {f.time_counter(player.status["training_time"])}')
             trainWindow['begin'].update(disabled=True)
+
+            if player.status['training_time'] == 0:
+                player.status['training'] = False
+                trainWindow['train'].update('Your pokemon is ready for training!\n'
+                + 'Please, be gantle with it!')
+                trainWindow['begin'].update(disabled=False)
 
     trainWindow.close()
 
@@ -278,13 +299,18 @@ def sleep_screen(self, player):
     icon='Data\\img\\sleep.ico', element_justification="center")
 
     while True:
+
         event, value = sleepWindow.read(timeout=150)
-        if event == sg.WIN_CLOSED:
-            self.run = False
-            sys.exit()
-        if event == 'Main Menu':
-            self.run = False
-            os.execl(sys.executable, sys.executable, *sys.argv)
+        
+        match event:
+            case sg.WIN_CLOSED:
+                self.run = False
+                sys.exit()
+
+            case 'Main Menu':
+                self.run = False
+                os.execl(sys.executable, sys.executable, *sys.argv)
+
         if player.status['sleeping'] and player.status['sleep_time'] == 0:
             player.status['sleeping'] = False
             break

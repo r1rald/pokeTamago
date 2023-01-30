@@ -1,6 +1,6 @@
 from nickname_generator import generate
-import PySimpleGUI as sg
 from random import choice
+import PySimpleGUI as sg
 import time
 import json
 
