@@ -226,21 +226,18 @@ class Game:
         return pokes
 
     def read_save(self):
-        directory = 'Data\\save'
+        dir_list = os.listdir('Data\\save')
         saves = []
 
-        for filename in os.listdir(directory):
-            f = os.path.join(directory, filename)
-            if os.path.isfile(f):
-                saves.append(f.replace('.json', '').replace(
-                    'Data\\save\\', ''))
+        for save in dir_list:
+            saves.append(save.replace('.json', ''))
 
         return saves
 
     def load_saves(self, player, var):
         self.has_been_called = True
 
-        with open(f'Data\save\{var}.json', 'r') as load:
+        with open(f'Data\\save\\{var}.json', 'r') as load:
             data = json.load(load)
 
             player.properties = data['properties']

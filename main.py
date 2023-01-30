@@ -4,6 +4,11 @@ import sched
 import game
 import time
 import sys
+import os
+
+
+if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    os.chdir(sys._MEIPASS)
 
 
 s = sched.scheduler(time.time, time.sleep)
