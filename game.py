@@ -198,7 +198,9 @@ class Game:
         save['status'] = player.status
         player.status['logoff_time'] = round(time.time())
 
-        with open(f"data\\save\\{player.properties['name']}.json", 'w') as outfile:
+        path = os.path.expanduser('~\\Documents\\pokeTamago\\save')
+        
+        with open(f"{path}\\{player.properties['name']}.json", 'w') as outfile:
             json.dump(save, outfile, indent=4)
 
     def save_settings(self):
@@ -209,13 +211,13 @@ class Game:
         if self.settings['theme'] == "TamagoLight":
             self.settings['background'] = '#bfbfb2'
 
-        with open(f"data\\settings.json", 'w') as settings: 
+        with open("data\\settings.json", 'w') as settings: 
             json.dump(self.settings, settings, indent=4)
 
     def open_dex(self):
         pokes = ([], [], [], [])
 
-        with open('data\pokedex.json', 'r') as read_file:
+        with open('data\\pokedex.json', 'r') as read_file:
             data = json.load(read_file)
             for poke in data:
                 pokes[0].append(poke['name'])
@@ -226,13 +228,16 @@ class Game:
         return pokes
 
     def read_save(self):
-        dir_list = os.listdir('data\\save')
         saves = []
-
-        for save in dir_list:
-            saves.append(save.replace('.json', ''))
+        
+        if os.path.exists(os.path.expanduser('~\\Documents\\pokeTamago\\save')):
+            for save in os.listdir(os.path.expanduser('~\\Documents\\pokeTamago\\save')):
+                saves.append(save.replace('.json', ''))
+        else:
+            os.makedirs(os.path.expanduser('~\\Documents\\pokeTamago\\save'))
 
         return saves
+
 
     def load_saves(self, player, var):
         self.has_been_called = True

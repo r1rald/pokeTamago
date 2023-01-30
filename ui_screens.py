@@ -31,7 +31,6 @@ def new_pokemon_screen(self, player):
                 pokeName['-IN-'].update(value=generate())
 
             case 'Enter' | 'Submit':
-                self.read_save()
                 if 1 <= len(values['-IN-']) <= 14 and values['-IN-'] not in self.read_save():
                     player.properties["name"] = values['-IN-']
                     break
@@ -97,10 +96,10 @@ def loading_screen(self, player):
                     keep_on_top=True, auto_close=True, auto_close_duration=3, 
                     icon='data\\img\\warning.ico')
                 else:
-                    os.remove(f'data\\save\\{values["load"][0]}.json')
+                    path = os.path.expanduser('~\\Documents\\pokeTamago\\save')
+                    os.remove(f'{path}\\{values["load"][0]}.json')
                     self.read_save()
-                    loadScreen['load'].update(
-                        values=[x for x in self.read_save()])
+                    loadScreen['load'].update(values=[x for x in self.read_save()])
 
     loadScreen.close()
 
