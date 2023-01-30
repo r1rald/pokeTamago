@@ -1,6 +1,6 @@
 from nickname_generator import generate
-import PySimpleGUI as sg
 from random import choice
+import PySimpleGUI as sg
 import time
 import json
 
@@ -57,26 +57,34 @@ class Player(Poke):
         super().__init__()
 
 
-    def level_up(self):
-        need = 0
+    def xp_need(self):
+        level = self.properties['level']
 
         match self.properties["xp_group"]:
             case "Fast":
-                need = int((4*(self.properties['level']**3))/5)
+                need = int((4*(level**3))/5)
+
             case "Medium Fast":
-                need = int(self.properties['level']**3)
+                need = int(level**3)
+
             case "Medium Slow":
-                need = int(((6/5)*(self.properties['level']**3))-
-                (15*(self.properties['level']**2))+(100*self.properties['level'])-140)
+                need = int(((6 / 5) * (level ** 3)) - (15 * (level ** 2)) +
+                (100 * level)-140)
+                
             case "Slow":
-                need = int((5*(self.properties['level']**3))/4)
-        
-        if self.properties['xp'] >= need and self.properties['level'] < 100:
-            self.properties['xp'] = 0
-            self.properties['level'] += 1
+                need = int((5*(level**3))/4)
 
         return need
 
+
+
+    def level_up(self):   
+        level = self.properties['level']
+        xp = self.properties['xp']
+
+        if xp >= self.xp_need() and level < 100:
+            self.properties['xp'] = 0
+            self.properties['level'] += 1
 
 
     def eat(self):
@@ -84,15 +92,17 @@ class Player(Poke):
             self.status['eating'] = True
             self.status['eat_time'] = 28800
         else:
-            sg.popup("You can't feed your pet for now!", title='', keep_on_top=True, auto_close=True,
-                     auto_close_duration=3, any_key_closes=True, icon='Data\\img\\warning.ico')
+            sg.popup("You can't feed your pet for now!", title='', 
+            keep_on_top=True, auto_close=True, auto_close_duration=3,
+            any_key_closes=True, icon='Data\\img\\warning.ico')
 
 
     def training(self):
+        self.status['training'] = True
         if self.status['training_time'] == 0:
-            self.status['training_time'] = 86400
-            self.condition['food'] -= 5
-            self.condition['exhausted'] += 20
+            self.status['training_time'] = 28800
+            self.condition['food'] -= 25
+            self.condition['exhausted'] += 25
             self.properties['xp'] += 5
             if self.condition['bored'] <= 10:
                 self.condition['bored'] == 0
@@ -103,7 +113,8 @@ class Player(Poke):
 
 
     def play(self):
-        if self.status['play_time'] == 0:
+        self.status['playing'] = True
+        if self.condition['exhausted'] < 90:
             self.condition['food'] -= 2
             self.condition['exhausted'] += 10
             self.properties['xp'] += 1
@@ -111,16 +122,21 @@ class Player(Poke):
                 self.condition['bored'] == 0
             else:
                 self.condition['bored'] -= 20
+        else:
+            sg.popup("You can't play with your pet for now!", title='', 
+            keep_on_top=True, auto_close=True, auto_close_duration=3,
+            any_key_closes=True, icon='Data\\img\\warning.ico')
 
         self.level_up()
 
 
     def sleep(self):
         self.status['sleeping'] = True
-        self.status['sleep_time'] = 28800
-        self.condition['exhausted'] = 0
-        self.condition['bored'] = 0
-        self.condition['food'] = 20
+        if self.status['sleep_time'] == 0:
+            self.status['sleep_time'] = 28800
+            self.condition['exhausted'] = 0
+            self.condition['bored'] = 0
+            self.condition['food'] = 20
 
 
     def passing_time(self):
