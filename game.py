@@ -28,7 +28,7 @@ class Game:
             "portrait_anim": True
         }
 
-        with open(f'Data\\settings.json', 'r') as settings:
+        with open(f'data\\settings.json', 'r') as settings:
             data = json.load(settings)
             self.settings = data
 
@@ -36,7 +36,7 @@ class Game:
         f.randomYieldGroup()
 
     def newGame(self, player):
-        window1 = sg.Window('', ui.newGame(), icon='Data\\img\\logo.ico',
+        window1 = sg.Window('', ui.newGame(), icon='data\\img\\logo.ico',
                             element_justification='c', grab_anywhere=True)
 
         while True:
@@ -89,7 +89,7 @@ class Game:
         graph_width, graph_height = size = (170, 100)
 
         mainWindow = sg.Window('pokéTamago', ui.mainGame(self, player),
-        icon='Data\\img\\logo.ico', finalize=True)
+        icon='data\\img\\logo.ico', finalize=True)
 
         mainWindow['GRAPH'].draw_image(f'{f.portrait_background(player)}', 
         location=(0, 0))
@@ -198,7 +198,7 @@ class Game:
         save['status'] = player.status
         player.status['logoff_time'] = round(time.time())
 
-        with open(f"Data\\save\\{player.properties['name']}.json", 'w') as outfile:
+        with open(f"data\\save\\{player.properties['name']}.json", 'w') as outfile:
             json.dump(save, outfile, indent=4)
 
     def save_settings(self):
@@ -209,13 +209,13 @@ class Game:
         if self.settings['theme'] == "TamagoLight":
             self.settings['background'] = '#bfbfb2'
 
-        with open(f"Data\\settings.json", 'w') as settings: 
+        with open(f"data\\settings.json", 'w') as settings: 
             json.dump(self.settings, settings, indent=4)
 
     def open_dex(self):
         pokes = ([], [], [], [])
 
-        with open('Data\pokedex.json', 'r') as read_file:
+        with open('data\pokedex.json', 'r') as read_file:
             data = json.load(read_file)
             for poke in data:
                 pokes[0].append(poke['name'])
@@ -226,7 +226,7 @@ class Game:
         return pokes
 
     def read_save(self):
-        dir_list = os.listdir('Data\\save')
+        dir_list = os.listdir('data\\save')
         saves = []
 
         for save in dir_list:
@@ -237,7 +237,7 @@ class Game:
     def load_saves(self, player, var):
         self.has_been_called = True
 
-        with open(f'Data\\save\\{var}.json', 'r') as load:
+        with open(f'data\\save\\{var}.json', 'r') as load:
             data = json.load(load)
 
             player.properties = data['properties']

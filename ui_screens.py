@@ -13,7 +13,7 @@ import os
 
 def new_pokemon_screen(self, player):
     pokeName = sg.Window('Name', ui.newPoke(),
-                         icon='Data\\img\\logo.ico', grab_anywhere=True)
+                         icon='data\\img\\logo.ico', grab_anywhere=True)
 
     while True:
 
@@ -42,13 +42,13 @@ def new_pokemon_screen(self, player):
                     [sg.B('OK', s=(10, 1), p=(10, 10), bind_return_key=True,
                     focus=True)]], keep_on_top=True, auto_close=True, 
                     auto_close_duration=3, element_justification='c',
-                    icon='Data\\img\\warning.ico').read(close=True)
+                    icon='data\\img\\warning.ico').read(close=True)
     pokeName.close()
 
 
 def choose_pokemon(self, player):
     pokeChooseWin = sg.Window('Choose', ui.choosePoke(self),
-                              icon='Data\\img\\pokeball.ico')
+                              icon='data\\img\\pokeball.ico')
 
     while True:
         event, values = pokeChooseWin.read()
@@ -60,7 +60,7 @@ def choose_pokemon(self, player):
             case 'Choose' | 'poke+-double click-':
                 index = self.open_dex()[0].index(f'{values["poke"][0]}')
                 name = sub("\s|[']", '', values["poke"][0])
-                player.properties['portrait'] = f'Data\\img\\poke\\{name}.gif'
+                player.properties['portrait'] = f'data\\img\\poke\\{name}.gif'
                 player.properties['type'] = self.open_dex()[1][index]
                 player.properties['xp_group'] = self.open_dex()[2][index]
                 player.properties['yield'] = self.open_dex()[3][index]
@@ -71,7 +71,7 @@ def choose_pokemon(self, player):
 
 
 def loading_screen(self, player):
-    loadScreen = sg.Window('Load', ui.load(self), icon='Data\\img\\load.ico')
+    loadScreen = sg.Window('Load', ui.load(self), icon='data\\img\\load.ico')
 
     while True:
 
@@ -86,7 +86,7 @@ def loading_screen(self, player):
                 if not values["load"]:
                     sg.Popup('You must choose a save file!', title='error', 
                     keep_on_top=True, auto_close=True, auto_close_duration=3, 
-                    icon='Data\\img\\warning.ico')
+                    icon='data\\img\\warning.ico')
                 else:
                     self.load_saves(player, values["load"][0])
                     break
@@ -95,9 +95,9 @@ def loading_screen(self, player):
                 if not values["load"]:
                     sg.Popup('You must choose a save file!', title='error', 
                     keep_on_top=True, auto_close=True, auto_close_duration=3, 
-                    icon='Data\\img\\warning.ico')
+                    icon='data\\img\\warning.ico')
                 else:
-                    os.remove(f'Data\\save\\{values["load"][0]}.json')
+                    os.remove(f'data\\save\\{values["load"][0]}.json')
                     self.read_save()
                     loadScreen['load'].update(
                         values=[x for x in self.read_save()])
@@ -107,7 +107,7 @@ def loading_screen(self, player):
 
 def settings_screen(self):
     OptWindow = sg.Window(
-        'Settings', ui.settings(self), icon='Data\\img\\gear.ico', grab_anywhere=True)
+        'Settings', ui.settings(self), icon='data\\img\\gear.ico', grab_anywhere=True)
 
     while True:
         event, values = OptWindow.read(timeout=100)
@@ -153,10 +153,10 @@ def settings_screen(self):
 def death_screen(self, player):
     if not player.status["revive"]:
         deathWindow = sg.Window('Passing', ui.dead(player)[0],
-        icon='Data\\img\\death.ico', element_justification="center")
+        icon='data\\img\\death.ico', element_justification="center")
     else:
         deathWindow = sg.Window('Revive', ui.dead(player)[1], 
-        icon='Data\\img\\death.ico', element_justification="center")
+        icon='data\\img\\death.ico', element_justification="center")
 
     while True:
         event, value = deathWindow.read(timeout=150)
@@ -167,7 +167,7 @@ def death_screen(self, player):
             player.status['revive'] = True
             player.status['revive_time'] = 604800
         if (event == 'l'):
-            os.remove(f'Data\\save\\{self.stats["name"]}.json')
+            os.remove(f'data\\save\\{self.stats["name"]}.json')
             self.run = False
             sys.exit()
         if player.status['revive'] and player.status['revive_time'] == 0:
@@ -181,10 +181,10 @@ def death_screen(self, player):
 
         if not player.status["revive"]:
             deathWindow['image'].UpdateAnimation(
-                'Data\\img\\death.gif', time_between_frames=150)
+                'data\\img\\death.gif', time_between_frames=150)
         if player.status["revive"]:
             deathWindow['image'].UpdateAnimation(
-                'Data\\img\\revive.gif', time_between_frames=150)
+                'data\\img\\revive.gif', time_between_frames=150)
             deathWindow['text1'].update(
                 'Your pet is about to begin a new life.')
             deathWindow['text2'].update(
@@ -211,8 +211,8 @@ def train_screen(self, player):
                 break
 
     im1 = Image.open(player.properties['portrait'])
-    im2 = Image.open('Data\\img\\sweat1.gif')
-    im3 = Image.open('Data\\img\\sweat2.gif')
+    im2 = Image.open('data\\img\\sweat1.gif')
+    im3 = Image.open('data\\img\\sweat2.gif')
 
     width1, height1 = im1.size
     width2, height2 = im2.size
@@ -225,10 +225,10 @@ def train_screen(self, player):
     graph_width, graph_height = size = (300, 260)
 
     trainWindow = sg.Window('Training', ui.training(player), size=(320, 365),
-    icon='Data\\img\\gym.ico', element_justification="c", finalize=True)
+    icon='data\\img\\gym.ico', element_justification="c", finalize=True)
 
     trainWindow['train_graph'].draw_image(
-        'Data\\img\\gym_training.png', location=(0, 0))
+        'data\\img\\gym_training.png', location=(0, 0))
 
     index1 = 0 if self.settings['portrait_anim'] else 10
     index2 = 0 if self.settings['portrait_anim'] else 5
@@ -296,7 +296,7 @@ def train_screen(self, player):
 
 def sleep_screen(self, player):
     sleepWindow = sg.Window('Sleeping', ui.sleeping(player), 
-    icon='Data\\img\\sleep.ico', element_justification="center")
+    icon='data\\img\\sleep.ico', element_justification="center")
 
     while True:
 
@@ -315,7 +315,7 @@ def sleep_screen(self, player):
             player.status['sleeping'] = False
             break
 
-        sleepWindow['image'].UpdateAnimation('Data\\img\\sleep.gif',
+        sleepWindow['image'].UpdateAnimation('data\\img\\sleep.gif',
         time_between_frames=150)
         sleepWindow['text'].update('Shhh!!! Your pet is sleeping now.\n' + 
         f'Let it rest for about {f.time_counter(player.status["sleep_time"])}.')
@@ -328,7 +328,7 @@ def eat_screen(player):
     gif_update = 'eat'
 
     eatWindow = sg.Window(
-        'Eating', ui.eating(portion), icon='Data\\img\\eat.ico', element_justification="center")
+        'Eating', ui.eating(portion), icon='data\\img\\eat.ico', element_justification="center")
 
     while True:
         event, value = eatWindow.read(timeout=150)
@@ -350,7 +350,7 @@ def eat_screen(player):
                 gif_update = 'eat_miss'
 
         eatWindow['image'].UpdateAnimation(
-            f'Data\\img\\{gif_update}.gif', time_between_frames=150)
+            f'data\\img\\{gif_update}.gif', time_between_frames=150)
         eatWindow['text1'].update(f'You have {portion} portions.')
 
         if portion == 0:

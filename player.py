@@ -94,7 +94,7 @@ class Player(Poke):
         else:
             sg.popup("You can't feed your pet for now!", title='', 
             keep_on_top=True, auto_close=True, auto_close_duration=3,
-            any_key_closes=True, icon='Data\\img\\warning.ico')
+            any_key_closes=True, icon='data\\img\\warning.ico')
 
 
     def training(self):
@@ -125,7 +125,7 @@ class Player(Poke):
         else:
             sg.popup("You can't play with your pet for now!", title='', 
             keep_on_top=True, auto_close=True, auto_close_duration=3,
-            any_key_closes=True, icon='Data\\img\\warning.ico')
+            any_key_closes=True, icon='data\\img\\warning.ico')
 
         self.level_up()
 
@@ -224,7 +224,7 @@ class Npc(Poke):
         player = sum(Player().base.values())
         pokes = []
 
-        with open('Data\pokedex.json', 'r') as read_file:
+        with open('data\pokedex.json', 'r') as read_file:
             data = json.load(read_file)
             for poke in data:
                 if (player-10) < sum(poke['base'].values()) < (player+10):

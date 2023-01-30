@@ -11,7 +11,7 @@ def newGame():
         [sg.B('Exit', size=12)]
     ]
     layout = [
-        [sg.Image('Data\\img\\logo.png', subsample=3)],
+        [sg.Image('data\\img\\logo.png', subsample=3)],
         [sg.Column(buttonColumn, element_justification='c')]
     ]
 
@@ -104,19 +104,19 @@ def mainGame(self, player):
 
     if len(player.properties["type"]) < 2:
         TypeImage2 = [
-            sg.Image(f'Data\\img\\poke\\types\\none.png', k='type2', p=0,
+            sg.Image(f'data\\img\\poke\\types\\none.png', k='type2', p=0,
             size=(30, 24), background_color=self.settings['background'], 
             tooltip=' There is no second type of this Pokemon ')
         ]
     else:
         TypeImage2 = [
-            sg.Image(f'Data\\img\\poke\\types\\{player.properties["type"][1]}_Type_Icon.png',
+            sg.Image(f'data\\img\\poke\\types\\{player.properties["type"][1]}_Type_Icon.png',
             k='type2',background_color=self.settings['background'], p=0, 
             size=(30, 24), tooltip=f' {player.properties["type"][1]} ')
         ]
 
     conditionBar = [
-        [sg.Image(f'Data\\img\\poke\\types\\{player.properties["type"][0]}_Type_Icon.png', 
+        [sg.Image(f'data\\img\\poke\\types\\{player.properties["type"][0]}_Type_Icon.png', 
         k='type1', background_color=self.settings['background'], p=0, 
         size=(30, 24), tooltip=f' {player.properties["type"][0]} ')],
         [sg.HSeparator(color='#3c4754', p=0)],
@@ -235,7 +235,7 @@ def settings(self):
 
 def dead(player):
     layout1 = [
-        [sg.Image('Data\\img\\death.gif', k='image', p=((20, 20), (20, 0)))],
+        [sg.Image('data\\img\\death.gif', k='image', p=((20, 20), (20, 0)))],
         [sg.Text('Sadly seems like your pet is passed away.', k='text1', 
         p=((0, 0), (20, 0)))],
         [sg.Text('Do you want to revive it?', p=((0, 0), (0, 20)), k='text2')],
@@ -243,7 +243,7 @@ def dead(player):
         sg.Button('Exit', size=8, p=((50, 0), (0, 0)))]
     ]
     layout2 = [
-        [sg.Image('Data\\img\\revive.gif', k='image', p=((20, 20), (20, 0)),)],
+        [sg.Image('data\\img\\revive.gif', k='image', p=((20, 20), (20, 0)),)],
         [sg.Text('Your pet is about to begin a new life.',k='text1', 
         p=((0, 0), (20, 0)))],
         [sg.Text(f'The process will take {f.time_counter(player.status["revive_time"])}.',
@@ -272,7 +272,7 @@ def training(player):
 
 def sleeping(player):
     layout = [
-        [sg.Image('Data\\img\\sleep.gif', k='image', p=((20, 20), (0, 0)))],
+        [sg.Image('data\\img\\sleep.gif', k='image', p=((20, 20), (0, 0)))],
         [sg.Text('Shhh!!! Your pet is sleeping now.\n' + 
         f'Let it rest for about {f.time_counter(player.status["sleep_time"])}.',
         p=((0, 0), (20, 0)), k='text', justification='c')],
@@ -284,7 +284,7 @@ def sleeping(player):
 
 def eating(var1):
     layout = [
-        [sg.Image('Data\\img\\eat.gif', k='image', p=((20, 20), (20, 20)))],
+        [sg.Image('data\\img\\eat.gif', k='image', p=((20, 20), (20, 20)))],
         [sg.Text(f'You have {var1} portions.',
                  k='text1', p=((0, 0), (20, 0)))],
         [sg.Text("You don't have any food for now!", visible=False, k='text2')],
