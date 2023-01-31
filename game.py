@@ -40,7 +40,7 @@ class Game:
                             element_justification='c', grab_anywhere=True)
 
         while True:
-            event, values = window1.read()
+            event, values = window1.read(timeout=100)
             match event:
 
                 case sg.WIN_CLOSED | 'Exit':
@@ -59,15 +59,21 @@ class Game:
                     else:
                         continue
 
-                case 'Continue':
+                case 'load':
                     self.has_been_called = False
                     sc.loading_screen(self, player)
                     if self.has_been_called:
                         break
                     else:
                         continue
+
                 case 'Settings':
                     sc.settings_screen(self)
+
+            if not self.read_save():
+                window1['load'].update(disabled=True)
+            else:
+                window1['load'].update(disabled=False)
 
         window1.close()
 
@@ -94,7 +100,7 @@ class Game:
         mainWindow['GRAPH'].draw_image(f'{f.portrait_background(player)}', 
         location=(0, 0))
 
-        index = 0 if self.settings['portrait_anim'] else 10
+        index = 0 if self.settings['portrait_anim'] else 1
 
         im.seek(index)
 
@@ -109,7 +115,7 @@ class Game:
 
         while True:
 
-            event, value = mainWindow.read(timeout=30)
+            event, value = mainWindow.read(timeout=10)
 
             match event:
                 case sg.TIMEOUT_KEY:
@@ -242,7 +248,7 @@ class Game:
     def load_saves(self, player, var):
         self.has_been_called = True
 
-        with open(f'data\\save\\{var}.json', 'r') as load:
+        with open(os.path.expanduser(f'~\\Documents\\pokeTamago\\save\\{var}.json'), 'r') as load:
             data = json.load(load)
 
             player.properties = data['properties']

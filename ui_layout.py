@@ -6,7 +6,7 @@ import PySimpleGUI as sg
 def newGame():
     buttonColumn = [
         [sg.Button('New Pokemon', size=12)],
-        [sg.Button('Continue', size=12)],
+        [sg.Button('Continue', size=12, key='load')],
         [sg.B('Settings', size=12)],
         [sg.B('Exit', size=12)]
     ]
@@ -262,7 +262,7 @@ def training(player):
 
     layout = [
         [sg.Frame('', graph, s=(300, 260))],
-        [sg.T('Your pokemon is ready for training!\nPlease, be gantle with it!',
+        [sg.T('Your pokemon is ready for training!\nPlease, be gentle with it!',
         justification='c', k='train')],
         [sg.B("Let's begin", p=(10, 10), k='begin'), sg.B('Back', p=(10, 10))]
     ]

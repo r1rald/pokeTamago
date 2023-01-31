@@ -50,12 +50,15 @@ def choose_pokemon(self, player):
                               icon='data\\img\\pokeball.ico')
 
     while True:
-        event, values = pokeChooseWin.read()
+
+        event, values = pokeChooseWin.read(timeout=100)
         pokeChooseWin["poke"].bind('<Double-Button-1>', "+-double click-")
+
         match event:
             case sg.WINDOW_CLOSED | 'Back':
                 player.properties['name'] = ""
                 break
+
             case 'Choose' | 'poke+-double click-':
                 index = self.open_dex()[0].index(f'{values["poke"][0]}')
                 name = sub("\s|[']", '', values["poke"][0])
@@ -287,7 +290,7 @@ def train_screen(self, player):
             if player.status['training_time'] == 0:
                 player.status['training'] = False
                 trainWindow['train'].update('Your pokemon is ready for training!\n'
-                + 'Please, be gantle with it!')
+                + 'Please, be gentle with it!')
                 trainWindow['begin'].update(disabled=False)
 
     trainWindow.close()
