@@ -9,13 +9,13 @@ class Poke:
 
     def __init__(self):
         self.properties = {
-            "name": "",
-            "portrait": "",
+            "name": None,
+            "portrait": None,
             "type": [],
             "level": 1,
             "xp": 0,
-            "xp_group": "",
-            "yield": 0
+            "xp_group": None,
+            "yield": None
         }
         
         self.base = {
@@ -68,8 +68,7 @@ class Player(Poke):
                 need = int(level**3)
 
             case "Medium Slow":
-                need = int(((6 / 5) * (level ** 3)) - (15 * (level ** 2)) +
-                (100 * level)-140)
+                need = int(((6 / 5) * (level ** 3)) - (15 * (level ** 2)) + (100 * level)-140)
                 
             case "Slow":
                 need = int((5*(level**3))/4)
@@ -92,9 +91,8 @@ class Player(Poke):
             self.status['eating'] = True
             self.status['eat_time'] = 28800
         else:
-            sg.popup("You can't feed your pet for now!", title='', 
-            keep_on_top=True, auto_close=True, auto_close_duration=3,
-            any_key_closes=True, icon='data\\img\\warning.ico')
+            sg.popup("You can't feed your pet for now!", title='', keep_on_top=True, auto_close=True,
+            auto_close_duration=3, any_key_closes=True, icon='data\\img\\warning.ico')
 
 
     def training(self):
@@ -123,9 +121,8 @@ class Player(Poke):
             else:
                 self.condition['bored'] -= 20
         else:
-            sg.popup("You can't play with your pet for now!", title='', 
-            keep_on_top=True, auto_close=True, auto_close_duration=3,
-            any_key_closes=True, icon='data\\img\\warning.ico')
+            sg.popup("You can't play with your pet for now!", title='', keep_on_top=True, 
+            auto_close=True, auto_close_duration=3, any_key_closes=True, icon='data\\img\\warning.ico')
 
         self.level_up()
 

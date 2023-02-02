@@ -10,6 +10,7 @@ def newGame():
         [sg.B('Settings', size=12)],
         [sg.B('Exit', size=12)]
     ]
+
     layout = [
         [sg.Image('data\\img\\logo.png', subsample=3)],
         [sg.Column(buttonColumn, element_justification='c')]
@@ -20,82 +21,70 @@ def newGame():
 
 def mainGame(self, player):
     condition_layout = [
-        [sg.T("Health", font=('', 10, 'bold'), 
-        background_color=self.settings['background'])],
+        [sg.T("Health", font=('', 10, 'bold'), background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T("Age", font=('', 10, 'bold'), 
-        background_color=self.settings['background'])],
+        [sg.T("Age", font=('', 10, 'bold'), background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"Food", font=('', 10, 'bold'), 
-        background_color=self.settings['background'])],
+        [sg.T(f"Food", font=('', 10, 'bold'), background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"Bored", font=('', 10, 'bold'), 
-        background_color=self.settings['background'])],
+        [sg.T(f"Bored", font=('', 10, 'bold'), background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"Exhausted", font=('', 10, 'bold'),
-              background_color=self.settings['background'])]
+        [sg.T(f"Exhausted", font=('', 10, 'bold'), background_color=self.settings['background'])]
     ]
 
     condition_values = [
-        [sg.T(f"{int(player.condition['health'])}", font=('', 10, 'bold'), 
-        k='health', background_color=self.settings['background'])],
-        [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T("", font=('', 10, 'bold'), k='age', 
+        [sg.T(f"{int(player.condition['health'])}", font=('', 10, 'bold'), k='health', 
         background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.ProgressBar(max_value=100, orientation='h', expand_x=True, 
-        expand_y=True, p=0, key='food',)],
+        [sg.T("", font=('', 10, 'bold'), k='age', background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.ProgressBar(max_value=100, orientation='h', expand_x=True, 
-        expand_y=True, p=0, key='bored',)],
+        [sg.ProgressBar(max_value=100, orientation='h', expand_x=True, expand_y=True, p=0,
+        key='food',)],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.ProgressBar(max_value=100, orientation='h', expand_x=True, 
-        expand_y=True, p=0, key='exhausted',)]
+        [sg.ProgressBar(max_value=100, orientation='h', expand_x=True, expand_y=True, p=0,
+        key='bored',)],
+        [sg.HSeparator(color='#3c4754', p=0)],
+        [sg.ProgressBar(max_value=100, orientation='h', expand_x=True, expand_y=True, p=0,
+        key='exhausted',)]
     ]
 
     stats_layout = [
-        [sg.T(f"Attack", font=('', 10, 'bold'), 
-        background_color=self.settings['background'])],
+        [sg.T(f"Attack", font=('', 10, 'bold'), background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"Defense", font=('', 10, 'bold'), 
-        background_color=self.settings['background'])],
+        [sg.T(f"Defense", font=('', 10, 'bold'), background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"Sp. Attack", font=('', 10, 'bold'), 
-        background_color=self.settings['background'])],
+        [sg.T(f"Sp. Attack", font=('', 10, 'bold'), background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"Sp. Defense", font=('', 10, 'bold'), 
-        background_color=self.settings['background'])],
+        [sg.T(f"Sp. Defense", font=('', 10, 'bold'), background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"Speed", font=('', 10, 'bold'), 
-        background_color=self.settings['background'])]
+        [sg.T(f"Speed", font=('', 10, 'bold'), background_color=self.settings['background'])]
     ]
 
     stats_values = [
-        [sg.T(f"{player.base['Attack']}", font=('', 10, 'bold'), 
-        background_color=self.settings['background'], k='Attack')],
+        [sg.T(f"{player.base['Attack']}", font=('', 10, 'bold'), background_color=self.settings['background'],
+        k='Attack')],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"{player.base['Defense']}", font=('', 10, 'bold'), 
-        background_color=self.settings['background'], k='Defense')],
+        [sg.T(f"{player.base['Defense']}", font=('', 10, 'bold'), background_color=self.settings['background'],
+        k='Defense')],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"{player.base['Sp. Attack']}", font=('', 10, 'bold'), 
-        background_color=self.settings['background'], k='Sp. Attack')],
+        [sg.T(f"{player.base['Sp. Attack']}", font=('', 10, 'bold'), background_color=self.settings['background'],
+        k='Sp. Attack')],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"{player.base['Sp. Defense']}", font=('', 10, 'bold'), 
-        background_color=self.settings['background'], k='Sp. Defense')],
+        [sg.T(f"{player.base['Sp. Defense']}", font=('', 10, 'bold'), background_color=self.settings['background'],
+        k='Sp. Defense')],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"{player.base['Speed']}", font=('', 10, 'bold'), 
-        background_color=self.settings['background'], k='Speed')]
+        [sg.T(f"{player.base['Speed']}", font=('', 10, 'bold'), background_color=self.settings['background'],
+        k='Speed')]
     ]
 
     nameLayout = [
         [sg.T(f"{player.properties['name']}".upper(), font=('', 15, 'bold'), 
         background_color=self.settings['background'])],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"Level {player.properties['level']}", font=('', 10), 
-        key='level', background_color=self.settings['background'])],
-        [sg.ProgressBar(max_value=player.xp_need(), expand_x=True, expand_y=True, 
-        bar_color=('#28fc03','#f2f2f2'),key='progress_1',orientation='h',
-        relief=sg.RELIEF_RAISED)],
+        [sg.T(f"Level {player.properties['level']}", font=('', 10), key='level',
+        background_color=self.settings['background'])],
+        [sg.ProgressBar(max_value=player.xp_need(), expand_x=True, expand_y=True, key='progress_1',
+        orientation='h', bar_color=('#28fc03','#f2f2f2'), relief=sg.RELIEF_RAISED)],
     ]
 
     imageLayout = [
@@ -104,21 +93,18 @@ def mainGame(self, player):
 
     if len(player.properties["type"]) < 2:
         TypeImage2 = [
-            sg.Image(f'data\\img\\poke\\types\\none.png', k='type2', p=0,
-            size=(30, 24), background_color=self.settings['background'], 
-            tooltip=' There is no second type of this Pokemon ')
+            sg.Image(f'data\\img\\poke\\types\\none.png', k='type2', p=0, size=(30, 24), 
+            background_color=self.settings['background'], tooltip=' There is no second type of this Pokemon ')
         ]
     else:
         TypeImage2 = [
-            sg.Image(f'data\\img\\poke\\types\\{player.properties["type"][1]}_Type_Icon.png',
-            k='type2',background_color=self.settings['background'], p=0, 
-            size=(30, 24), tooltip=f' {player.properties["type"][1]} ')
+            sg.Image(f'data\\img\\poke\\types\\{player.properties["type"][1]}_Type_Icon.png', k='type2',
+            background_color=self.settings['background'], p=0,  size=(30, 24), tooltip=f' {player.properties["type"][1]} ')
         ]
 
     conditionBar = [
-        [sg.Image(f'data\\img\\poke\\types\\{player.properties["type"][0]}_Type_Icon.png', 
-        k='type1', background_color=self.settings['background'], p=0, 
-        size=(30, 24), tooltip=f' {player.properties["type"][0]} ')],
+        [sg.Image(f'data\\img\\poke\\types\\{player.properties["type"][0]}_Type_Icon.png', k='type1',
+        background_color=self.settings['background'], p=0, size=(30, 24), tooltip=f' {player.properties["type"][0]} ')],
         [sg.HSeparator(color='#3c4754', p=0)],
         TypeImage2,
         [sg.HSeparator(color='#3c4754', p=0)],
@@ -126,20 +112,20 @@ def mainGame(self, player):
     ]
 
     Column = [
-        [sg.Frame('', imageLayout, size=(170, 100), element_justification='c',
-        p=((0, 0), (0, 5)), background_color=self.settings['background']),
-        sg.Frame('', conditionBar, size=(30, 100), element_justification='c',
-        p=((0, 0), (0, 5)), background_color=self.settings['background'])],
-        [sg.Frame('', nameLayout, size=(200, 90), element_justification='c',
-        p=((0, 0), (5, 5)), background_color=self.settings['background'])],
-        [sg.Frame('', condition_layout, size=(100, 142), element_justification='c',
-        p=((0, 0), (5, 5)), background_color=self.settings['background']), 
-        sg.Frame('', condition_values, size=(100, 142), element_justification='c',
-        p=((0, 0), (5, 5)), background_color=self.settings['background'])],
-        [sg.Frame('', stats_layout, size=(100, 142), element_justification='c',
-        p=((0, 0), (5, 0)), background_color=self.settings['background']),
-        sg.Frame('', stats_values, size=(100, 142), element_justification='c',
-        p=((0, 0), (5, 0)), background_color=self.settings['background'])]
+        [sg.Frame('', imageLayout, size=(170, 100), element_justification='c', p=((0, 0), (0, 5)),
+        background_color=self.settings['background']),
+        sg.Frame('', conditionBar, size=(30, 100), element_justification='c', p=((0, 0), (0, 5)),
+        background_color=self.settings['background'])],
+        [sg.Frame('', nameLayout, size=(200, 90), element_justification='c', p=((0, 0), (5, 5)),
+        background_color=self.settings['background'])],
+        [sg.Frame('', condition_layout, size=(100, 142), element_justification='c', p=((0, 0), (5, 5)),
+        background_color=self.settings['background']), 
+        sg.Frame('', condition_values, size=(100, 142), element_justification='c', p=((0, 0), (5, 5)),
+        background_color=self.settings['background'])],
+        [sg.Frame('', stats_layout, size=(100, 142), element_justification='c', p=((0, 0), (5, 0)),
+        background_color=self.settings['background']),
+        sg.Frame('', stats_values, size=(100, 142), element_justification='c', p=((0, 0), (5, 0)),
+        background_color=self.settings['background'])]
     ]
 
     buttonColumn = [
@@ -155,8 +141,7 @@ def mainGame(self, player):
     ]
 
     layout = [
-        [sg.Column(buttonColumn), sg.Column(
-            Column, element_justification='c')],
+        [sg.Column(buttonColumn), sg.Column(Column, element_justification='c')],
     ]
 
     return layout
@@ -167,8 +152,7 @@ def newPoke():
         [sg.Text('What is the name of your Pokemon?')],
         [sg.Input(key='-IN-')],
         [sg.B('Random'), sg.Button('Enter', p=((170, 0), (0, 0))), 
-        sg.Button('Back'),sg.Button('Submit', visible=False, bind_return_key=
-        True)]
+        sg.Button('Back'),sg.Button('Submit', visible=False, bind_return_key=True)]
     ]
 
     return layout
@@ -176,8 +160,8 @@ def newPoke():
 
 def choosePoke(self):
     layout = [
-        [sg.Listbox(values=[x for x in self.open_dex()[0]], enable_events=True,
-        size=(25, 15), key="poke", expand_x=True,)],
+        [sg.Listbox(values=[x for x in self.open_dex()[0]], enable_events=True, size=(25, 15), 
+        key="poke", expand_x=True,)],
         [sg.B('Choose', p=((98, 0), (0, 0))), sg.B('Back')]
     ]
 
@@ -186,9 +170,9 @@ def choosePoke(self):
 
 def load(self):
     layout = [
-        [sg.Listbox(values=[x for x in self.read_save()], enable_events=True, 
-        size=(25, 15), key="load", expand_x=True)],
-        [sg.B('Load', p=((58, 0), (0, 0))), sg.B('Delete'), sg.B('Back'), 
+        [sg.Listbox(values=[x for x in self.read_save()], enable_events=True, expand_y=True, 
+        expand_x=True, key="load")],
+        [sg.B('Load', p=((55, 0), (0, 0))), sg.B('Delete'), sg.B('Back'), 
         sg.B('Submit', visible=False, bind_return_key=True)]
     ]
 
@@ -203,31 +187,32 @@ def settings(self):
 
     theme = [
         [sg.T(f"Current theme: {self.settings['theme']}", key='_theme_txt_')],
-        [sg.Combo(listOfThemes, size=(25, 10),
-                  default_value=f"{self.settings['theme']}", key='_theme_')],
+        [sg.Combo(listOfThemes, size=(25, 10), default_value=f"{self.settings['theme']}", key='_theme_')],
     ]
+
     sounds = [
         [sg.T(f"Current music: {self.settings['music']}", key='_music_txt_')],
-        [sg.Combo(listOfMusic, size=(14, 0), default_value=self.settings['music'],
-        key='_music_'), sg.Checkbox(text=status1, default=self.settings['music_playing'],
-        key='_playing_')],
+        [sg.Combo(listOfMusic, size=(14, 0), default_value=self.settings['music'], key='_music_'),
+        sg.Checkbox(text=status1, default=self.settings['music_playing'], key='_playing_')],
         [sg.T(f'Music')],
-        [sg.Slider(orientation='h', disable_number_display=True,range=(0, 100), 
-        default_value=self.settings['music_volume'], key='_music_vol_')],
+        [sg.Slider(orientation='h', disable_number_display=True,range=(0, 100), key='_music_vol_',
+        default_value=self.settings['music_volume'])],
         [sg.T(f'Sound')],
-        [sg.Slider(orientation='h', disable_number_display=True, range=(0, 100),
-        default_value=self.settings['sound_volume'], key='_sound_vol_')]
+        [sg.Slider(orientation='h', disable_number_display=True, range=(0, 100), key='_sound_vol_',
+        default_value=self.settings['sound_volume'])]
     ]
+
     portrait = [
-        [sg.T('Animated image:'), sg.Checkbox(text=status2, 
-        default=self.settings['portrait_anim'], p=((20, 0), (0, 0)), key='_portrait_')]
+        [sg.T('Animated image:'), sg.Checkbox(text=status2, default=self.settings['portrait_anim'],
+        p=((20, 0), (0, 0)), key='_portrait_')]
     ]
+
     layout = [
         [sg.Frame('Theme', theme, s=(215, 80))],
         [sg.Frame('Audio', sounds, s=(215, 200))],
         [sg.Frame('Portrait', portrait, s=(215, 55))],
-        [sg.B('Default', p=((5, 0), (10, 5))), sg.B('Apply', p=(
-            (73, 0), (10, 5))), sg.B('Back', p=((10, 0), (10, 5)))]
+        [sg.B('Default', p=((5, 0), (10, 5))), sg.B('Apply', p=((73, 0), (10, 5))),
+        sg.B('Back', p=((10, 0), (10, 5)))]
     ]
 
     return layout
@@ -236,20 +221,19 @@ def settings(self):
 def dead(player):
     layout1 = [
         [sg.Image('data\\img\\death.gif', k='image', p=((20, 20), (20, 0)))],
-        [sg.Text('Sadly seems like your pet is passed away.', k='text1', 
-        p=((0, 0), (20, 0)))],
+        [sg.Text('Sadly seems like your pet is passed away.', k='text1', p=((0, 0), (20, 0)))],
         [sg.Text('Do you want to revive it?', p=((0, 0), (0, 20)), k='text2')],
         [sg.Button('Revive', size=8, k='r'), sg.Button('Let go', size=8, k='l'),
         sg.Button('Exit', size=8, p=((50, 0), (0, 0)))]
     ]
+
     layout2 = [
         [sg.Image('data\\img\\revive.gif', k='image', p=((20, 20), (20, 0)),)],
-        [sg.Text('Your pet is about to begin a new life.',k='text1', 
-        p=((0, 0), (20, 0)))],
+        [sg.Text('Your pet is about to begin a new life.',k='text1', p=((0, 0), (20, 0)))],
         [sg.Text(f'The process will take {f.time_counter(player.status["revive_time"])}.',
         p=((0, 0), (0, 20)), k='text2')],
         [sg.Button('Revive', size=8, k='r'), sg.Button('Let go', size=8, k='l'),
-         sg.Button('Exit', size=8, p=((50, 0), (0, 0)))]
+        sg.Button('Exit', size=8, p=((50, 0), (0, 0)))]
     ]
 
     return layout1, layout2
@@ -262,8 +246,8 @@ def training(player):
 
     layout = [
         [sg.Frame('', graph, s=(300, 260))],
-        [sg.T('Your pokemon is ready for training!\nPlease, be gentle with it!',
-        justification='c', k='train')],
+        [sg.T('Your pokemon is ready for training!\nPlease, be gentle with it!', justification='c',
+        k='train')],
         [sg.B("Let's begin", p=(10, 10), k='begin'), sg.B('Back', p=(10, 10))]
     ]
 
@@ -271,11 +255,15 @@ def training(player):
 
 
 def sleeping(player):
+    graph = [
+        [sg.Graph((300, 260), (0, 260), (300, 0), p=0, key='sleep_graph')],
+    ]
+
     layout = [
-        [sg.Image('data\\img\\sleep.gif', k='image', p=((20, 20), (0, 0)))],
+        [sg.Frame('', graph, s=(300, 260))],
         [sg.Text('Shhh!!! Your pet is sleeping now.\n' + 
-        f'Let it rest for about {f.time_counter(player.status["sleep_time"])}.',
-        p=((0, 0), (20, 0)), k='text', justification='c')],
+        f'Let it rest for about {f.time_counter(player.status["sleep_time"])}.', k='text',
+        p=((0, 0), (20, 0)), justification='c')],
         [sg.Button('Main Menu', size=8, p=(0,10))]
     ]
 
@@ -285,14 +273,12 @@ def sleeping(player):
 def eating(var1):
     layout = [
         [sg.Image('data\\img\\eat.gif', k='image', p=((20, 20), (20, 20)))],
-        [sg.Text(f'You have {var1} portions.',
-                 k='text1', p=((0, 0), (20, 0)))],
+        [sg.Text(f'You have {var1} portions.', k='text1', p=((0, 0), (20, 0)))],
         [sg.Text("You don't have any food for now!", visible=False, k='text2')],
-        [sg.Text("Your pet is full, you can't feed it for now!",
-                 visible=False, k='text3')],
+        [sg.Text("Your pet is full, you can't feed it for now!", visible=False, k='text3')],
         [sg.Button('Give a snack', size=10, k='snack', p=((0, 0), (20, 0))),
-         sg.Button('Serve a meal', size=10, k='meal', p=((0, 0), (20, 0))),
-         sg.Button('Back', size=8, p=((50, 0), (20, 0)))]
+        sg.Button('Serve a meal', size=10, k='meal', p=((0, 0), (20, 0))),
+        sg.Button('Back', size=8, p=((50, 0), (20, 0)))]
     ]
 
     return layout

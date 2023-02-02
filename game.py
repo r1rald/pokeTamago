@@ -36,13 +36,13 @@ class Game:
         f.randomYieldGroup()
 
     def newGame(self, player):
-        window1 = sg.Window('', ui.newGame(), icon='data\\img\\logo.ico',
-                            element_justification='c', grab_anywhere=True)
+        window1 = sg.Window('', ui.newGame(), icon='data\\img\\logo.ico', element_justification='c',
+        grab_anywhere=True)
 
         while True:
             event, values = window1.read(timeout=100)
-            match event:
 
+            match event:
                 case sg.WIN_CLOSED | 'Exit':
                     sys.exit()
 
@@ -89,25 +89,24 @@ class Game:
                     break
 
         im = Image.open(player.properties['portrait'])
+
         width, height = im.size
         frames = im.n_frames
 
         graph_width, graph_height = size = (170, 100)
 
-        mainWindow = sg.Window('pokéTamago', ui.mainGame(self, player),
-        icon='data\\img\\logo.ico', finalize=True)
+        mainWindow = sg.Window('pokéTamago', ui.mainGame(self, player), icon='data\\img\\logo.ico', 
+        finalize=True)
 
-        mainWindow['GRAPH'].draw_image(f'{f.portrait_background(player)}', 
-        location=(0, 0))
+        mainWindow['GRAPH'].draw_image(f'{f.portrait_background(player)}', location=(0, 0))
 
-        index = 0 if self.settings['portrait_anim'] else 1
+        index = 1
 
         im.seek(index)
 
         location = (graph_width//2-width//2, graph_height//2-height//2)
 
-        item = mainWindow['GRAPH'].draw_image(data=f.image_to_data(im),
-        location=location)
+        item = mainWindow['GRAPH'].draw_image(data=f.image_to_data(im),location=location)
 
         thread = Thread(target=portrait_thread, daemon=True)
         if self.settings['portrait_anim']:
@@ -119,11 +118,8 @@ class Game:
 
             match event:
                 case sg.TIMEOUT_KEY:
-                    mainWindow['progress_1'].update(current_count=0,
-                    max=player.xp_need())
                     im.seek(index)
-                    item_new = mainWindow['GRAPH'].draw_image(data=
-                    f.image_to_data(im), location=location)
+                    item_new = mainWindow['GRAPH'].draw_image(data=f.image_to_data(im), location=location)
                     mainWindow['GRAPH'].delete_figure(item)
                     item = item_new
                     mainWindow.refresh()
@@ -177,16 +173,13 @@ class Game:
             else:
                 xhstdClr = ('red', 'white')
 
-            mainWindow['progress_1'].update(player.properties['xp'])
+            mainWindow['progress_1'].update(player.properties['xp'], max=player.xp_need())
             mainWindow['level'].update(f"Level {player.properties['level']}")
             mainWindow['health'].update(round(player.condition['health']))
             mainWindow['age'].update(f.time_counter(player.condition['age']))
-            mainWindow['food'].update(player.condition['food'], 
-            bar_color=fdClr)
-            mainWindow['bored'].update(player.condition['bored'], 
-            bar_color=brdClr)
-            mainWindow['exhausted'].update(player.condition['exhausted'], 
-            bar_color=xhstdClr)
+            mainWindow['food'].update(player.condition['food'], bar_color=fdClr)
+            mainWindow['bored'].update(player.condition['bored'], bar_color=brdClr)
+            mainWindow['exhausted'].update(player.condition['exhausted'], bar_color=xhstdClr)
             mainWindow['Attack'].update(player.base['Attack'])
             mainWindow['Defense'].update(player.base['Defense'])
             mainWindow['Sp. Attack'].update(player.base['Sp. Attack'])
