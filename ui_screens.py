@@ -201,8 +201,9 @@ def train_screen(self, player):
         while True:
             sleep(0.03)
             index1 = (index1 + 1) % frames1
-            index2 = (index2 + 1) % frames2
-            index3 = (index3 + 1) % frames3
+            if player.status['training'] == True:
+                index2 = (index2 + 1) % frames2
+                index3 = (index3 + 1) % frames3
             if not train:
                 break
 
@@ -220,29 +221,26 @@ def train_screen(self, player):
 
     graph_width, graph_height = size = (300, 260)
 
-    trainWindow = sg.Window('Training', ui.training(player), size=(320, 365),
-    icon='data\\img\\gym.ico', element_justification="c", finalize=True)
+    trainWindow = sg.Window('Training', ui.training(player), finalize=True, size=(320, 365),
+    icon='data\\img\\gym.ico', element_justification="c")
 
-    trainWindow['train_graph'].draw_image(
-        'data\\img\\gym_training.png', location=(0, 0))
+    trainWindow['train_graph'].draw_image('data\\img\\gym_training.png', location=(0, 0))
 
     index1 = 1
     index2 = 1
     index3 = 1
+
     im1.seek(index1)
     im2.seek(index2)
     im3.seek(index3)
-    location1 = (graph_width//2-width1//2, graph_height//1.65-height1//1.65)
-    location2 = (graph_width//1.25-width2//1.25,
-                 graph_height//1.75-height2//1.75)
-    location3 = (graph_width//4.25-width3//4.25,
-                 graph_height//1.75-height3//1.75)
-    item1 = trainWindow['train_graph'].draw_image(
-        data=f.image_to_data(im1), location=location1)
-    item2 = trainWindow['train_graph'].draw_image(
-        data=f.image_to_data(im2), location=location2)
-    item3 = trainWindow['train_graph'].draw_image(
-        data=f.image_to_data(im3), location=location3)
+
+    location1 = (graph_width//2-width1//2, graph_height//1.4-height1)
+    location2 = ((graph_width//2-width2//2)+60, graph_height//1.4-height1//1.5)
+    location3 = ((graph_width//2-width2//2)-60, graph_height//1.4-height1//1.5)
+
+    item1 = trainWindow['train_graph'].draw_image(data=f.image_to_data(im1), location=location1)
+    item2 = trainWindow['train_graph'].draw_image(data=f.image_to_data(im2), location=location2)
+    item3 = trainWindow['train_graph'].draw_image( data=f.image_to_data(im3), location=location3)
 
     thread = Thread(target=portrait_thread, daemon=True)
     if self.settings['portrait_anim']:
@@ -253,21 +251,30 @@ def train_screen(self, player):
 
         match event:
             case sg.TIMEOUT_KEY:
-                im1.seek(index1)
-                im2.seek(index2)
-                im3.seek(index3)
-                item_new1 = trainWindow['train_graph'].draw_image(
-                    data=f.image_to_data(im1), location=location1)
-                item_new2 = trainWindow['train_graph'].draw_image(
-                    data=f.image_to_data(im2), location=location2)
-                item_new3 = trainWindow['train_graph'].draw_image(
-                    data=f.image_to_data(im3), location=location3)
-                trainWindow['train_graph'].delete_figure(item1)
                 trainWindow['train_graph'].delete_figure(item2)
-                trainWindow['train_graph'].delete_figure(item3)
+                trainWindow['train_graph'].delete_figure(item3)  
+
+                im1.seek(index1)
+
+                item_new1 = trainWindow['train_graph'].draw_image(data=f.image_to_data(im1),
+                location=location1)
+
+                trainWindow['train_graph'].delete_figure(item1)
+
                 item1 = item_new1
-                item2 = item_new2
-                item3 = item_new3
+
+                if player.status['training'] == True:
+                    im2.seek(index2)
+                    im3.seek(index3)
+                    item_new2 = trainWindow['train_graph'].draw_image(data=f.image_to_data(im2),
+                    location=location2)
+                    item_new3 = trainWindow['train_graph'].draw_image(data=f.image_to_data(im3),
+                    location=location3)
+                    trainWindow['train_graph'].delete_figure(item2)
+                    trainWindow['train_graph'].delete_figure(item3)               
+                    item2 = item_new2
+                    item3 = item_new3
+
                 trainWindow.refresh()
 
             case sg.WIN_CLOSED | 'Back':
@@ -319,7 +326,7 @@ def sleep_screen(self, player):
     sleepWindow = sg.Window('Sleeping', ui.sleeping(player), finalize=True, size=(320, 375),
     element_justification="c", icon='data\\img\\sleep.ico')
 
-    sleepWindow['sleep_graph'].draw_image('data\\img\\gym_training.png', location=(0, 0))
+    sleepWindow['sleep_graph'].draw_image('data\\img\\room_sleeping.png', location=(0, 0))
 
     index1 = 1
     index2 = 1

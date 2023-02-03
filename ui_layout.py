@@ -262,8 +262,8 @@ def sleeping(player):
     layout = [
         [sg.Frame('', graph, s=(300, 260))],
         [sg.Text('Shhh!!! Your pet is sleeping now.\n' + 
-        f'Let it rest for about {f.time_counter(player.status["sleep_time"])}.', k='text',
-        p=((0, 0), (20, 0)), justification='c')],
+        f'Let it rest for about {f.time_counter(player.status["sleep_time"])}.', k='text', p=(0,10),
+         justification='c')],
         [sg.Button('Main Menu', size=8, p=(0,10))]
     ]
 
