@@ -85,6 +85,7 @@ def loading_screen(self, player):
                     auto_close=True, auto_close_duration=3, icon='data\\img\\warning.ico')
                 else:
                     self.load_saves(player, values["load"][0])
+                    player.offline_time()
                     break
 
             case 'Delete':
@@ -208,8 +209,8 @@ def train_screen(self, player):
                 break
 
     im1 = Image.open(player.properties['portrait'])
-    im2 = Image.open('data\\img\\sweat1.gif')
-    im3 = Image.open('data\\img\\sweat2.gif')
+    im2 = Image.open('data\\img\\effects\\sweat1.gif')
+    im3 = Image.open('data\\img\\effects\\sweat2.gif')
 
     width1, height1 = im1.size
     width2, height2 = im2.size
@@ -224,7 +225,7 @@ def train_screen(self, player):
     trainWindow = sg.Window('Training', ui.training(player), finalize=True, size=(320, 365),
     icon='data\\img\\gym.ico', element_justification="c")
 
-    trainWindow['train_graph'].draw_image('data\\img\\gym_training.png', location=(0, 0))
+    trainWindow['train_graph'].draw_image('data\\img\\bg\\gym_training.png', location=(0, 0))
 
     index1 = 1
     index2 = 1
@@ -311,7 +312,7 @@ def sleep_screen(self, player):
                 break
 
     im1 = Image.open(player.properties['portrait'])
-    im2 = Image.open('data\\img\\sleep.gif')
+    im2 = Image.open('data\\img\\effects\\sleep.gif')
 
     width1, height1 = im1.size
     width2, height2 = im2.size
@@ -324,7 +325,7 @@ def sleep_screen(self, player):
     sleepWindow = sg.Window('Sleeping', ui.sleeping(player), finalize=True, size=(320, 375),
     element_justification="c", icon='data\\img\\sleep.ico')
 
-    sleepWindow['sleep_graph'].draw_image('data\\img\\room_sleeping.png', location=(0, 0))
+    sleepWindow['sleep_graph'].draw_image('data\\img\\bg\\room_sleeping.png', location=(0, 0))
 
     index1 = 1
     index2 = 1
@@ -397,7 +398,7 @@ def eat_screen(self, player):
                     break
 
     im1 = Image.open(player.properties['portrait'])
-    im2 = Image.open('data\\img\\Frame_1.gif')
+    im2 = Image.open('data\\img\\effects\\eat.gif')
 
     width1, height1 = im1.size
     width2, height2 = im2.size
@@ -407,10 +408,10 @@ def eat_screen(self, player):
 
     graph_width, graph_height = size = (300, 260)
 
-    eatWindow = sg.Window('Eating', ui.eating(), finalize=True, size=(320, 375),
+    eatWindow = sg.Window('Eating', ui.eating(player), finalize=True, size=(320, 375),
     element_justification="c", icon='data\\img\\eat.ico')
 
-    eatWindow['eat_graph'].draw_image('data\\img\\kitchen_eating.png', location=(0, 0))
+    eatWindow['eat_graph'].draw_image('data\\img\\bg\\kitchen_eating.png', location=(0, 0))
 
     index1 = 1
     index2 = 1
@@ -461,7 +462,8 @@ def eat_screen(self, player):
 
         if player.status['eating']:
             eatWindow['text1'].update(visible=False)
-            eatWindow['text3'].update(visible=True)
+            eatWindow['text3'].update("Your pet is full, you can't feed it for now!\n" + 
+            f'Let it rest for about {f.time_counter(player.status["eat_time"])}.', visible=True)
             eatWindow['feed'].update(disabled=True)
             if player.status['eat_time'] == 0:
                 player.status['eating'] = False

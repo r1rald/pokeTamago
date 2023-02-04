@@ -199,11 +199,28 @@ class Player(Poke):
                 self.status['revive_time'] = 0
 
         if self.status['sleeping']:
-            self.condition['age'] += elapsed_time
             if self.status['sleep_time'] > elapsed_time:
                 self.status['sleep_time'] -= elapsed_time
             else:
                 self.status['sleep_time'] = 0
+
+        if self.status['eating']:
+            if self.status['eat_time'] > elapsed_time:
+                self.status['eat_time'] -= elapsed_time
+            else:
+                self.status['eat_time'] = 0
+
+        if self.status['training']:
+            if self.status['training_time'] > elapsed_time:
+                self.status['training_time'] -= elapsed_time
+            else:
+                self.status['training_time'] = 0
+
+        if self.status['playing']:
+            if self.status['play_time'] > elapsed_time:
+                self.status['play_time'] -= elapsed_time
+            else:
+                self.status['play_time'] = 0
 
 
 class Npc(Poke):

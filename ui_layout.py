@@ -93,17 +93,17 @@ def mainGame(self, player):
 
     if len(player.properties["type"]) < 2:
         TypeImage2 = [
-            sg.Image(f'data\\img\\poke\\types\\none.png', k='type2', p=0, size=(30, 24), 
+            sg.Image(f'data\\img\\types\\none.png', k='type2', p=0, size=(30, 24), 
             background_color=self.settings['background'], tooltip=' There is no second type of this Pokemon ')
         ]
     else:
         TypeImage2 = [
-            sg.Image(f'data\\img\\poke\\types\\{player.properties["type"][1]}_Type_Icon.png', k='type2',
+            sg.Image(f'data\\img\\types\\{player.properties["type"][1]}_Type_Icon.png', k='type2',
             background_color=self.settings['background'], p=0,  size=(30, 24), tooltip=f' {player.properties["type"][1]} ')
         ]
 
     conditionBar = [
-        [sg.Image(f'data\\img\\poke\\types\\{player.properties["type"][0]}_Type_Icon.png', k='type1',
+        [sg.Image(f'data\\img\\types\\{player.properties["type"][0]}_Type_Icon.png', k='type1',
         background_color=self.settings['background'], p=0, size=(30, 24), tooltip=f' {player.properties["type"][0]} ')],
         [sg.HSeparator(color='#3c4754', p=0)],
         TypeImage2,
@@ -182,7 +182,9 @@ def load(self):
 def settings(self):
     status1 = 'Enabled' if self.settings['music_playing'] else 'Disabled'
     status2 = 'Enabled' if self.settings['portrait_anim'] else 'Disabled'
+
     listOfThemes = ['TamagoDefault', 'TamagoDark', 'TamagoLight']
+
     listOfMusic = ['music1', 'music2', 'music3']
 
     theme = [
@@ -229,7 +231,7 @@ def dead(player):
 
     layout2 = [
         [sg.Image('data\\img\\revive.gif', k='image', p=((20, 20), (20, 0)),)],
-        [sg.Text('Your pet is about to begin a new life.',k='text1', p=((0, 0), (20, 0)))],
+        [sg.Text('Your pet is about to begin a new life.', k='text1', p=((0, 0), (20, 0)))],
         [sg.Text(f'The process will take {f.time_counter(player.status["revive_time"])}.',
         p=((0, 0), (0, 20)), k='text2')],
         [sg.Button('Revive', size=8, k='r'), sg.Button('Let go', size=8, k='l'),
@@ -270,7 +272,7 @@ def sleeping(player):
     return layout
 
 
-def eating():
+def eating(player):
     graph = [
         [sg.Graph((300, 260), (0, 260), (300, 0), p=0, key='eat_graph')],
     ]
@@ -279,7 +281,9 @@ def eating():
         [sg.Frame('', graph, s=(300, 260))],
         [sg.Text('Your pet is hungry and waiting to be fed.', visible=True, k='text1', p=(0,10)), 
         sg.Text("You don't have any food for now!", visible=False, k='text2', p=(0,10)),
-        sg.Text("Your pet is full, you can't feed it for now!", visible=False, k='text3', p=(0,10))],
+        sg.Text("Your pet is full, you can't feed it for now!\n" +
+        f'Let it rest for about {f.time_counter(player.status["eat_time"])}.', justification='c',
+        visible=False, k='text3', p=(0,10))],
         [sg.Button('Feed', size=8, p=(10,10), k='feed'), sg.Button('Back', size=8, p=(10,10))]
     ]
 
