@@ -263,22 +263,24 @@ def sleeping(player):
         [sg.Frame('', graph, s=(300, 260))],
         [sg.Text('Shhh!!! Your pet is sleeping now.\n' + 
         f'Let it rest for about {f.time_counter(player.status["sleep_time"])}.', k='text', p=(0,10),
-         justification='c')],
+        justification='c')],
         [sg.Button('Main Menu', size=8, p=(0,10))]
     ]
 
     return layout
 
 
-def eating(var1):
+def eating():
+    graph = [
+        [sg.Graph((300, 260), (0, 260), (300, 0), p=0, key='eat_graph')],
+    ]
+
     layout = [
-        [sg.Image('data\\img\\eat.gif', k='image', p=((20, 20), (20, 20)))],
-        [sg.Text(f'You have {var1} portions.', k='text1', p=((0, 0), (20, 0)))],
-        [sg.Text("You don't have any food for now!", visible=False, k='text2')],
-        [sg.Text("Your pet is full, you can't feed it for now!", visible=False, k='text3')],
-        [sg.Button('Give a snack', size=10, k='snack', p=((0, 0), (20, 0))),
-        sg.Button('Serve a meal', size=10, k='meal', p=((0, 0), (20, 0))),
-        sg.Button('Back', size=8, p=((50, 0), (20, 0)))]
+        [sg.Frame('', graph, s=(300, 260))],
+        [sg.Text('Your pet is hungry and waiting to be fed.', visible=True, k='text1', p=(0,10)), 
+        sg.Text("You don't have any food for now!", visible=False, k='text2', p=(0,10)),
+        sg.Text("Your pet is full, you can't feed it for now!", visible=False, k='text3', p=(0,10))],
+        [sg.Button('Feed', size=8, p=(10,10), k='feed'), sg.Button('Back', size=8, p=(10,10))]
     ]
 
     return layout

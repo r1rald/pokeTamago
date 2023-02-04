@@ -269,9 +269,7 @@ def train_screen(self, player):
                     item_new2 = trainWindow['train_graph'].draw_image(data=f.image_to_data(im2),
                     location=location2)
                     item_new3 = trainWindow['train_graph'].draw_image(data=f.image_to_data(im3),
-                    location=location3)
-                    trainWindow['train_graph'].delete_figure(item2)
-                    trainWindow['train_graph'].delete_figure(item3)               
+                    location=location3)              
                     item2 = item_new2
                     item3 = item_new3
 
@@ -383,43 +381,92 @@ def sleep_screen(self, player):
     sleepWindow.close()
 
 
-def eat_screen(player):
-    portion = 5
-    gif_update = 'eat'
+def eat_screen(self, player):
+    global index1, index2, frames1, frames2, size
 
-    eatWindow = sg.Window(
-        'Eating', ui.eating(portion), icon='data\\img\\eat.ico', element_justification="center")
+    eating = True
+
+    def portrait_thread():
+            global index1, index2, frames1, frames2
+            while True:
+                sleep(0.03)
+                index1 = (index1 + 1) % frames1
+                if player.status['eating'] == True:
+                    index2 = (index2 + 1) % frames2
+                if not eating:
+                    break
+
+    im1 = Image.open(player.properties['portrait'])
+    im2 = Image.open('data\\img\\Frame_1.gif')
+
+    width1, height1 = im1.size
+    width2, height2 = im2.size
+
+    frames1 = im1.n_frames
+    frames2 = im2.n_frames
+
+    graph_width, graph_height = size = (300, 260)
+
+    eatWindow = sg.Window('Eating', ui.eating(), finalize=True, size=(320, 375),
+    element_justification="c", icon='data\\img\\eat.ico')
+
+    eatWindow['eat_graph'].draw_image('data\\img\\kitchen_eating.png', location=(0, 0))
+
+    index1 = 1
+    index2 = 1
+
+    im1.seek(index1)
+    im2.seek(index2)
+
+    location1 = (graph_width//2-width1//2, graph_height//1.5-height1)
+    location2 = (graph_width//2-width2//2, graph_height//1.5-(height2+(height1//2)))
+
+    item1 = eatWindow['eat_graph'].draw_image(data=f.image_to_data(im1), location=location1)
+    item2 = eatWindow['eat_graph'].draw_image(data=f.image_to_data(im2), location=location2)
+
+    thread = Thread(target=portrait_thread, daemon=True)
+    if self.settings['portrait_anim']:
+        thread.start()
 
     while True:
-        event, value = eatWindow.read(timeout=150)
-        if (event == sg.WIN_CLOSED) or (event == 'Back'):
-            break
-        if (event == 'snack'):
-            portion -= 1
-            if player.condition['food'] <= 90 and randint(0,100) % 2 == 0:
-                player.condition['food'] += 10
-                gif_update = 'snack'
-            else:
-                gif_update = 'eat_miss'
-        if (event == 'meal'):
-            portion -= 1
-            if player.condition['food'] <= 75 and randint(0,100) % 3 == 0:
-                player.condition['food'] += 25
-                gif_update = 'meal'
-            else:
-                gif_update = 'eat_miss'
+        event, value = eatWindow.read(timeout=30)
 
-        eatWindow['image'].UpdateAnimation(
-            f'data\\img\\{gif_update}.gif', time_between_frames=150)
-        eatWindow['text1'].update(f'You have {portion} portions.')
+        match event:
+            case sg.TIMEOUT_KEY:
+                eatWindow['eat_graph'].delete_figure(item2)
 
-        if portion == 0:
-            eatWindow['text2'].update(visible=True)
-        if player.condition['food'] > 75:
-            eatWindow['meal'].update(disabled=True)
-            if player.condition['food'] > 90:
-                eatWindow['text3'].update(visible=True)
-                eatWindow['snack'].update(disabled=True)
+                im1.seek(index1)
+                
+                item_new1 = eatWindow['eat_graph'].draw_image(data=f.image_to_data(im1),
+                location=location1)
 
-    player.status['eating'] = False
+                eatWindow['eat_graph'].delete_figure(item1)
+
+                item1 = item_new1
+
+                if player.status['eating'] == True:
+                    im2.seek(index2)
+                    item_new2 = eatWindow['eat_graph'].draw_image(data=f.image_to_data(im2),
+                    location=location2)
+                    item2 = item_new2
+
+                eatWindow.refresh()
+
+            case sg.WINDOW_CLOSED | 'Back':
+                eating = False
+                break
+
+            case 'feed':
+                player.eat()
+
+        if player.status['eating']:
+            eatWindow['text1'].update(visible=False)
+            eatWindow['text3'].update(visible=True)
+            eatWindow['feed'].update(disabled=True)
+            if player.status['eat_time'] == 0:
+                player.status['eating'] = False
+                eatWindow['text1'].update(visible=True)
+                eatWindow['text3'].update(visible=False)
+                eatWindow['feed'].update(disabled=False)
+
     eatWindow.close()

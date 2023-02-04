@@ -87,12 +87,10 @@ class Player(Poke):
 
 
     def eat(self):
+        self.status['eating'] = True
         if self.status['eat_time'] == 0:
-            self.status['eating'] = True
             self.status['eat_time'] = 28800
-        else:
-            sg.popup("You can't feed your pet for now!", title='', keep_on_top=True, auto_close=True,
-            auto_close_duration=3, any_key_closes=True, icon='data\\img\\warning.ico')
+            self.condition['food'] += 50
 
 
     def training(self):

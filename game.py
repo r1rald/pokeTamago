@@ -129,7 +129,7 @@ class Game:
                     break
 
                 case 'Eat':
-                    sc.eat_screen(player)
+                    sc.eat_screen(self, player)
 
                 case 'Battle':
                     pass
