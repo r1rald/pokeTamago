@@ -28,7 +28,7 @@ class Game:
             "portrait_anim": True
         }
 
-        with open(f'Data\\settings.json', 'r') as settings:
+        with open(f'data\\settings.json', 'r') as settings:
             data = json.load(settings)
             self.settings = data
 
@@ -36,13 +36,13 @@ class Game:
         f.randomYieldGroup()
 
     def newGame(self, player):
-        window1 = sg.Window('', ui.newGame(), icon='Data\\img\\logo.ico',
-                            element_justification='c', grab_anywhere=True)
+        window1 = sg.Window('', ui.newGame(), icon='data\\img\\logo.ico', element_justification='c',
+        grab_anywhere=True)
 
         while True:
-            event, values = window1.read()
-            match event:
+            event, values = window1.read(timeout=100)
 
+            match event:
                 case sg.WIN_CLOSED | 'Exit':
                     sys.exit()
 
@@ -59,15 +59,21 @@ class Game:
                     else:
                         continue
 
-                case 'Continue':
+                case 'load':
                     self.has_been_called = False
                     sc.loading_screen(self, player)
                     if self.has_been_called:
                         break
                     else:
                         continue
+
                 case 'Settings':
                     sc.settings_screen(self)
+
+            if not self.read_save():
+                window1['load'].update(disabled=True)
+            else:
+                window1['load'].update(disabled=False)
 
         window1.close()
 
@@ -83,25 +89,24 @@ class Game:
                     break
 
         im = Image.open(player.properties['portrait'])
+
         width, height = im.size
         frames = im.n_frames
 
         graph_width, graph_height = size = (170, 100)
 
-        mainWindow = sg.Window('pokéTamago', ui.mainGame(self, player),
-        icon='Data\\img\\logo.ico', finalize=True)
+        mainWindow = sg.Window('pokéTamago', ui.mainGame(self, player), icon='data\\img\\logo.ico', 
+        finalize=True)
 
-        mainWindow['GRAPH'].draw_image(f'{f.portrait_background(player)}', 
-        location=(0, 0))
+        mainWindow['GRAPH'].draw_image(f'{f.portrait_background(player)}', location=(0, 0))
 
-        index = 0 if self.settings['portrait_anim'] else 10
+        index = 1
 
         im.seek(index)
 
         location = (graph_width//2-width//2, graph_height//2-height//2)
 
-        item = mainWindow['GRAPH'].draw_image(data=f.image_to_data(im),
-        location=location)
+        item = mainWindow['GRAPH'].draw_image(data=f.image_to_data(im),location=location)
 
         thread = Thread(target=portrait_thread, daemon=True)
         if self.settings['portrait_anim']:
@@ -109,15 +114,12 @@ class Game:
 
         while True:
 
-            event, value = mainWindow.read(timeout=30)
+            event, value = mainWindow.read(timeout=10)
 
             match event:
                 case sg.TIMEOUT_KEY:
-                    mainWindow['progress_1'].update(current_count=0,
-                    max=player.xp_need())
                     im.seek(index)
-                    item_new = mainWindow['GRAPH'].draw_image(data=
-                    f.image_to_data(im), location=location)
+                    item_new = mainWindow['GRAPH'].draw_image(data=f.image_to_data(im), location=location)
                     mainWindow['GRAPH'].delete_figure(item)
                     item = item_new
                     mainWindow.refresh()
@@ -127,7 +129,7 @@ class Game:
                     break
 
                 case 'Eat':
-                    sc.eat_screen(player)
+                    sc.eat_screen(self, player)
 
                 case 'Battle':
                     pass
@@ -171,16 +173,13 @@ class Game:
             else:
                 xhstdClr = ('red', 'white')
 
-            mainWindow['progress_1'].update(player.properties['xp'])
+            mainWindow['progress_1'].update(player.properties['xp'], max=player.xp_need())
             mainWindow['level'].update(f"Level {player.properties['level']}")
             mainWindow['health'].update(round(player.condition['health']))
             mainWindow['age'].update(f.time_counter(player.condition['age']))
-            mainWindow['food'].update(player.condition['food'], 
-            bar_color=fdClr)
-            mainWindow['bored'].update(player.condition['bored'], 
-            bar_color=brdClr)
-            mainWindow['exhausted'].update(player.condition['exhausted'], 
-            bar_color=xhstdClr)
+            mainWindow['food'].update(player.condition['food'], bar_color=fdClr)
+            mainWindow['bored'].update(player.condition['bored'], bar_color=brdClr)
+            mainWindow['exhausted'].update(player.condition['exhausted'], bar_color=xhstdClr)
             mainWindow['Attack'].update(player.base['Attack'])
             mainWindow['Defense'].update(player.base['Defense'])
             mainWindow['Sp. Attack'].update(player.base['Sp. Attack'])
@@ -198,7 +197,9 @@ class Game:
         save['status'] = player.status
         player.status['logoff_time'] = round(time.time())
 
-        with open(f"Data\\save\\{player.properties['name']}.json", 'w') as outfile:
+        path = os.path.expanduser('~\\Documents\\pokeTamago\\save')
+        
+        with open(f"{path}\\{player.properties['name']}.json", 'w') as outfile:
             json.dump(save, outfile, indent=4)
 
     def save_settings(self):
@@ -209,13 +210,13 @@ class Game:
         if self.settings['theme'] == "TamagoLight":
             self.settings['background'] = '#bfbfb2'
 
-        with open(f"Data\\settings.json", 'w') as settings: 
+        with open("data\\settings.json", 'w') as settings: 
             json.dump(self.settings, settings, indent=4)
 
     def open_dex(self):
         pokes = ([], [], [], [])
 
-        with open('Data\pokedex.json', 'r') as read_file:
+        with open('data\\pokedex.json', 'r') as read_file:
             data = json.load(read_file)
             for poke in data:
                 pokes[0].append(poke['name'])
@@ -226,21 +227,21 @@ class Game:
         return pokes
 
     def read_save(self):
-        directory = 'Data\\save'
         saves = []
-
-        for filename in os.listdir(directory):
-            f = os.path.join(directory, filename)
-            if os.path.isfile(f):
-                saves.append(f.replace('.json', '').replace(
-                    'Data\\save\\', ''))
+        
+        if os.path.exists(os.path.expanduser('~\\Documents\\pokeTamago\\save')):
+            for save in os.listdir(os.path.expanduser('~\\Documents\\pokeTamago\\save')):
+                saves.append(save.replace('.json', ''))
+        else:
+            os.makedirs(os.path.expanduser('~\\Documents\\pokeTamago\\save'))
 
         return saves
+
 
     def load_saves(self, player, var):
         self.has_been_called = True
 
-        with open(f'Data\save\{var}.json', 'r') as load:
+        with open(os.path.expanduser(f'~\\Documents\\pokeTamago\\save\\{var}.json'), 'r') as load:
             data = json.load(load)
 
             player.properties = data['properties']
