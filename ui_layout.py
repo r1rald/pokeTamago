@@ -1,4 +1,3 @@
-
 import funct as f
 import PySimpleGUI as sg
 
@@ -221,24 +220,22 @@ def settings(self):
 
 
 def dead(player):
-    layout1 = [
-        [sg.Image('data\\img\\death.gif', k='image', p=((20, 20), (20, 0)))],
-        [sg.Text('Sadly seems like your pet is passed away.', k='text1', p=((0, 0), (20, 0)))],
-        [sg.Text('Do you want to revive it?', p=((0, 0), (0, 20)), k='text2')],
-        [sg.Button('Revive', size=8, k='r'), sg.Button('Let go', size=8, k='l'),
-        sg.Button('Exit', size=8, p=((50, 0), (0, 0)))]
+    graph = [
+        [sg.Graph((300, 260), (0, 260), (300, 0), p=0, key='death_graph')]
     ]
 
-    layout2 = [
-        [sg.Image('data\\img\\revive.gif', k='image', p=((20, 20), (20, 0)),)],
-        [sg.Text('Your pet is about to begin a new life.', k='text1', p=((0, 0), (20, 0)))],
-        [sg.Text(f'The process will take {f.time_counter(player.status["revive_time"])}.',
-        p=((0, 0), (0, 20)), k='text2')],
-        [sg.Button('Revive', size=8, k='r'), sg.Button('Let go', size=8, k='l'),
-        sg.Button('Exit', size=8, p=((50, 0), (0, 0)))]
+    layout = [
+        [sg.Frame('', graph, s=(300, 260))],
+        [sg.Text('Sadly seems like your pet is passed away.\n Do you want to revive it?',
+        p=(0,10), k='text1', visible=True, justification='c')],
+        [sg.Text('Your pet is about to begin a new life.\n' +
+        f'The process will take {f.time_counter(player.status["revive_time"])}.', p=(0,10),
+        visible=False, k='text2', justification='c')], [sg.Button('Revive', size=8, k='revive',
+        visible=True), sg.Button('Letting go', size=8, k='letgo', visible=True), sg.Button(
+        'Main Menu', size=8, p=(0, 10), k='menu', visible=False)]
     ]
 
-    return layout1, layout2
+    return layout
 
 
 def training(player):
