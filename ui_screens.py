@@ -155,6 +155,9 @@ def death_screen(self, player):
             sleep(0.03)
             index1 = (index1 + 1) % frames1
             index2 = (index2 + 1) % frames2
+            if player.status["revive"]:
+                index1 = (index1 + 1) % frames1
+                index3 = (index3 + 1) % frames3
             if not death:
                 break
 
@@ -164,9 +167,11 @@ def death_screen(self, player):
 
     width1, height1 = im1.size
     width2, height2 = im2.size
+    width3, height3 = im3.size
 
     frames1 = im1.n_frames
     frames2 = im2.n_frames
+    frames3 = im3.n_frames
 
     graph_width, graph_height = size = (300, 260)
 
@@ -174,18 +179,24 @@ def death_screen(self, player):
     element_justification="c")
 
     deathWindow['death_graph'].draw_image('data\\img\\bg\\death_graveyard.png', location=(0, 0))
+    deathWindow['revive_graph'].draw_image('data\\img\\bg\\death_graveyard.png', location=(0, 0))
 
     index1 = 1
     index2 = 1
+    index3 = 1
 
     im1.seek(index1)
     im2.seek(index2)
+    im3.seek(index3)
 
     location1 = (graph_width//2-width1//2, graph_height//1.4-height1)
     location2 = ((graph_width//2-width2//2), (graph_height//1.4-height1)-height1)
+    location3 = ((graph_width//2-width3//2), (graph_height//1.4-height1)-height1)
 
     item1 = deathWindow['death_graph'].draw_image(data=f.image_to_data(im1), location=location1)
     item2 = deathWindow['death_graph'].draw_image(data=f.image_to_data(im2), location=location2)
+    item3 = deathWindow['revive_graph'].draw_image(data=f.image_to_data(im1), location=location1)
+    item4 = deathWindow['revive_graph'].draw_image(data=f.image_to_data(im3), location=location3)
 
     thread = Thread(target=portrait_thread, daemon=True)
     if self.settings['portrait_anim']:
@@ -196,6 +207,11 @@ def death_screen(self, player):
 
         match event:
             case sg.TIMEOUT_KEY:
+                deathWindow['death_graph'].delete_figure(item1)
+                deathWindow['death_graph'].delete_figure(item2)
+                deathWindow['revive_graph'].delete_figure(item3)
+                deathWindow['revive_graph'].delete_figure(item4)
+
                 im1.seek(index1)
                 im2.seek(index2)
 
@@ -204,11 +220,18 @@ def death_screen(self, player):
                 item_new2 = deathWindow['death_graph'].draw_image(data=f.image_to_data(im2),
                 location=location2)
 
-                deathWindow['death_graph'].delete_figure(item1)
-                deathWindow['death_graph'].delete_figure(item2)
-
                 item1 = item_new1
                 item2 = item_new2
+
+                if player.status["revive"]:
+                    im1.seek(index1)
+                    im3.seek(index3)
+                    item_new3 = deathWindow['revive_graph'].draw_image(data=f.image_to_data(im1),
+                    location=location1)
+                    item_new4 = deathWindow['revive_graph'].draw_image(data=f.image_to_data(im3),
+                    location=location2)
+                    item3 = item_new3
+                    item4 = item_new4
 
                 deathWindow.refresh()
 
@@ -232,6 +255,8 @@ def death_screen(self, player):
                 os.execl(sys.executable, sys.executable, *sys.argv)
 
         if player.status["revive"]:
+            deathWindow['death_frame'].update(visible=False)
+            deathWindow['revive_frame'].update(visible=True)
             deathWindow['text1'].update(visible=False)
             deathWindow['text2'].update('Your pet is about to begin a new life.\n' +
             f'The process will take {f.time_counter(player.status["revive_time"])}.', visible=True)
@@ -240,6 +265,8 @@ def death_screen(self, player):
             deathWindow['menu'].update(visible=True)
 
             if player.status['revive'] and player.status['revive_time'] == 0:
+                deathWindow['death_frame'].update(visible=True)
+                deathWindow['revive_frame'].update(visible=False)
                 deathWindow['text1'].update(visible=True)
                 deathWindow['text2'].update(visible=False)
                 deathWindow['revive'].update(visible=True)

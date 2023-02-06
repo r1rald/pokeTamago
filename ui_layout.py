@@ -220,19 +220,23 @@ def settings(self):
 
 
 def dead(player):
-    graph = [
-        [sg.Graph((300, 260), (0, 260), (300, 0), p=0, key='death_graph')]
+    graph1 = [
+        [sg.Graph((300, 260), (0, 260), (300, 0), p=0, key='death_graph')],
+    ]
+    graph2 =[
+        [sg.Graph((300, 260), (0, 260), (300, 0), p=0, key='revive_graph')]
     ]
 
     layout = [
-        [sg.Frame('', graph, s=(300, 260))],
+        [sg.Frame('', graph1, s=(300, 260), visible=True, k='death_frame'), sg.Frame('', graph2,
+        s=(300, 260), visible=False, k='revive_frame')],
         [sg.Text('Sadly seems like your pet is passed away.\n Do you want to revive it?',
         p=(0,10), k='text1', visible=True, justification='c')],
         [sg.Text('Your pet is about to begin a new life.\n' +
         f'The process will take {f.time_counter(player.status["revive_time"])}.', p=(0,10),
-        visible=False, k='text2', justification='c')], [sg.Button('Revive', size=8, k='revive',
-        visible=True), sg.Button('Letting go', size=8, k='letgo', visible=True), sg.Button(
-        'Main Menu', size=8, p=(0, 10), k='menu', visible=False)]
+        visible=False, k='text2', justification='c')], [sg.Button('Revive', size=8, k='revive', 
+        p=(0,10), visible=True), sg.Button('Letting go', size=8, k='letgo', p=(0,10), visible=True),
+        sg.Button('Main Menu', size=8, p=(0, 10), k='menu', visible=False)]
     ]
 
     return layout
