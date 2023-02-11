@@ -113,8 +113,7 @@ class Game:
             thread.start()
 
         while True:
-
-            event, value = mainWindow.read(timeout=10)
+            event, value = mainWindow.read(timeout=41.66)
 
             match event:
                 case sg.TIMEOUT_KEY:

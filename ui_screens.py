@@ -14,7 +14,7 @@ def new_pokemon_screen(self, player):
     pokeName = sg.Window('Name', ui.newPoke(), icon='data\\img\\logo.ico', grab_anywhere=True)
 
     while True:
-        event, values = pokeName.read(timeout=1000)
+        event, values = pokeName.read(timeout=100)
 
         match event:
             case sg.TIMEOUT_KEY:
@@ -46,7 +46,7 @@ def choose_pokemon(self, player):
     pokeChooseWin = sg.Window('Choose', ui.choosePoke(self), icon='data\\img\\pokeball.ico')
 
     while True:
-        event, values = pokeChooseWin.read(timeout=100)
+        event, values = pokeChooseWin.read()
         pokeChooseWin["poke"].bind('<Double-Button-1>', "+-double click-")
 
         match event:
@@ -203,7 +203,7 @@ def death_screen(self, player):
         thread.start()
 
     while True:
-        event, value = deathWindow.read(timeout=24)
+        event, value = deathWindow.read(timeout=41.66)
 
         match event:
             case sg.TIMEOUT_KEY:
@@ -341,7 +341,7 @@ def train_screen(self, player):
         thread.start()
 
     while True:
-        event, value = trainWindow.read(timeout=25)
+        event, value = trainWindow.read(timeout=41.66)
 
         match event:
             case sg.TIMEOUT_KEY:
@@ -440,7 +440,7 @@ def sleep_screen(self, player):
         thread.start()
 
     while True:
-        event, value = sleepWindow.read(timeout=30)
+        event, value = sleepWindow.read(timeout=41.66)
         
         match event:
             case sg.TIMEOUT_KEY:
@@ -526,7 +526,7 @@ def eat_screen(self, player):
         thread.start()
 
     while True:
-        event, value = eatWindow.read(timeout=30)
+        event, value = eatWindow.read(timeout=41.66)
 
         match event:
             case sg.TIMEOUT_KEY:
@@ -612,7 +612,7 @@ def play_screen(self, player):
     im2.seek(index2)
 
     location1 = (graph_width//2-width1//2, graph_height//1.5-height1)
-    location2 = (graph_width//2-width2//2, graph_height//2)
+    location2 = ((graph_width//2-width2//2)+width1//2, (graph_height//1.5-height2//2)-height1)
 
     item1 = playWindow['play_graph'].draw_image(data=f.image_to_data(im1), location=location1)
     item2 = playWindow['play_graph'].draw_image(data=f.image_to_data(im2), location=location2)
@@ -624,7 +624,7 @@ def play_screen(self, player):
     playWindow['play_graph'].draw_image('data\\img\\bg\\room_playing_2.png', location=(0, 0))
 
     while True:
-        event, value = playWindow.read(timeout=30)
+        event, value = playWindow.read(timeout=41.66)
 
         match event:
             case sg.TIMEOUT_KEY:
@@ -659,5 +659,12 @@ def play_screen(self, player):
                 
                     if play_button and index2 > 1:
                         index2 = 1
+
+        if player.condition['exhausted'] >= 90:
+            playWindow['text'].update(visible=True)
+            playWindow['play'].update(disabled=True)
+        else:
+            playWindow['text'].update(visible=False)
+            playWindow['play'].update(disabled=False)
 
     playWindow.close()
