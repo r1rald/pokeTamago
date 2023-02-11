@@ -100,7 +100,7 @@ class Player(Poke):
             self.condition['food'] -= 25
             self.condition['exhausted'] += 25
             self.properties['xp'] += 5
-            self.condition['bored'] -= 10 if self.condition > 0 else 0
+            self.condition['bored'] -= 10 if self.condition['bored'] > 0 else 0
 
         self.level_up()
 
