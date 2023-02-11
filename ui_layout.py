@@ -299,7 +299,7 @@ def playing():
     layout = [
         [sg.Frame('', graph, s=(300, 260))],
         [sg.Text('Your pet is exhausted, let it rest for now.', visible=False, k='text', p=(0,10))],
-        [sg.B('Play', p=(0,10), disabled=False, k='play'), sg.B('Back')]
+        [sg.B('Play', size=8, p=(10,10), disabled=False, k='play'), sg.B('Back', size=8, p=(10,10))]
     ]
 
     return layout
