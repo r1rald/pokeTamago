@@ -138,10 +138,10 @@ class Game:
                     sc.train_screen(self, player)
 
                 case 'Play':
-                    player.play()
+                    sc.play_screen(self, player)
 
                 case 'Sleep':
-                    player.sleep()
+                    sc.sleep_screen(self, player)
                     
                 case 'Main Menu':
                     self.run = False

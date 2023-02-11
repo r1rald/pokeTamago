@@ -1,5 +1,5 @@
-import funct as f
 import PySimpleGUI as sg
+import funct as f
 
 
 def newGame():
@@ -286,6 +286,20 @@ def eating(player):
         f'Let it rest for about {f.time_counter(player.status["eat_time"])}.', justification='c',
         visible=False, k='text3', p=(0,10))],
         [sg.Button('Feed', size=8, p=(10,10), k='feed'), sg.Button('Back', size=8, p=(10,10))]
+    ]
+
+    return layout
+
+
+def playing():
+    graph = [
+        [sg.Graph((300, 260), (0, 260), (300, 0), p=0, key='play_graph')],
+    ]
+
+    layout = [
+        [sg.Frame('', graph, s=(300, 260))],
+        [sg.Text('Your pet is exhausted, let it rest for now.', visible=False, k='text', p=(0,10))],
+        [sg.B('Play', p=(0,10), disabled=False, k='play'), sg.B('Back')]
     ]
 
     return layout

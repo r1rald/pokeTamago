@@ -1,8 +1,8 @@
 from nickname_generator import generate
 from threading import Thread
 import PySimpleGUI as sg
-import ui_layout as ui
 from time import sleep
+import ui_layout as ui
 from PIL import Image
 from re import sub
 import funct as f
@@ -393,6 +393,9 @@ def train_screen(self, player):
 def sleep_screen(self, player):
     global index1, index2, frames1, frames2, size
 
+    if not player.status['sleeping']:
+        player.sleep()
+
     sleeping = True
 
     def portrait_thread():
@@ -565,3 +568,97 @@ def eat_screen(self, player):
                 eatWindow['feed'].update(disabled=False)
 
     eatWindow.close()
+
+
+def play_screen(self, player):
+    global index1, index2, frames1, frames2, size
+
+    playing = True
+    play_button = False
+
+    def portrait_thread():
+            global index1, index2, frames1, frames2
+            while True:
+                sleep(0.03)
+                index1 = (index1 + 1) % frames1
+                if play_button == True:
+                    index2 = (index2 + 1) % frames2
+                    print(index2)
+                if not playing:
+                    break
+
+    im1 = Image.open(player.properties['portrait'])
+    im2 = Image.open('data\\img\\effects\\play.gif')
+
+    width1, height1 = im1.size
+    width2, height2 = im2.size
+
+    frames1 = im1.n_frames
+    frames2 = im2.n_frames
+
+    graph_width, graph_height = size = (300, 260)
+
+    playWindow = sg.Window('Playing', ui.playing(), finalize=True, size=(320, 375),
+    element_justification="c", icon='data\\img\\play.ico')
+
+    playWindow['play_graph'].draw_image('data\\img\\bg\\room_playing.png', location=(0, 0))
+    playWindow['play_graph'].draw_image('data\\img\\bg\\room_playing_1.png', location=(0, 0))
+
+    index1 = 1
+    index2 = 1
+
+    im1.seek(index1)
+    im2.seek(index2)
+
+    location1 = (graph_width//2-width1//2, graph_height//1.5-height1)
+    location2 = (graph_width//2-width2//2, graph_height//2)
+
+    item1 = playWindow['play_graph'].draw_image(data=f.image_to_data(im1), location=location1)
+    item2 = playWindow['play_graph'].draw_image(data=f.image_to_data(im2), location=location2)
+
+    thread = Thread(target=portrait_thread, daemon=True)
+    if self.settings['portrait_anim']:
+        thread.start()
+
+    playWindow['play_graph'].draw_image('data\\img\\bg\\room_playing_2.png', location=(0, 0))
+
+    while True:
+        event, value = playWindow.read(timeout=30)
+
+        match event:
+            case sg.TIMEOUT_KEY:
+                playWindow['play_graph'].delete_figure(item2)
+
+                im1.seek(index1)
+                
+                item_new1 = playWindow['play_graph'].draw_image(data=f.image_to_data(im1),
+                location=location1)
+
+                playWindow['play_graph'].delete_figure(item1)
+
+                item1 = item_new1
+
+                if play_button:
+                    im2.seek(index2)
+                    item_new2 = playWindow['play_graph'].draw_image(data=f.image_to_data(im2),
+                    location=location2)
+                    item2 = item_new2
+
+                    if index2 >= 42:
+                        play_button = False
+
+
+                playWindow.refresh()
+
+            case sg.WINDOW_CLOSED | 'Back':
+                playing = False
+                break
+
+            case 'play':
+                player.play()
+                play_button = True
+                
+                if play_button and index2 > 1:
+                    index2 = 1
+
+    playWindow.close()
