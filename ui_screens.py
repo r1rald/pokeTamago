@@ -571,19 +571,20 @@ def eat_screen(self, player):
 
 
 def play_screen(self, player):
-    global index1, index2, frames1, frames2, size
+    global index1, index2, frames1, frames2, size, play_button
 
     playing = True
     play_button = False
 
     def portrait_thread():
-            global index1, index2, frames1, frames2
+            global index1, index2, frames1, frames2, play_button
             while True:
                 sleep(0.03)
                 index1 = (index1 + 1) % frames1
-                if play_button == True:
+                if play_button:
                     index2 = (index2 + 1) % frames2
-                    print(index2)
+                    if index2 == 42:
+                        play_button = False
                 if not playing:
                     break
 
@@ -644,10 +645,6 @@ def play_screen(self, player):
                     location=location2)
                     item2 = item_new2
 
-                    if index2 >= 42:
-                        play_button = False
-
-
                 playWindow.refresh()
 
             case sg.WINDOW_CLOSED | 'Back':
@@ -656,9 +653,11 @@ def play_screen(self, player):
 
             case 'play':
                 player.play()
-                play_button = True
+
+                if player.condition['exhausted'] < 90:
+                    play_button = True
                 
-                if play_button and index2 > 1:
-                    index2 = 1
+                    if play_button and index2 > 1:
+                        index2 = 1
 
     playWindow.close()
