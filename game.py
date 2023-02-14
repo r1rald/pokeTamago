@@ -27,10 +27,16 @@ class Game:
             "sound_volume": 100.0,
             "portrait_anim": True
         }
+        
+        path = os.path.expanduser('~\\Documents\\pokeTamago\\cfg')
 
-        with open(f'data\\settings.json', 'r') as settings:
-            data = json.load(settings)
-            self.settings = data
+        if os.path.exists(os.path.expanduser('~\\Documents\\pokeTamago\\cfg')):
+            with open(f'{path}\\settings.json', 'r') as settings:
+                data = json.load(settings)
+                self.settings = data
+        else:
+            os.makedirs(path)
+            self.save_settings()
 
         sg.theme(self.settings['theme'])
         f.randomYieldGroup()
@@ -202,6 +208,8 @@ class Game:
             json.dump(save, outfile, indent=4)
 
     def save_settings(self):
+        path = os.path.expanduser('~\\Documents\\pokeTamago\\cfg')
+
         if self.settings['theme'] == "TamagoDefault":
             self.settings['background'] = '#516073'
         if self.settings['theme'] == "TamagoDark":
@@ -209,7 +217,7 @@ class Game:
         if self.settings['theme'] == "TamagoLight":
             self.settings['background'] = '#bfbfb2'
 
-        with open("data\\settings.json", 'w') as settings: 
+        with open(f"{path}\\settings.json", 'w') as settings: 
             json.dump(self.settings, settings, indent=4)
 
     def open_dex(self):
@@ -240,7 +248,9 @@ class Game:
     def load_saves(self, player, var):
         self.has_been_called = True
 
-        with open(os.path.expanduser(f'~\\Documents\\pokeTamago\\save\\{var}.json'), 'r') as load:
+        path = os.path.expanduser('~\\Documents\\pokeTamago\\save')
+
+        with open(os.path.expanduser(f'{path}\\{var}.json'), 'r') as load:
             data = json.load(load)
 
             player.properties = data['properties']
