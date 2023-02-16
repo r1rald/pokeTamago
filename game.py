@@ -7,8 +7,8 @@ from PIL import Image
 from re import sub
 import Data.themes
 import funct as f
-import time
 import json
+import time
 import sys
 import os
 
@@ -178,18 +178,18 @@ class Game:
             else:
                 xhstdClr = ('red', 'white')
 
-            mainWindow['progress_1'].update(player.properties['xp'], max=player.xp_need())
+            mainWindow['progress_1'].update(int(player.properties['xp']), max=player.xp_need())
             mainWindow['level'].update(f"Level {player.properties['level']}")
-            mainWindow['health'].update(round(player.condition['health']))
+            mainWindow['health'].update(int(player.condition['health']))
             mainWindow['age'].update(f.time_counter(player.condition['age']))
-            mainWindow['food'].update(player.condition['food'], bar_color=fdClr)
-            mainWindow['bored'].update(player.condition['bored'], bar_color=brdClr)
-            mainWindow['exhausted'].update(player.condition['exhausted'], bar_color=xhstdClr)
-            mainWindow['Attack'].update(player.base['Attack'])
-            mainWindow['Defense'].update(player.base['Defense'])
-            mainWindow['Sp. Attack'].update(player.base['Sp. Attack'])
-            mainWindow['Sp. Defense'].update(player.base['Sp. Defense'])
-            mainWindow['Speed'].update(player.base['Speed'])
+            mainWindow['food'].update(int(player.condition['food']), bar_color=fdClr)
+            mainWindow['bored'].update(int(player.condition['bored']), bar_color=brdClr)
+            mainWindow['exhausted'].update(int(player.condition['exhausted']), bar_color=xhstdClr)
+            mainWindow['Attack'].update(int(player.base['Attack']))
+            mainWindow['Defense'].update(int(player.base['Defense']))
+            mainWindow['Sp. Attack'].update(int(player.base['Sp. Attack']))
+            mainWindow['Sp. Defense'].update(int(player.base['Sp. Defense']))
+            mainWindow['Speed'].update(int(player.base['Speed']))
 
         mainWindow.close()
 

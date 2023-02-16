@@ -60,20 +60,20 @@ def mainGame(self, player):
     ]
 
     stats_values = [
-        [sg.T(f"{player.base['Attack']}", font=('', 10, 'bold'), background_color=self.settings['background'],
-        k='Attack')],
+        [sg.T(f"{int(player.base['Attack'])}", font=('', 10, 'bold'), background_color=
+        self.settings['background'], k='Attack')],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"{player.base['Defense']}", font=('', 10, 'bold'), background_color=self.settings['background'],
-        k='Defense')],
+        [sg.T(f"{int(player.base['Defense'])}", font=('', 10, 'bold'), background_color=
+        self.settings['background'], k='Defense')],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"{player.base['Sp. Attack']}", font=('', 10, 'bold'), background_color=self.settings['background'],
-        k='Sp. Attack')],
+        [sg.T(f"{int(player.base['Sp. Attack'])}", font=('', 10, 'bold'), background_color=
+        self.settings['background'], k='Sp. Attack')],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"{player.base['Sp. Defense']}", font=('', 10, 'bold'), background_color=self.settings['background'],
-        k='Sp. Defense')],
+        [sg.T(f"{int(player.base['Sp. Defense'])}", font=('', 10, 'bold'), background_color=
+        self.settings['background'], k='Sp. Defense')],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"{player.base['Speed']}", font=('', 10, 'bold'), background_color=self.settings['background'],
-        k='Speed')]
+        [sg.T(f"{int(player.base['Speed'])}", font=('', 10, 'bold'), background_color=
+        self.settings['background'], k='Speed')]
     ]
 
     nameLayout = [

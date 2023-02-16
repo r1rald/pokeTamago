@@ -85,12 +85,23 @@ class Player(Poke):
             self.properties['xp'] = 0
             self.properties['level'] += 1
 
+            self.base["Attack"] += round(self.base["Attack"]/50, 2)
+            self.base["Defense"] += round(self.base["Defense"]/50, 2)
+            self.base["Sp. Attack"] += round(self.base["Sp. Attack"]/50, 2)
+            self.base["Sp. Defense"] += round(self.base["Sp. Defense"]/50, 2)
+            self.base["Speed"] += round(self.base["Speed"]/50, 2)
+
+            #"MaxHP" : 43,
+            #self.condition['health'] = self.condition['MaxHP']
+
 
     def eat(self):
         self.status['eating'] = True
         if self.status['eat_time'] == 0:
             self.status['eat_time'] = 28800
             self.condition['food'] += 50
+            if self.condition['food'] > 100:
+                self.condition['food'] = 100
 
 
     def training(self):
@@ -101,6 +112,10 @@ class Player(Poke):
             self.condition['exhausted'] += 25
             self.properties['xp'] += 5
             self.condition['bored'] -= 10 if self.condition['bored'] > 0 else 0
+            if self.condition['exhausted'] > 100:
+                self.condition['exhausted'] = 100
+            if self.condition['food'] < 0:
+                self.condition['food'] = 0
 
         self.level_up()
 
