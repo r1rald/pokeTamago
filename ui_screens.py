@@ -1,12 +1,12 @@
 from nickname_generator import generate
 from threading import Thread
-from random import randint
 import PySimpleGUI as sg
-import ui_layout as ui
 from time import sleep
+import ui_layout as ui
 from PIL import Image
-from re import sub, search
+from re import sub
 import funct as f
+import json
 import sys
 import os
 
@@ -15,7 +15,7 @@ def new_pokemon_screen(self, player):
     pokeName = sg.Window('Name', ui.newPoke(), icon='data\\img\\logo.ico', grab_anywhere=True)
 
     while True:
-        event, values = pokeName.read(timeout=1000)
+        event, values = pokeName.read(timeout=100)
 
         match event:
             case sg.TIMEOUT_KEY:
@@ -47,7 +47,7 @@ def choose_pokemon(self, player):
     pokeChooseWin = sg.Window('Choose', ui.choosePoke(self), icon='data\\img\\pokeball.ico')
 
     while True:
-        event, values = pokeChooseWin.read(timeout=100)
+        event, values = pokeChooseWin.read()
         pokeChooseWin["poke"].bind('<Double-Button-1>', "+-double click-")
 
         match event:
@@ -130,6 +130,24 @@ def settings_screen(self):
                 os.execl(sys.executable, sys.executable, *sys.argv)
 
             case sg.WIN_CLOSED | 'Back':
+
+                event, values = sg.Window('error',[
+                    [sg.T('Are you sure you want to continue?')],
+                    [sg.T('Your unapplied changes may be lost!')],
+                    [sg.B('OK', s=8, p=(10, 10)), sg.B('Cancel', s=8, p=(10, 10))]
+                    ], keep_on_top=True, icon='data\\img\\warning.ico',
+                    element_justification='c').read(close=True)
+
+                if event == 'OK':
+                    path = os.path.expanduser('~\\Documents\\pokeTamago\\cfg')
+                    with open(f'{path}\\settings.json', 'r') as settings:
+                        data = json.load(settings)
+                        self.settings = data
+                    break
+
+                if event == sg.WIN_CLOSED or event == 'Cancel':
+                    continue
+
                 break
 
             case 'Apply':
@@ -146,48 +164,142 @@ def settings_screen(self):
 
 
 def death_screen(self, player):
+    global index1, index2, index3, frames1, frames2, frames3, size
 
-    if not player.status["revive"]:
-        deathWindow = sg.Window('Passing', ui.dead(player)[0], icon='data\\img\\death.ico',
-        element_justification="center")
-    else:
-        deathWindow = sg.Window('Revive', ui.dead(player)[1], icon='data\\img\\death.ico',
-        element_justification="center")
+    death = True
+
+    def portrait_thread():
+        global index1, index2, index3, frames1, frames2, frames3
+        while True:
+            sleep(0.03)
+            index1 = (index1 + 1) % frames1
+            index2 = (index2 + 1) % frames2
+            if player.status["revive"]:
+                index1 = (index1 + 1) % frames1
+                index3 = (index3 + 1) % frames3
+            if not death:
+                break
+
+    im1 = Image.open(player.properties['portrait'])
+    im2 = Image.open('data\\img\\effects\\death.gif')
+    im3 = Image.open('data\\img\\effects\\revive.gif')
+
+    width1, height1 = im1.size
+    width2, height2 = im2.size
+    width3, height3 = im3.size
+
+    frames1 = im1.n_frames
+    frames2 = im2.n_frames
+    frames3 = im3.n_frames
+
+    graph_width, graph_height = size = (300, 260)
+
+    deathWindow = sg.Window('Passing', ui.dead(player), finalize=True, icon='data\\img\\death.ico', 
+    element_justification="c")
+
+    deathWindow['death_graph'].draw_image('data\\img\\bg\\death_graveyard.png', location=(0, 0))
+    deathWindow['revive_graph'].draw_image('data\\img\\bg\\death_graveyard.png', location=(0, 0))
+
+    index1 = 1
+    index2 = 1
+    index3 = 1
+
+    im1.seek(index1)
+    im2.seek(index2)
+    im3.seek(index3)
+
+    location1 = (graph_width//2-width1//2, graph_height//1.4-height1)
+    location2 = ((graph_width//2-width2//2), (graph_height//1.4-height1)-height1)
+    location3 = ((graph_width//2-width3//2), (graph_height//1.4-height1)-height1)
+
+    item1 = deathWindow['death_graph'].draw_image(data=f.image_to_data(im1), location=location1)
+    item2 = deathWindow['death_graph'].draw_image(data=f.image_to_data(im2), location=location2)
+    item3 = deathWindow['revive_graph'].draw_image(data=f.image_to_data(im1), location=location1)
+    item4 = deathWindow['revive_graph'].draw_image(data=f.image_to_data(im3), location=location3)
+
+    thread = Thread(target=portrait_thread, daemon=True)
+    if self.settings['portrait_anim']:
+        thread.start()
 
     while True:
-        event, value = deathWindow.read(timeout=150)
+        event, value = deathWindow.read(timeout=41.66)
 
         match event:
-            case sg.WIN_CLOSED | 'Exit':
+            case sg.TIMEOUT_KEY:
+                deathWindow['death_graph'].delete_figure(item1)
+                deathWindow['death_graph'].delete_figure(item2)
+                deathWindow['revive_graph'].delete_figure(item3)
+                deathWindow['revive_graph'].delete_figure(item4)
+
+                im1.seek(index1)
+                im2.seek(index2)
+
+                item_new1 = deathWindow['death_graph'].draw_image(data=f.image_to_data(im1),
+                location=location1)
+                item_new2 = deathWindow['death_graph'].draw_image(data=f.image_to_data(im2),
+                location=location2)
+
+                item1 = item_new1
+                item2 = item_new2
+
+                if player.status["revive"]:
+                    im1.seek(index1)
+                    im3.seek(index3)
+                    item_new3 = deathWindow['revive_graph'].draw_image(data=f.image_to_data(im1),
+                    location=location1)
+                    item_new4 = deathWindow['revive_graph'].draw_image(data=f.image_to_data(im3),
+                    location=location2)
+                    item3 = item_new3
+                    item4 = item_new4
+
+                deathWindow.refresh()
+
+            case sg.WIN_CLOSED:
                 self.run = False
+                death = False
                 sys.exit()
 
-            case 'r':
-                player.status['revive'] = True
-                player.status['revive_time'] = 604800
+            case 'menu':
+                self.run = False
+                death = False
+                os.execl(sys.executable, sys.executable, *sys.argv)
 
-            case 'l':
+            case 'revive':
+                player.status['revive'] = True
+                player.status['revive_time'] = 86400
+
+            case 'letgo':
                 os.remove(os.path.expanduser(f'~\\Documents\\pokeTamago\\save\\{player.properties["name"]}.json'))
                 self.run = False
                 os.execl(sys.executable, sys.executable, *sys.argv)
 
-        if player.status['revive'] and player.status['revive_time'] == 0:
-            player.condition['health'] = player.condition['MaxHP']
-            player.condition['bored'] = 0
-            player.condition['food'] = 100
-            player.condition['exhausted'] = 0
-            player.status['alive'] = True
-            player.status['revive'] = False
-            break
-
         if player.status["revive"]:
-            deathWindow['image'].UpdateAnimation('data\\img\\revive.gif', time_between_frames=150)
-            deathWindow['text1'].update('Your pet is about to begin a new life.')
-            deathWindow['text2'].update(f'The process will take {f.time_counter(player.status["revive_time"])}.')
-            deathWindow['r'].update(disabled=True)
-            deathWindow['l'].update(disabled=True)
-        else:
-            deathWindow['image'].UpdateAnimation('data\\img\\death.gif', time_between_frames=150)
+            deathWindow['death_frame'].update(visible=False)
+            deathWindow['revive_frame'].update(visible=True)
+            deathWindow['text1'].update(visible=False)
+            deathWindow['text2'].update('Your pet is about to begin a new life.\n' +
+            f'The process will take {f.time_counter(player.status["revive_time"])}.', visible=True)
+            deathWindow['revive'].update(visible=False)
+            deathWindow['letgo'].update(visible=False)
+            deathWindow['menu'].update(visible=True)
+
+            if player.status['revive'] and player.status['revive_time'] == 0:
+                deathWindow['death_frame'].update(visible=True)
+                deathWindow['revive_frame'].update(visible=False)
+                deathWindow['text1'].update(visible=True)
+                deathWindow['text2'].update(visible=False)
+                deathWindow['revive'].update(visible=True)
+                deathWindow['letgo'].update(visible=True)
+                deathWindow['menu'].update(visible=False)
+
+                player.condition['health'] = player.condition['MaxHP']
+                player.condition['bored'] = 0
+                player.condition['food'] = 100
+                player.condition['exhausted'] = 0
+                player.status['alive'] = True
+                player.status['revive'] = False
+                death = False
+                break
 
     deathWindow.close()
 
@@ -248,7 +360,7 @@ def train_screen(self, player):
         thread.start()
 
     while True:
-        event, value = trainWindow.read(timeout=25)
+        event, value = trainWindow.read(timeout=41.66)
 
         match event:
             case sg.TIMEOUT_KEY:
@@ -300,6 +412,9 @@ def train_screen(self, player):
 def sleep_screen(self, player):
     global index1, index2, frames1, frames2, size
 
+    if not player.status['sleeping']:
+        player.sleep()
+
     sleeping = True
 
     def portrait_thread():
@@ -344,7 +459,7 @@ def sleep_screen(self, player):
         thread.start()
 
     while True:
-        event, value = sleepWindow.read(timeout=30)
+        event, value = sleepWindow.read(timeout=41.66)
         
         match event:
             case sg.TIMEOUT_KEY:
@@ -430,7 +545,7 @@ def eat_screen(self, player):
         thread.start()
 
     while True:
-        event, value = eatWindow.read(timeout=30)
+        event, value = eatWindow.read(timeout=41.66)
 
         match event:
             case sg.TIMEOUT_KEY:
@@ -472,3 +587,103 @@ def eat_screen(self, player):
                 eatWindow['feed'].update(disabled=False)
 
     eatWindow.close()
+
+
+def play_screen(self, player):
+    global index1, index2, frames1, frames2, size, play_button
+
+    playing = True
+    play_button = False
+
+    def portrait_thread():
+            global index1, index2, frames1, frames2, play_button
+            while True:
+                sleep(0.03)
+                index1 = (index1 + 1) % frames1
+                if play_button:
+                    index2 = (index2 + 1) % frames2
+                    if index2 == 42:
+                        play_button = False
+                if not playing:
+                    break
+
+    im1 = Image.open(player.properties['portrait'])
+    im2 = Image.open('data\\img\\effects\\play.gif')
+
+    width1, height1 = im1.size
+    width2, height2 = im2.size
+
+    frames1 = im1.n_frames
+    frames2 = im2.n_frames
+
+    graph_width, graph_height = size = (300, 260)
+
+    playWindow = sg.Window('Playing', ui.playing(), finalize=True, size=(320, 375),
+    element_justification="c", icon='data\\img\\play.ico')
+
+    playWindow['play_graph'].draw_image('data\\img\\bg\\room_playing.png', location=(0, 0))
+    playWindow['play_graph'].draw_image('data\\img\\bg\\room_playing_1.png', location=(0, 0))
+
+    index1 = 1
+    index2 = 1
+
+    im1.seek(index1)
+    im2.seek(index2)
+
+    location1 = (graph_width//2-width1//2, graph_height//1.5-height1)
+    location2 = ((graph_width//2-width2//2)+width1//2, (graph_height//1.5-height2//2)-height1)
+
+    item1 = playWindow['play_graph'].draw_image(data=f.image_to_data(im1), location=location1)
+    item2 = playWindow['play_graph'].draw_image(data=f.image_to_data(im2), location=location2)
+
+    thread = Thread(target=portrait_thread, daemon=True)
+    if self.settings['portrait_anim']:
+        thread.start()
+
+    playWindow['play_graph'].draw_image('data\\img\\bg\\room_playing_2.png', location=(0, 0))
+
+    while True:
+        event, value = playWindow.read(timeout=41.66)
+
+        match event:
+            case sg.TIMEOUT_KEY:
+                playWindow['play_graph'].delete_figure(item2)
+
+                im1.seek(index1)
+                
+                item_new1 = playWindow['play_graph'].draw_image(data=f.image_to_data(im1),
+                location=location1)
+
+                playWindow['play_graph'].delete_figure(item1)
+
+                item1 = item_new1
+
+                if play_button:
+                    im2.seek(index2)
+                    item_new2 = playWindow['play_graph'].draw_image(data=f.image_to_data(im2),
+                    location=location2)
+                    item2 = item_new2
+
+                playWindow.refresh()
+
+            case sg.WINDOW_CLOSED | 'Back':
+                playing = False
+                break
+
+            case 'play':
+                player.play()
+
+                if player.condition['exhausted'] < 90:
+                    play_button = True
+                
+                    if play_button and index2 > 1:
+                        index2 = 1
+
+        if player.condition['exhausted'] >= 90:
+            playWindow['text'].update(visible=True)
+            playWindow['play'].update(disabled=True)
+        else:
+            playWindow['text'].update(visible=False)
+            playWindow['play'].update(disabled=False)
+
+    playWindow.close()

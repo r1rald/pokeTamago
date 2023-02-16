@@ -62,16 +62,16 @@ class Player(Poke):
 
         match self.properties["xp_group"]:
             case "Fast":
-                need = int((4*(level**3))/5)
+                need = int((4 * (level ** 3)) / 5)
 
             case "Medium Fast":
-                need = int(level**3)
+                need = int(level ** 3)
 
             case "Medium Slow":
                 need = int(((6 / 5) * (level ** 3)) - (15 * (level ** 2)) + (100 * level)-140)
                 
             case "Slow":
-                need = int((5*(level**3))/4)
+                need = int((5 * (level ** 3)) / 4)
 
         return need
 
@@ -85,12 +85,23 @@ class Player(Poke):
             self.properties['xp'] = 0
             self.properties['level'] += 1
 
+            self.base["Attack"] += round(self.base["Attack"]/50, 2)
+            self.base["Defense"] += round(self.base["Defense"]/50, 2)
+            self.base["Sp. Attack"] += round(self.base["Sp. Attack"]/50, 2)
+            self.base["Sp. Defense"] += round(self.base["Sp. Defense"]/50, 2)
+            self.base["Speed"] += round(self.base["Speed"]/50, 2)
+
+            #"MaxHP" : 43,
+            #self.condition['health'] = self.condition['MaxHP']
+
 
     def eat(self):
         self.status['eating'] = True
         if self.status['eat_time'] == 0:
             self.status['eat_time'] = 28800
             self.condition['food'] += 50
+            if self.condition['food'] > 100:
+                self.condition['food'] = 100
 
 
     def training(self):
@@ -100,10 +111,11 @@ class Player(Poke):
             self.condition['food'] -= 25
             self.condition['exhausted'] += 25
             self.properties['xp'] += 5
-            if self.condition['bored'] <= 10:
-                self.condition['bored'] == 0
-            else:
-                self.condition['bored'] -= 10
+            self.condition['bored'] -= 10 if self.condition['bored'] > 0 else 0
+            if self.condition['exhausted'] > 100:
+                self.condition['exhausted'] = 100
+            if self.condition['food'] < 0:
+                self.condition['food'] = 0
 
         self.level_up()
 
@@ -111,16 +123,10 @@ class Player(Poke):
     def play(self):
         self.status['playing'] = True
         if self.condition['exhausted'] < 90:
-            self.condition['food'] -= 2
-            self.condition['exhausted'] += 10
+            self.condition['food'] -= 2 if self.condition['food'] > 0 else 0
+            self.condition['exhausted'] += 10 if self.condition['exhausted'] < 100 else 0
             self.properties['xp'] += 1
-            if self.condition['bored'] <= 20:
-                self.condition['bored'] == 0
-            else:
-                self.condition['bored'] -= 20
-        else:
-            sg.popup("You can't play with your pet for now!", title='', keep_on_top=True, 
-            auto_close=True, auto_close_duration=3, any_key_closes=True, icon='data\\img\\warning.ico')
+            self.condition['bored'] -= 20 if self.condition['bored'] > 0 else 0
 
         self.level_up()
 

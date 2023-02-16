@@ -1,6 +1,5 @@
-
-import funct as f
 import PySimpleGUI as sg
+import funct as f
 
 
 def newGame():
@@ -61,20 +60,20 @@ def mainGame(self, player):
     ]
 
     stats_values = [
-        [sg.T(f"{player.base['Attack']}", font=('', 10, 'bold'), background_color=self.settings['background'],
-        k='Attack')],
+        [sg.T(f"{int(player.base['Attack'])}", font=('', 10, 'bold'), background_color=
+        self.settings['background'], k='Attack')],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"{player.base['Defense']}", font=('', 10, 'bold'), background_color=self.settings['background'],
-        k='Defense')],
+        [sg.T(f"{int(player.base['Defense'])}", font=('', 10, 'bold'), background_color=
+        self.settings['background'], k='Defense')],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"{player.base['Sp. Attack']}", font=('', 10, 'bold'), background_color=self.settings['background'],
-        k='Sp. Attack')],
+        [sg.T(f"{int(player.base['Sp. Attack'])}", font=('', 10, 'bold'), background_color=
+        self.settings['background'], k='Sp. Attack')],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"{player.base['Sp. Defense']}", font=('', 10, 'bold'), background_color=self.settings['background'],
-        k='Sp. Defense')],
+        [sg.T(f"{int(player.base['Sp. Defense'])}", font=('', 10, 'bold'), background_color=
+        self.settings['background'], k='Sp. Defense')],
         [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.T(f"{player.base['Speed']}", font=('', 10, 'bold'), background_color=self.settings['background'],
-        k='Speed')]
+        [sg.T(f"{int(player.base['Speed'])}", font=('', 10, 'bold'), background_color=
+        self.settings['background'], k='Speed')]
     ]
 
     nameLayout = [
@@ -221,24 +220,26 @@ def settings(self):
 
 
 def dead(player):
-    layout1 = [
-        [sg.Image('data\\img\\death.gif', k='image', p=((20, 20), (20, 0)))],
-        [sg.Text('Sadly seems like your pet is passed away.', k='text1', p=((0, 0), (20, 0)))],
-        [sg.Text('Do you want to revive it?', p=((0, 0), (0, 20)), k='text2')],
-        [sg.Button('Revive', size=8, k='r'), sg.Button('Let go', size=8, k='l'),
-        sg.Button('Exit', size=8, p=((50, 0), (0, 0)))]
+    graph1 = [
+        [sg.Graph((300, 260), (0, 260), (300, 0), p=0, key='death_graph')],
+    ]
+    graph2 =[
+        [sg.Graph((300, 260), (0, 260), (300, 0), p=0, key='revive_graph')]
     ]
 
-    layout2 = [
-        [sg.Image('data\\img\\revive.gif', k='image', p=((20, 20), (20, 0)),)],
-        [sg.Text('Your pet is about to begin a new life.', k='text1', p=((0, 0), (20, 0)))],
-        [sg.Text(f'The process will take {f.time_counter(player.status["revive_time"])}.',
-        p=((0, 0), (0, 20)), k='text2')],
-        [sg.Button('Revive', size=8, k='r'), sg.Button('Let go', size=8, k='l'),
-        sg.Button('Exit', size=8, p=((50, 0), (0, 0)))]
+    layout = [
+        [sg.Frame('', graph1, s=(300, 260), visible=True, k='death_frame'), sg.Frame('', graph2,
+        s=(300, 260), visible=False, k='revive_frame')],
+        [sg.Text('Sadly seems like your pet is passed away.\n Do you want to revive it?',
+        p=(0,10), k='text1', visible=True, justification='c')],
+        [sg.Text('Your pet is about to begin a new life.\n' +
+        f'The process will take {f.time_counter(player.status["revive_time"])}.', p=(0,10),
+        visible=False, k='text2', justification='c')], [sg.Button('Revive', size=8, k='revive', 
+        p=(0,10), visible=True), sg.Button('Letting go', size=8, k='letgo', p=(0,10), visible=True),
+        sg.Button('Main Menu', size=8, p=(0, 10), k='menu', visible=False)]
     ]
 
-    return layout1, layout2
+    return layout
 
 
 def training(player):
@@ -285,6 +286,20 @@ def eating(player):
         f'Let it rest for about {f.time_counter(player.status["eat_time"])}.', justification='c',
         visible=False, k='text3', p=(0,10))],
         [sg.Button('Feed', size=8, p=(10,10), k='feed'), sg.Button('Back', size=8, p=(10,10))]
+    ]
+
+    return layout
+
+
+def playing():
+    graph = [
+        [sg.Graph((300, 260), (0, 260), (300, 0), p=0, key='play_graph')],
+    ]
+
+    layout = [
+        [sg.Frame('', graph, s=(300, 260))],
+        [sg.Text('Your pet is exhausted, let it rest for now.', visible=False, k='text', p=(0,10))],
+        [sg.B('Play', size=8, p=(10,10), disabled=False, k='play'), sg.B('Back', size=8, p=(10,10))]
     ]
 
     return layout

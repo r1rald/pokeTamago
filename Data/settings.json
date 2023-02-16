@@ -1,9 +1,0 @@
-{
-    "theme": "TamagoDefault",
-    "background": "#516073",
-    "music": "music1",
-    "music_playing": true,
-    "music_volume": 100.0,
-    "sound_volume": 100.0,
-    "portrait_anim": true
-}
