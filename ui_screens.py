@@ -6,6 +6,7 @@ import ui_layout as ui
 from PIL import Image
 from re import sub
 import funct as f
+import json
 import sys
 import os
 
@@ -129,6 +130,24 @@ def settings_screen(self):
                 os.execl(sys.executable, sys.executable, *sys.argv)
 
             case sg.WIN_CLOSED | 'Back':
+
+                event, values = sg.Window('error',[
+                    [sg.T('Are you sure you want to continue?')],
+                    [sg.T('Your unapplied changes may be lost!')],
+                    [sg.B('OK', s=8, p=(10, 10)), sg.B('Cancel', s=8, p=(10, 10))]
+                    ], keep_on_top=True, icon='data\\img\\warning.ico',
+                    element_justification='c').read(close=True)
+
+                if event == 'OK':
+                    path = os.path.expanduser('~\\Documents\\pokeTamago\\cfg')
+                    with open(f'{path}\\settings.json', 'r') as settings:
+                        data = json.load(settings)
+                        self.settings = data
+                    break
+
+                if event == sg.WIN_CLOSED or event == 'Cancel':
+                    continue
+
                 break
 
             case 'Apply':
