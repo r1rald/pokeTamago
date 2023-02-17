@@ -131,12 +131,10 @@ def settings_screen(self):
 
             case sg.WIN_CLOSED | 'Back':
 
-                event, values = sg.Window('error',[
-                    [sg.T('Are you sure you want to continue?')],
-                    [sg.T('Your unapplied changes may be lost!')],
-                    [sg.B('OK', s=8, p=(10, 10)), sg.B('Cancel', s=8, p=(10, 10))]
-                    ], keep_on_top=True, icon='data\\img\\warning.ico',
-                    element_justification='c').read(close=True)
+                event, values = sg.Window('error',[[sg.T('Are you sure you want to continue?\n' +
+                    'Your unapplied changes may be lost!', justification='c')], [sg.B(
+                    'OK', s=8, p=(10, 10)), sg.B('Cancel', s=8, p=(10, 10))]], keep_on_top=True,
+                    icon='data\\img\\warning.ico', element_justification='c').read(close=True)
 
                 if event == 'OK':
                     path = os.path.expanduser('~\\Documents\\pokeTamago\\cfg')
