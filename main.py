@@ -12,9 +12,9 @@ if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
 
 
 s = sched.scheduler(time.time, time.sleep)
+t = Thread(target=s.run)
 mg = game.Game()
 p = Player()
-
 
 def run(sc):
     mg.autosave(p)
@@ -24,12 +24,10 @@ def run(sc):
         mg.autosave(p)
         sys.exit()
 
-
 if __name__ == "__main__":
     mg.newGame(p)
 
     s.enter(1, 1, run, (s,))
-    t = Thread(target=s.run)
     t.start()
 
     while mg.run:
