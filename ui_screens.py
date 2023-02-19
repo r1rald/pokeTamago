@@ -12,7 +12,7 @@ import os
 
 
 def new_pokemon_screen(self, player):
-    pokeName = sg.Window('Name', ui.newPoke(), icon='data\\img\\logo.ico', grab_anywhere=True)
+    pokeName = sg.Window('Name', ui.newPoke(), grab_anywhere=True)
 
     while True:
         event, values = pokeName.read(timeout=100)
@@ -36,8 +36,8 @@ def new_pokemon_screen(self, player):
                     event, values = sg.Window('error',
                     [[sg.T('Invalid name or this Pokemon is already exist!')],
                     [sg.T('(The name cannot be longer than 14 characters)')],
-                    [sg.B('OK', s=(10, 1), p=(10, 10), bind_return_key=True,focus=True)]],
-                    keep_on_top=True, auto_close=True, auto_close_duration=3, element_justification='c',
+                    [sg.B('OK', s=(10, 1), p=(10, 10), bind_return_key=True, focus=True)]],
+                    keep_on_top=True, auto_close=True, element_justification='c',
                     icon='data\\img\\warning.ico').read(close=True)
 
     pokeName.close()
@@ -69,7 +69,7 @@ def choose_pokemon(self, player):
 
 
 def loading_screen(self, player):
-    loadScreen = sg.Window('Load', ui.load(self), icon='data\\img\\load.ico', size=(214,333))
+    loadScreen = sg.Window('Load', ui.load(self), icon='data\\img\\load.ico')
 
     while True:
         event, values = loadScreen.read()  
@@ -82,7 +82,7 @@ def loading_screen(self, player):
             case 'Load' | 'load+-double click-':
                 if not values["load"]:
                     sg.Popup('You must choose a save file!', title='error', keep_on_top=True,
-                    auto_close=True, auto_close_duration=3, icon='data\\img\\warning.ico')
+                    auto_close=True, icon='data\\img\\warning.ico')
                 else:
                     self.load_saves(player, values["load"][0])
                     player.offline_time()
@@ -91,7 +91,7 @@ def loading_screen(self, player):
             case 'Delete':
                 if not values["load"]:
                     sg.Popup('You must choose a save file!', title='error', keep_on_top=True,
-                    auto_close=True, auto_close_duration=3, icon='data\\img\\warning.ico')
+                    auto_close=True, icon='data\\img\\warning.ico')
                 else:
                     path = os.path.expanduser('~\\Documents\\pokeTamago\\save')
                     os.remove(f'{path}\\{values["load"][0]}.json')
