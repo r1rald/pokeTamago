@@ -6,6 +6,7 @@ from time import sleep
 from PIL import Image
 from re import sub
 import Data.themes
+import Data.config
 import funct as f
 import json
 import time
@@ -19,13 +20,13 @@ class Game:
 
     def __init__(self):
         self.settings = {
-            "theme": "TamagoDefault",
-            "background": "#516073",
-            "music": "music1",
-            "music_playing": True,
-            "music_volume": 100.0,
-            "sound_volume": 100.0,
-            "portrait_anim": True
+            'theme': 'TamagoDefault',
+            'music': 'music1',
+            'music_playing': True,
+            'music_volume': 100.0,
+            'sound_volume': 100.0,
+            'portrait_anim': True,
+            'scale': 1
         }
         
         path = os.path.expanduser('~\\Documents\\pokeTamago\\cfg')
@@ -42,8 +43,7 @@ class Game:
         f.randomYieldGroup()
 
     def newGame(self, player):
-        window1 = sg.Window('', ui.newGame(), icon='data\\img\\logo.ico', element_justification='c',
-        grab_anywhere=True)
+        window1 = sg.Window('', ui.newGame(), element_justification='c', grab_anywhere=True)
 
         while True:
             event, values = window1.read(timeout=100)
@@ -101,7 +101,7 @@ class Game:
 
         graph_width, graph_height = size = (170, 100)
 
-        mainWindow = sg.Window('pokéTamago', ui.mainGame(self, player), icon='data\\img\\logo.ico', 
+        mainWindow = sg.Window('pokéTamago', ui.mainGame(self, player), icon='data\\img\\logo.ico',
         finalize=True)
 
         mainWindow['GRAPH'].draw_image(f'{f.portrait_background(player)}', location=(0, 0))
@@ -209,13 +209,6 @@ class Game:
 
     def save_settings(self):
         path = os.path.expanduser('~\\Documents\\pokeTamago\\cfg')
-
-        if self.settings['theme'] == "TamagoDefault":
-            self.settings['background'] = '#516073'
-        if self.settings['theme'] == "TamagoDark":
-            self.settings['background'] = '#303134'
-        if self.settings['theme'] == "TamagoLight":
-            self.settings['background'] = '#bfbfb2'
 
         with open(f"{path}\\settings.json", 'w') as settings: 
             json.dump(self.settings, settings, indent=4)
