@@ -1,13 +1,12 @@
 from threading import Thread
+import Data.screens as sc
 import PySimpleGUI as sg
-import ui_screens as sc
-import ui_layout as ui
 from time import sleep
 from PIL import Image
 from re import sub
 import Data.themes
 import Data.config
-import funct as f
+import Data.funct as f
 import json
 import time
 import sys
@@ -43,7 +42,7 @@ class Game:
         f.randomYieldGroup()
 
     def newGame(self, player):
-        window1 = sg.Window('', ui.newGame(), element_justification='c', grab_anywhere=True)
+        window1 = sg.Window('', newGame(), element_justification='c', grab_anywhere=True)
 
         while True:
             event, values = window1.read(timeout=100)
@@ -101,7 +100,7 @@ class Game:
 
         graph_width, graph_height = size = (170, 100)
 
-        mainWindow = sg.Window('pokéTamago', ui.mainGame(self, player), icon='data\\img\\logo.ico',
+        mainWindow = sg.Window('pokéTamago', mainGame(self, player), icon='data\\img\\logo.ico',
         finalize=True)
 
         mainWindow['GRAPH'].draw_image(f'{f.portrait_background(player)}', location=(0, 0))
@@ -250,3 +249,116 @@ class Game:
             player.base = data['base']
             player.condition = data['condition']
             player.status = data['status']
+
+
+def newGame():
+    buttonColumn = [
+        [sg.Button('New Pokemon', size=12)],
+        [sg.Button('Continue', size=12, key='load')],
+        [sg.B('Settings', size=12)],
+        [sg.B('Exit', size=12)]
+    ]
+
+    layout = [
+        [sg.Image('data\\img\\logo.png', subsample=3)],
+        [sg.Column(buttonColumn, element_justification='c')]
+    ]
+
+    return layout
+
+
+def mainGame(self, player):
+    condition_layout = [
+        [sg.T("Health", font=('', 10, 'bold'))], [sg.HSeparator(color='#3c4754', p=0)],
+        [sg.T("Age", font=('', 10, 'bold'))], [sg.HSeparator(color='#3c4754', p=0)],
+        [sg.T(f"Food", font=('', 10, 'bold'))], [sg.HSeparator(color='#3c4754', p=0)], 
+        [sg.T(f"Bored", font=('', 10, 'bold'))], [sg.HSeparator(color='#3c4754', p=0)],
+        [sg.T(f"Exhausted", font=('', 10, 'bold'))]
+    ]
+
+    condition_values = [
+        [sg.T(f"{int(player.condition['health'])}", font=('', 10, 'bold'), k='health')],
+        [sg.HSeparator(color='#3c4754', p=0)], [sg.T("", font=('', 10, 'bold'), k='age')],
+        [sg.HSeparator(color='#3c4754', p=0)], [sg.ProgressBar(max_value=100, orientation='h', 
+        expand_x=True, expand_y=True, p=0, key='food',)], [sg.HSeparator(color='#3c4754', p=0)],
+        [sg.ProgressBar(max_value=100, orientation='h', expand_x=True, expand_y=True, p=0,
+        key='bored',)], [sg.HSeparator(color='#3c4754', p=0)], [sg.ProgressBar(max_value=100, 
+        orientation='h', expand_x=True, expand_y=True, p=0, key='exhausted',)]
+    ]
+
+    stats_layout = [
+        [sg.T(f"Attack", font=('', 10, 'bold'))], [sg.HSeparator(color='#3c4754', p=0)],
+        [sg.T(f"Defense", font=('', 10, 'bold'))], [sg.HSeparator(color='#3c4754', p=0)],
+        [sg.T(f"Sp. Attack", font=('', 10, 'bold'))], [sg.HSeparator(color='#3c4754', p=0)],
+        [sg.T(f"Sp. Defense", font=('', 10, 'bold'))], [sg.HSeparator(color='#3c4754', p=0)],
+        [sg.T(f"Speed", font=('', 10, 'bold'))]
+    ]
+
+    stats_values = [
+        [sg.T(f"{int(player.base['Attack'])}", font=('', 10, 'bold'), k='Attack')],
+        [sg.HSeparator(color='#3c4754', p=0)],
+        [sg.T(f"{int(player.base['Defense'])}", font=('', 10, 'bold'), k='Defense')],
+        [sg.HSeparator(color='#3c4754', p=0)],
+        [sg.T(f"{int(player.base['Sp. Attack'])}", font=('', 10, 'bold'), k='Sp. Attack')],
+        [sg.HSeparator(color='#3c4754', p=0)],
+        [sg.T(f"{int(player.base['Sp. Defense'])}", font=('', 10, 'bold'), k='Sp. Defense')],
+        [sg.HSeparator(color='#3c4754', p=0)],
+        [sg.T(f"{int(player.base['Speed'])}", font=('', 10, 'bold'), k='Speed')]
+    ]
+
+    nameLayout = [
+        [sg.T(f"{player.properties['name']}".upper(), font=('', 15, 'bold'))],
+        [sg.HSeparator(color='#3c4754', p=0)],
+        [sg.T(f"Level {player.properties['level']}", font=('', 10), key='level')],
+        [sg.ProgressBar(max_value=player.xp_need(), expand_x=True, expand_y=True, orientation='h',
+        key='progress_1')],
+    ]
+
+    imageLayout = [
+        [sg.Graph((170, 100), (0, 100), (170, 0), p=0, key='GRAPH')]
+    ]
+
+    if len(player.properties["type"]) < 2:
+        TypeImage2 = [
+            sg.Image(f'data\\img\\types\\none.png', k='type2', p=0, size=(30, 24), 
+            tooltip=' There is no second type of this Pokemon ')
+        ]
+    else:
+        TypeImage2 = [
+            sg.Image(f'data\\img\\types\\{player.properties["type"][1]}_Type_Icon.png', k='type2',
+            p=0,  size=(30, 24), tooltip=f' {player.properties["type"][1]} ')
+        ]
+
+    conditionBar = [
+        [sg.Image(f'data\\img\\types\\{player.properties["type"][0]}_Type_Icon.png', k='type1',
+        p=0, size=(30, 24), tooltip=f' {player.properties["type"][0]} ')], [sg.HSeparator(color='#3c4754', p=0)],
+        TypeImage2, [sg.HSeparator(color='#3c4754', p=0)], [sg.HSeparator(color='#3c4754', p=0)]
+    ]
+
+    Column = [
+        [sg.Frame('', imageLayout, size=(170, 100), element_justification='c', p=((0, 0), (0, 5))),
+        sg.Frame('', conditionBar, size=(30, 100), element_justification='c', p=((0, 0), (0, 5)))],
+        [sg.Frame('', nameLayout, size=(200, 90), element_justification='c', p=((0, 0), (5, 5)))],
+        [sg.Frame('', condition_layout, size=(100, 142), element_justification='c', p=((0, 0), (5, 5))), 
+        sg.Frame('', condition_values, size=(100, 142), element_justification='c', p=((0, 0), (5, 5)))],
+        [sg.Frame('', stats_layout, size=(100, 142), element_justification='c', p=((0, 0), (5, 0))),
+        sg.Frame('', stats_values, size=(100, 142), element_justification='c', p=((0, 0), (5, 0)))]
+    ]
+
+    buttonColumn = [
+        [sg.B('Eat')],
+        [sg.B('Play', size=8)],
+        [sg.B('Sleep', size=8)],
+        [sg.HSeparator(color='#3c4754', p=((0, 0), (10, 10)))],
+        [sg.B('Training', size=8)],
+        [sg.B('Battle', size=8, disabled=True)],
+        [sg.B('Shop', size=8, disabled=True)],
+        [sg.HSeparator(color='#3c4754', p=((0, 0), (10, 10)))],
+        [sg.B('Main Menu', size=8)],
+    ]
+
+    layout = [
+        [sg.Column(buttonColumn), sg.Column(Column, element_justification='c')],
+    ]
+
+    return layout

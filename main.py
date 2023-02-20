@@ -1,7 +1,7 @@
 from threading import Thread
-from player import Player
+from Data.player import Player
 import sched
-import game
+import Data.game as game
 import time
 import sys
 import os
