@@ -1,8 +1,8 @@
-from threading import Thread
 from Data.player import Player
-import sched
-import Data.game as game
-import time
+from threading import Thread
+from sched import scheduler
+from Data.game import Game
+import time as t
 import sys
 import os
 
@@ -11,24 +11,24 @@ if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
     os.chdir(sys._MEIPASS)
 
 
-s = sched.scheduler(time.time, time.sleep)
+s = scheduler(t.time, t.sleep)
 t = Thread(target=s.run)
-mg = game.Game()
+g = Game()
 p = Player()
 
 def run(sc):
-    mg.autosave(p)
+    g.autosave(p)
     p.passing_time()
     s.enter(1, 1, run, (sc,))
-    if not mg.run:
-        mg.autosave(p)
+    if not g.run:
+        g.autosave(p)
         sys.exit()
 
 if __name__ == "__main__":
-    mg.newGame(p)
+    g.newGame(p)
 
     s.enter(1, 1, run, (s,))
     t.start()
 
-    while mg.run:
-        mg.mainGame(p)
+    while g.run:
+        g.mainGame(p)
