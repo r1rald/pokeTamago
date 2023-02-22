@@ -7,3 +7,4 @@ from Data.screens.loading import loading_screen
 from Data.screens.newPoke import new_pokemon_screen
 from Data.screens.eating import eat_screen
 from Data.screens.death import death_screen
+from Data.screens.popUp import popUp
