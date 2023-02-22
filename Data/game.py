@@ -1,12 +1,11 @@
 from threading import Thread
 import Data.screens as sc
 import PySimpleGUI as sg
+import Data.funct as f
 from time import sleep
 from PIL import Image
-from re import sub
 import Data.themes
 import Data.config
-import Data.funct as f
 import json
 import time
 import sys
@@ -42,19 +41,27 @@ class Game:
         f.randomYieldGroup()
 
     def newGame(self, player):
-        window1 = sg.Window('', newGame(), element_justification='c', grab_anywhere=True)
+        window1 = sg.Window('', newGame(self), element_justification='c',
+            enable_close_attempted_event=True)
 
         while True:
-            event, values = window1.read(timeout=100)
+            event, values = window1.read(timeout=41.66)
 
             match event:
-                case sg.WIN_CLOSED | 'Exit':
-                    sys.exit()
+                case sg.WINDOW_CLOSE_ATTEMPTED_EVENT | 'Exit':
+                    event = sc.popUp(self,'Quit','Are you sure you want to quit?')
+                    
+                    if event=='OK':
+                        sys.exit()
+
+                    if event=='c':
+                        continue
 
                 case 'New Pokemon':
                     self.cancel = False
 
                     while not self.cancel:
+                        window1.Hide()
                         sc.new_pokemon_screen(self, player)
                         if player.properties['name']:
                             sc.choose_pokemon(self, player)
@@ -62,18 +69,27 @@ class Game:
                     if player.properties['portrait']:
                         break
                     else:
+                        window1.UnHide()
                         continue
 
                 case 'load':
                     self.has_been_called = False
+                    window1.Hide()
                     sc.loading_screen(self, player)
+
                     if self.has_been_called:
                         break
                     else:
+                        window1.UnHide()
                         continue
 
                 case 'Settings':
+                    self.cancel = False
+                    window1.Hide()
                     sc.settings_screen(self)
+
+                    if self.cancel:
+                        window1.UnHide()
 
             if not self.read_save():
                 window1['load'].update(disabled=True)
@@ -101,7 +117,7 @@ class Game:
         graph_width, graph_height = size = (170, 100)
 
         mainWindow = sg.Window('pokéTamago', mainGame(self, player), icon='data\\img\\logo.ico',
-        finalize=True)
+        finalize=True, enable_close_attempted_event=True)
 
         mainWindow['GRAPH'].draw_image(f'{f.portrait_background(player)}', location=(0, 0))
 
@@ -151,6 +167,16 @@ class Game:
                     self.run = False
                     os.execl(sys.executable, sys.executable, *sys.argv)
 
+                case sg.WINDOW_CLOSE_ATTEMPTED_EVENT:
+                    event = sc.popUp(self,'Quit','Are you sure you want to quit?')
+
+                    if event == 'OK':
+                        self.run = False
+                        break
+
+                    if event == 'c':
+                        continue
+
             if not player.status['alive']:
                 sc.death_screen(self, player)
             if player.status['sleeping']:
@@ -180,7 +206,7 @@ class Game:
             mainWindow['progress_1'].update(int(player.properties['xp']), max=player.xp_need())
             mainWindow['level'].update(f"Level {player.properties['level']}")
             mainWindow['health'].update(int(player.condition['health']))
-            mainWindow['age'].update(f.time_counter(player.condition['age']))
+            mainWindow['age'].update(f"{f.time_counter(player.condition['age'])}")
             mainWindow['food'].update(int(player.condition['food']), bar_color=fdClr)
             mainWindow['bored'].update(int(player.condition['bored']), bar_color=brdClr)
             mainWindow['exhausted'].update(int(player.condition['exhausted']), bar_color=xhstdClr)
@@ -251,7 +277,18 @@ class Game:
             player.status = data['status']
 
 
-def newGame():
+def newGame(self):
+    match self.settings['theme']:
+
+        case "TamagoDefault":
+            titlebar = '#283b5b'
+
+        case "TamagoDark":
+            titlebar = '#303134'
+
+        case "TamagoLight":
+            titlebar = '#0052e7'
+
     buttonColumn = [
         [sg.Button('New Pokemon', size=12)],
         [sg.Button('Continue', size=12, key='load')],
@@ -259,15 +296,34 @@ def newGame():
         [sg.B('Exit', size=12)]
     ]
 
-    layout = [
+    elements = [
         [sg.Image('data\\img\\logo.png', subsample=3)],
-        [sg.Column(buttonColumn, element_justification='c')]
+        [sg.Column(buttonColumn)]
+    ]
+
+    frame = [
+        [sg.Frame('', elements, relief=sg.RELIEF_FLAT, p=(0,0), element_justification='c')]
+    ]
+
+    layout = [
+        [sg.Frame('', frame, relief=sg.RELIEF_FLAT, p=(0,0), background_color=titlebar)]
     ]
 
     return layout
 
 
 def mainGame(self, player):
+    match self.settings['theme']:
+
+        case "TamagoDefault":
+            titlebar = '#283b5b'
+
+        case "TamagoDark":
+            titlebar = '#303134'
+
+        case "TamagoLight":
+            titlebar = '#0052e7'
+
     condition_layout = [
         [sg.T("Health", font=('', 10, 'bold'))], [sg.HSeparator(color='#3c4754', p=0)],
         [sg.T("Age", font=('', 10, 'bold'))], [sg.HSeparator(color='#3c4754', p=0)],
@@ -278,12 +334,14 @@ def mainGame(self, player):
 
     condition_values = [
         [sg.T(f"{int(player.condition['health'])}", font=('', 10, 'bold'), k='health')],
-        [sg.HSeparator(color='#3c4754', p=0)], [sg.T("", font=('', 10, 'bold'), k='age')],
-        [sg.HSeparator(color='#3c4754', p=0)], [sg.ProgressBar(max_value=100, orientation='h', 
-        expand_x=True, expand_y=True, p=0, key='food',)], [sg.HSeparator(color='#3c4754', p=0)],
-        [sg.ProgressBar(max_value=100, orientation='h', expand_x=True, expand_y=True, p=0,
-        key='bored',)], [sg.HSeparator(color='#3c4754', p=0)], [sg.ProgressBar(max_value=100, 
-        orientation='h', expand_x=True, expand_y=True, p=0, key='exhausted',)]
+        [sg.HSeparator(color='#3c4754', p=0)], 
+        [sg.T(f"{f.time_counter(player.condition['age'])}", font=('', 10, 'bold'), k='age')],
+        [sg.HSeparator(color='#3c4754', p=0)], 
+        [sg.ProgressBar(max_value=100, orientation='h', p=0, key='food',)], 
+        [sg.HSeparator(color='#3c4754', p=0)], 
+        [sg.ProgressBar(max_value=100, orientation='h', p=0, key='bored',)], 
+        [sg.HSeparator(color='#3c4754', p=0)], 
+        [sg.ProgressBar(max_value=100, orientation='h', p=0, key='exhausted',)]
     ]
 
     stats_layout = [
@@ -337,16 +395,16 @@ def mainGame(self, player):
 
     Column = [
         [sg.Frame('', imageLayout, size=(170, 100), element_justification='c', p=((0, 0), (0, 5))),
-        sg.Frame('', conditionBar, size=(30, 100), element_justification='c', p=((0, 0), (0, 5)))],
+         sg.Frame('', conditionBar, size=(30, 100), element_justification='c', p=((0, 0), (0, 5)))],
         [sg.Frame('', nameLayout, size=(200, 90), element_justification='c', p=((0, 0), (5, 5)))],
         [sg.Frame('', condition_layout, size=(100, 142), element_justification='c', p=((0, 0), (5, 5))), 
-        sg.Frame('', condition_values, size=(100, 142), element_justification='c', p=((0, 0), (5, 5)))],
+         sg.Frame('', condition_values, size=(100, 142), element_justification='c', p=((0, 0), (5, 5)))],
         [sg.Frame('', stats_layout, size=(100, 142), element_justification='c', p=((0, 0), (5, 0))),
-        sg.Frame('', stats_values, size=(100, 142), element_justification='c', p=((0, 0), (5, 0)))]
+         sg.Frame('', stats_values, size=(100, 142), element_justification='c', p=((0, 0), (5, 0)))]
     ]
 
     buttonColumn = [
-        [sg.B('Eat')],
+        [sg.B('Eat', size=8)],
         [sg.B('Play', size=8)],
         [sg.B('Sleep', size=8)],
         [sg.HSeparator(color='#3c4754', p=((0, 0), (10, 10)))],
@@ -357,8 +415,16 @@ def mainGame(self, player):
         [sg.B('Main Menu', size=8)],
     ]
 
-    layout = [
+    elements = [
         [sg.Column(buttonColumn), sg.Column(Column, element_justification='c')],
+    ]
+
+    frame = [
+        [sg.Frame('', elements, p=(0,0), element_justification="c", relief=sg.RELIEF_FLAT)]
+        ]
+
+    layout = [
+        [sg.Frame('', frame, p=(0,0), background_color=titlebar, relief=sg.RELIEF_FLAT)]
     ]
 
     return layout

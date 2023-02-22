@@ -5,15 +5,34 @@ from PIL import Image
 import Data.funct as f
 
 
-def playing():
+def play(self):
+    match self.settings['theme']:
+
+        case "TamagoDefault":
+            titlebar = '#283b5b'
+
+        case "TamagoDark":
+            titlebar = '#303134'
+
+        case "TamagoLight":
+            titlebar = '#0052e7'
+
     graph = [
         [sg.Graph((300, 260), (0, 260), (300, 0), p=0, key='play_graph')],
     ]
 
-    layout = [
+    elements = [
         [sg.Frame('', graph, s=(300, 260))],
         [sg.Text('Your pet is exhausted, let it rest for now.', visible=False, k='text', p=(0,10))],
         [sg.B('Play', size=8, p=(10,10), disabled=False, k='play'), sg.B('Back', size=8, p=(10,10))]
+    ]
+
+    frame = [
+        [sg.Frame('', elements, p=(0,0), element_justification="c", relief=sg.RELIEF_FLAT)]
+        ]
+
+    layout = [
+        [sg.Frame('', frame, p=(0,0), background_color=titlebar, relief=sg.RELIEF_FLAT)]
     ]
 
     return layout
@@ -48,7 +67,7 @@ def play_screen(self, player):
 
     graph_width, graph_height = size = (300, 260)
 
-    playWindow = sg.Window('Playing', playing(), finalize=True, size=(320, 375),
+    playWindow = sg.Window('Playing', play(self), finalize=True, size=(320, 375),
     element_justification="c", icon='data\\img\\play.ico')
 
     playWindow['play_graph'].draw_image('data\\img\\bg\\room_playing.png', location=(0, 0))

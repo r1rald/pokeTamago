@@ -21,20 +21,21 @@ if os.path.exists(path):
 
         case "TamagoLight":
             background = '#bfbfb2'
-            titlebar = '#357EC7'
+            titlebar = '#0052e7'
 
     scale = settings['scale']
 
 else:
     background = None
-    scale = None
+    titlebar = None
+    scale = 1
 
 sg.set_options(
-    icon = 'data\\img\\logo.ico',
-    button_color = None,
-    element_size = (100, 100),
-    button_element_size = (8, 0),
-    margins = (10, 10),
+    icon='data\\img\\logo.ico',
+    button_color=None,
+    element_size=(100, 100),
+    button_element_size=(8, 0),
+    margins=(0, 0),
     element_padding = (None, None),
     auto_size_text = True,
     auto_size_buttons = True,
@@ -65,7 +66,7 @@ sg.set_options(
     tooltip_time=200,
     tooltip_font=('', 10, 'normal'),
     use_ttk_buttons=False,
-    ttk_theme='winnative',
+    ttk_theme='alt',
     suppress_error_popups=True,
     suppress_raise_key_errors=True,
     suppress_key_guessing = True,
@@ -73,7 +74,7 @@ sg.set_options(
     enable_treeview_869_patch = True,
     enable_mac_notitlebar_patch = False,
     use_custom_titlebar = True,
-    titlebar_background_color = None,
+    titlebar_background_color = titlebar,
     titlebar_text_color = 'white',
     titlebar_font = ('', 10, 'normal'),
     titlebar_icon = 'data\\img\\icon.png',
@@ -93,5 +94,5 @@ sg.set_options(
     sbar_arrow_width = None,
     sbar_frame_color = None,
     sbar_relief = None,
-    alpha_channel = 1,
+    alpha_channel = 1
     )

@@ -1,10 +1,22 @@
+import Data.screens as sc
 import PySimpleGUI as sg
 import json
 import sys
 import os
 
 
-def settings(self):
+def setting(self):
+    match self.settings['theme']:
+
+        case "TamagoDefault":
+            titlebar = '#283b5b'
+
+        case "TamagoDark":
+            titlebar = '#303134'
+
+        case "TamagoLight":
+            titlebar = '#0052e7'
+
     status1 = 'Enabled' if self.settings['music_playing'] else 'Disabled'
     status2 = 'Enabled' if self.settings['portrait_anim'] else 'Disabled'
 
@@ -34,7 +46,7 @@ def settings(self):
         p=((20, 0), (0, 0)), key='_portrait_')]
     ]
 
-    layout = [
+    elements = [
         [sg.Frame('Theme', theme, s=(215, 80))],
         [sg.Frame('Audio', sounds, s=(215, 200))],
         [sg.Frame('Portrait', portrait, s=(215, 55))],
@@ -42,11 +54,20 @@ def settings(self):
         sg.B('Back', p=((10, 0), (10, 5)))]
     ]
 
+    frame = [
+        [sg.Frame('', elements, p=(0,0), element_justification="c", relief=sg.RELIEF_FLAT)]
+        ]
+
+    layout = [
+        [sg.Frame('', frame, p=(0,0), background_color=titlebar, relief=sg.RELIEF_FLAT)]
+    ]
+
     return layout
 
 
 def settings_screen(self):
-    OptWindow = sg.Window('Settings', settings(self), icon='data\\img\\gear.ico', grab_anywhere=True)
+    OptWindow = sg.Window('Settings', setting(self), icon='data\\img\\gear.ico', grab_anywhere=True,
+    enable_close_attempted_event=True)
 
     while True:
         event, values = OptWindow.read(timeout=100)
@@ -73,24 +94,22 @@ def settings_screen(self):
                 self.save_settings()
                 os.execl(sys.executable, sys.executable, *sys.argv)
 
-            case sg.WIN_CLOSED | 'Back':
-
-                event, values = sg.Window('error',[[sg.T('Are you sure you want to continue?\n' +
-                    'Your unapplied changes may be lost!', justification='c')], [sg.B(
-                    'OK', s=8, p=(10, 10)), sg.B('Cancel', s=8, p=(10, 10))]], keep_on_top=True,
-                    icon='data\\img\\warning.ico', element_justification='c').read(close=True)
+            case sg.WINDOW_CLOSE_ATTEMPTED_EVENT | 'Back':
+                event = sc.popUp(self,'','Are you sure you want to continue?\n' +
+                    '(Your unapplied changes may be lost!)')
 
                 if event == 'OK':
                     path = os.path.expanduser('~\\Documents\\pokeTamago\\cfg')
+
                     with open(f'{path}\\settings.json', 'r') as settings:
                         data = json.load(settings)
                         self.settings = data
+
+                    self.cancel = True
                     break
 
-                if event == sg.WIN_CLOSED or event == 'Cancel':
+                if event == 'c':
                     continue
-
-                break
 
             case 'Apply':
                 self.settings['theme'] = values['_theme_']

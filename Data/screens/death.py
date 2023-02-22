@@ -7,7 +7,18 @@ import sys
 import os
 
 
-def dead(player):
+def dead(self,player):
+    match self.settings['theme']:
+
+        case "TamagoDefault":
+            titlebar = '#283b5b'
+
+        case "TamagoDark":
+            titlebar = '#303134'
+
+        case "TamagoLight":
+            titlebar = '#0052e7'
+
     graph1 = [
         [sg.Graph((300, 260), (0, 260), (300, 0), p=0, key='death_graph')],
     ]
@@ -15,7 +26,7 @@ def dead(player):
         [sg.Graph((300, 260), (0, 260), (300, 0), p=0, key='revive_graph')]
     ]
 
-    layout = [
+    elements = [
         [sg.Frame('', graph1, s=(300, 260), visible=True, k='death_frame'), sg.Frame('', graph2,
         s=(300, 260), visible=False, k='revive_frame')],
         [sg.Text('Sadly seems like your pet is passed away.\n Do you want to revive it?',
@@ -25,6 +36,14 @@ def dead(player):
         visible=False, k='text2', justification='c')], [sg.Button('Revive', size=8, k='revive', 
         p=(0,10), visible=True), sg.Button('Letting go', size=8, k='letgo', p=(0,10), visible=True),
         sg.Button('Main Menu', size=8, p=(0, 10), k='menu', visible=False)]
+    ]
+
+    frame = [
+        [sg.Frame('', elements, p=(0,0), element_justification="c", relief=sg.RELIEF_FLAT)]
+        ]
+
+    layout = [
+        [sg.Frame('', frame, p=(0,0), background_color=titlebar, relief=sg.RELIEF_FLAT)]
     ]
 
     return layout
@@ -61,7 +80,7 @@ def death_screen(self, player):
 
     graph_width, graph_height = size = (300, 260)
 
-    deathWindow = sg.Window('Passing', dead(player), finalize=True, icon='data\\img\\death.ico', 
+    deathWindow = sg.Window('Passing', dead(self,player), finalize=True, icon='data\\img\\death.ico', 
     element_justification="c")
 
     deathWindow['death_graph'].draw_image('data\\img\\bg\\death_graveyard.png', location=(0, 0))

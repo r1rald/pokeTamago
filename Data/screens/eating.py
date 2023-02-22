@@ -5,12 +5,23 @@ from PIL import Image
 import Data.funct as f
 
 
-def eating(player):
+def eat(self,player):
+    match self.settings['theme']:
+
+        case "TamagoDefault":
+            titlebar = '#283b5b'
+
+        case "TamagoDark":
+            titlebar = '#303134'
+
+        case "TamagoLight":
+            titlebar = '#0052e7'
+
     graph = [
         [sg.Graph((300, 260), (0, 260), (300, 0), p=0, key='eat_graph')],
     ]
 
-    layout = [
+    elements = [
         [sg.Frame('', graph, s=(300, 260))],
         [sg.Text('Your pet is hungry and waiting to be fed.', visible=True, k='text1', p=(0,10)), 
         sg.Text("You don't have any food for now!", visible=False, k='text2', p=(0,10)),
@@ -18,6 +29,14 @@ def eating(player):
         f'Let it rest for about {f.time_counter(player.status["eat_time"])}.', justification='c',
         visible=False, k='text3', p=(0,10))],
         [sg.Button('Feed', size=8, p=(10,10), k='feed'), sg.Button('Back', size=8, p=(10,10))]
+    ]
+
+    frame = [
+        [sg.Frame('', elements, p=(0,0), element_justification="c", relief=sg.RELIEF_FLAT)]
+        ]
+
+    layout = [
+        [sg.Frame('', frame, p=(0,0), background_color=titlebar, relief=sg.RELIEF_FLAT)]
     ]
 
     return layout
@@ -49,7 +68,7 @@ def eat_screen(self, player):
 
     graph_width, graph_height = size = (300, 260)
 
-    eatWindow = sg.Window('Eating', eating(player), finalize=True, size=(320, 375),
+    eatWindow = sg.Window('Eating', eat(self,player), finalize=True, size=(320, 375),
     element_justification="c", icon='data\\img\\eat.ico')
 
     eatWindow['eat_graph'].draw_image('data\\img\\bg\\kitchen_eating.png', location=(0, 0))

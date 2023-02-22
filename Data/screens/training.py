@@ -5,16 +5,35 @@ from PIL import Image
 import Data.funct as f
 
 
-def training(player):
+def training(self):
+    match self.settings['theme']:
+
+        case "TamagoDefault":
+            titlebar = '#283b5b'
+
+        case "TamagoDark":
+            titlebar = '#303134'
+
+        case "TamagoLight":
+            titlebar = '#0052e7'
+
     graph = [
         [sg.Graph((300, 260), (0, 260), (300, 0), p=0, key='train_graph')],
     ]
 
-    layout = [
+    elements = [
         [sg.Frame('', graph, s=(300, 260))],
         [sg.T('Your pokemon is ready for training!\nPlease, be gentle with it!', justification='c',
         k='train')],
         [sg.B("Let's begin", p=(10, 10), k='begin'), sg.B('Back', p=(10, 10))]
+    ]
+
+    frame = [
+        [sg.Frame('', elements, p=(0,0), element_justification="c", relief=sg.RELIEF_FLAT)]
+        ]
+
+    layout = [
+        [sg.Frame('', frame, p=(0,0), background_color=titlebar, relief=sg.RELIEF_FLAT)]
     ]
 
     return layout
@@ -50,7 +69,7 @@ def train_screen(self, player):
 
     graph_width, graph_height = size = (300, 260)
 
-    trainWindow = sg.Window('Training', training(player), finalize=True, size=(320, 365),
+    trainWindow = sg.Window('Training', training(self), finalize=True, size=(320, 365),
     icon='data\\img\\gym.ico', element_justification="c")
 
     trainWindow['train_graph'].draw_image('data\\img\\bg\\gym_training.png', location=(0, 0))

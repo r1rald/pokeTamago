@@ -3,11 +3,29 @@ import os
 
 
 def load(self):
-    layout = [
-        [sg.Listbox(values=[x for x in self.read_save()], enable_events=True, expand_y=True, 
-        expand_x=True, key="load")],
+    match self.settings['theme']:
+
+        case "TamagoDefault":
+            titlebar = '#283b5b'
+
+        case "TamagoDark":
+            titlebar = '#303134'
+
+        case "TamagoLight":
+            titlebar = '#0052e7'
+                
+    elements = [
+        [sg.Listbox(values=[x for x in self.read_save()], enable_events=True, key="load")],
         [sg.B('Load', p=((55, 0), (0, 0))), sg.B('Delete'), sg.B('Back'), 
         sg.B('Submit', visible=False, bind_return_key=True)]
+    ]
+
+    frame = [
+        [sg.Frame('', elements, p=(0,0), element_justification="c", relief=sg.RELIEF_FLAT)]
+        ]
+
+    layout = [
+        [sg.Frame('', frame, p=(0,0), background_color=titlebar, relief=sg.RELIEF_FLAT)]
     ]
 
     return layout

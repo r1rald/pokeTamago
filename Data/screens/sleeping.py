@@ -7,17 +7,36 @@ import sys
 import os
 
 
-def sleeping(player):
+def sleeping(self,player):
+    match self.settings['theme']:
+
+        case "TamagoDefault":
+            titlebar = '#283b5b'
+
+        case "TamagoDark":
+            titlebar = '#303134'
+
+        case "TamagoLight":
+            titlebar = '#0052e7'
+
     graph = [
         [sg.Graph((300, 260), (0, 260), (300, 0), p=0, key='sleep_graph')],
     ]
 
-    layout = [
+    elements = [
         [sg.Frame('', graph, s=(300, 260))],
         [sg.Text('Shhh!!! Your pet is sleeping now.\n' + 
         f'Let it rest for about {f.time_counter(player.status["sleep_time"])}.', k='text', p=(0,10),
         justification='c')],
         [sg.Button('Main Menu', size=8, p=(0,10))]
+    ]
+
+    frame = [
+        [sg.Frame('', elements, p=(0,0), element_justification="c", relief=sg.RELIEF_FLAT)]
+        ]
+
+    layout = [
+        [sg.Frame('', frame, p=(0,0), background_color=titlebar, relief=sg.RELIEF_FLAT)]
     ]
 
     return layout
@@ -29,7 +48,7 @@ def sleep_screen(self, player):
     if not player.status['sleeping']:
         player.sleep()
 
-    sleeping = True
+    sleep = True
 
     def portrait_thread():
         global index1, index2, frames1, frames2
@@ -37,7 +56,7 @@ def sleep_screen(self, player):
             sleep(0.03)
             index1 = (index1 + 1) % frames1
             index2 = (index2 + 1) % frames2
-            if not sleeping:
+            if not sleep:
                 break
 
     im1 = Image.open(player.properties['portrait'])
@@ -51,7 +70,7 @@ def sleep_screen(self, player):
 
     graph_width, graph_height = size = (300, 260)
 
-    sleepWindow = sg.Window('Sleeping', sleeping(player), finalize=True, size=(320, 375),
+    sleepWindow = sg.Window('Sleeping', sleeping(self,player), finalize=True, size=(320, 375),
                             element_justification="c", icon='data\\img\\sleep.ico')
 
     sleepWindow['sleep_graph'].draw_image('data\\img\\bg\\room_sleeping.png', location=(0, 0))

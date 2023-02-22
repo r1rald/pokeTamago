@@ -1,6 +1,5 @@
 from nickname_generator import generate
 from random import choice
-import PySimpleGUI as sg
 import time
 import json
 
@@ -91,8 +90,8 @@ class Player(Poke):
             self.base["Sp. Defense"] += round(self.base["Sp. Defense"]/50, 2)
             self.base["Speed"] += round(self.base["Speed"]/50, 2)
 
-            #"MaxHP" : 43,
-            #self.condition['health'] = self.condition['MaxHP']
+            self.condition['MaxHP'] = 43
+            self.condition['health'] = self.condition['MaxHP']
 
 
     def eat(self):
