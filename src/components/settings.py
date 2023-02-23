@@ -1,4 +1,4 @@
-import Data.screens as sc
+import src.components as c
 import PySimpleGUI as sg
 import json
 import sys
@@ -95,7 +95,7 @@ def settings_screen(self):
                 os.execl(sys.executable, sys.executable, *sys.argv)
 
             case sg.WINDOW_CLOSE_ATTEMPTED_EVENT | 'Back':
-                event = sc.popUp(self,'','Are you sure you want to continue?\n' +
+                event = c.popUp(self,'','Are you sure you want to continue?\n' +
                     '(Your unapplied changes may be lost!)')
 
                 if event == 'OK':

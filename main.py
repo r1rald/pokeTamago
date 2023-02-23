@@ -1,7 +1,7 @@
-from Data.player import Player
+from src.hooks.player import Player
 from threading import Thread
 from sched import scheduler
-from Data.game import Game
+from src.hooks.game import Game
 import time as t
 import sys
 import os

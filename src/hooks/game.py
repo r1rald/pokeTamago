@@ -1,11 +1,11 @@
 from threading import Thread
-import Data.screens as sc
+import src.components as c
 import PySimpleGUI as sg
-import Data.funct as f
+import src.hooks.funct as f
 from time import sleep
 from PIL import Image
-import Data.themes
-import Data.config
+import src.cfg.themes
+import src.cfg.config
 import json
 import time
 import sys
@@ -49,7 +49,7 @@ class Game:
 
             match event:
                 case sg.WINDOW_CLOSE_ATTEMPTED_EVENT | 'Exit':
-                    event = sc.popUp(self,'Quit','Are you sure you want to quit?')
+                    event = src.popUp(self,'Quit','Are you sure you want to quit?')
                     
                     if event=='OK':
                         sys.exit()
@@ -62,9 +62,9 @@ class Game:
 
                     while not self.cancel:
                         window1.Hide()
-                        sc.new_pokemon_screen(self, player)
+                        src.new_pokemon_screen(self, player)
                         if player.properties['name']:
-                            sc.choose_pokemon(self, player)
+                            src.choose_pokemon(self, player)
 
                     if player.properties['portrait']:
                         break
@@ -75,7 +75,7 @@ class Game:
                 case 'load':
                     self.has_been_called = False
                     window1.Hide()
-                    sc.loading_screen(self, player)
+                    src.loading_screen(self, player)
 
                     if self.has_been_called:
                         break
@@ -86,7 +86,7 @@ class Game:
                 case 'Settings':
                     self.cancel = False
                     window1.Hide()
-                    sc.settings_screen(self)
+                    src.settings_screen(self)
 
                     if self.cancel:
                         window1.UnHide()
@@ -149,26 +149,26 @@ class Game:
                     break
 
                 case 'Eat':
-                    sc.eat_screen(self, player)
+                    src.eat_screen(self, player)
 
                 case 'Battle':
                     pass
 
                 case 'Training':
-                    sc.train_screen(self, player)
+                    src.train_screen(self, player)
 
                 case 'Play':
-                    sc.play_screen(self, player)
+                    src.play_screen(self, player)
 
                 case 'Sleep':
-                    sc.sleep_screen(self, player)
+                    src.sleep_screen(self, player)
                     
                 case 'Main Menu':
                     self.run = False
                     os.execl(sys.executable, sys.executable, *sys.argv)
 
                 case sg.WINDOW_CLOSE_ATTEMPTED_EVENT:
-                    event = sc.popUp(self,'Quit','Are you sure you want to quit?')
+                    event = src.popUp(self,'Quit','Are you sure you want to quit?')
 
                     if event == 'OK':
                         self.run = False
@@ -178,9 +178,9 @@ class Game:
                         continue
 
             if not player.status['alive']:
-                sc.death_screen(self, player)
+                src.death_screen(self, player)
             if player.status['sleeping']:
-                sc.sleep_screen(self, player)
+                src.sleep_screen(self, player)
 
             if 40 < player.condition["food"]:
                 fdClr = (None)
@@ -290,10 +290,10 @@ def newGame(self):
             titlebar = '#0052e7'
 
     buttonColumn = [
-        [sg.Button('New Pokemon', size=12)],
-        [sg.Button('Continue', size=12, key='load')],
-        [sg.B('Settings', size=12)],
-        [sg.B('Exit', size=12)]
+        c.button(self,'New Pokemon',0.75),
+        c.button(self,'Continue',0.75),
+        c.button(self,'Settings',0.75),
+        c.button(self,'Exit',0.75)
     ]
 
     elements = [

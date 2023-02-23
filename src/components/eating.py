@@ -2,7 +2,7 @@ from threading import Thread
 import PySimpleGUI as sg
 from time import sleep
 from PIL import Image
-import Data.funct as f
+import src.hooks.funct as f
 
 
 def eat(self,player):

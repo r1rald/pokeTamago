@@ -1,4 +1,4 @@
-import Data.screens as sc
+import src.components as c
 import PySimpleGUI as sg
 from re import sub
 
@@ -55,7 +55,7 @@ def choose_pokemon(self, player):
                     self.cancel = True
                     break
                 else:
-                    event = sc.popUp(self,'error','You must choose a Pokemon!', True)
+                    event = c.popUp(self,'error','You must choose a Pokemon!', True)
 
                     if event == 'OK':
                         continue

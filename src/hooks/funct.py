@@ -7,7 +7,7 @@ import json
 def randomYieldGroup():
     xp_group = ['Medium Slow', 'Medium Fast', 'Fast', 'Slow']
 
-    with open("data\\pokedex.json", "r") as read_file:
+    with open("src\\cfg\\pokedex.json", "r") as read_file:
         data = json.load(read_file)
 
         for i in data:
@@ -15,7 +15,7 @@ def randomYieldGroup():
             "yield": random.randint(36,340)}
             i.update(a)
 
-    with open("data\\pokedex.json", "w") as write_file:
+    with open("src\\cfg\\pokedex.json", "w") as write_file:
         json.dump(data, write_file)
 
 
@@ -23,6 +23,7 @@ def image_to_data(im):
     with BytesIO() as output:
         im.save(output, format="PNG")
         data = output.getvalue()
+        
     return data
 
 
@@ -36,20 +37,20 @@ def portrait_background(player):
         return 'day' if 5 <= current_time <= 14 else 'afternoon' if 15 <= current_time <= 20 else 'night'
 
     if player.properties['type'][0] in grassland :
-        bg = f'data\\img\\bg\\grassland-feild-{partOfAday()}.png'
+        bg = f'src\\assets\\img\\bg\\grassland-feild-{partOfAday()}.png'
     elif player.properties['type'][0] in forest:
-         bg = f'data\\img\\bg\\forest-grassy-{partOfAday()}.png'
+         bg = f'src\\assets\\img\\bg\\forest-grassy-{partOfAday()}.png'
     elif player.properties['type'][0] in mountaintop:
-         bg = f'data\\img\\bg\\mountaintop-high-{partOfAday()}.png'
+         bg = f'src\\assets\\img\\bg\\mountaintop-high-{partOfAday()}.png'
     elif player.properties['type'][0] == 'Water':
-         bg = f'data\\img\\bg\\ocean-water-{partOfAday()}.png'
+         bg = f'src\\assets\\img\\bg\\ocean-water-{partOfAday()}.png'
     elif player.properties['type'][0] == 'Ice':
-         bg = f'data\\img\\bg\\snowy-{partOfAday()}.png'
+         bg = f'src\\assets\\img\\bg\\snowy-{partOfAday()}.png'
     else:
         if partOfAday() == 'day' or partOfAday() == 'afternoon':
-             bg = 'data\\img\\bg\\cave-day.png'
+             bg = 'src\\assets\\img\\bg\\cave-day.png'
         else:
-             bg = 'data\\img\\bg\\cave-night.png'   
+             bg = 'src\\assets\\img\\bg\\cave-night.png'   
 
     return bg
 

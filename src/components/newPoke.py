@@ -1,5 +1,5 @@
 from nickname_generator import generate
-import Data.screens as sc
+import src.components as c
 import PySimpleGUI as sg
 
 
@@ -55,7 +55,7 @@ def new_pokemon_screen(self, player):
                     player.properties["name"] = values['-IN-']
                     break
                 else:
-                    sc.popUp(self, 'error', 'Invalid name or this Pokemon is already exist!\n'+
+                    c.popUp(self, 'error', 'Invalid name or this Pokemon is already exist!\n'+
                     '(The name cannot be longer than 14 characters)', True)
 
     pokeName.close()
