@@ -48,8 +48,8 @@ class Game:
             event, values = window1.read(timeout=41.66)
 
             match event:
-                case sg.WINDOW_CLOSE_ATTEMPTED_EVENT | 'Exit':
-                    event = src.popUp(self,'Quit','Are you sure you want to quit?')
+                case sg.WINDOW_CLOSE_ATTEMPTED_EVENT | 'EXIT':
+                    event = c.popUp(self,'Quit','Are you sure you want to quit?')
                     
                     if event=='OK':
                         sys.exit()
@@ -57,14 +57,14 @@ class Game:
                     if event=='c':
                         continue
 
-                case 'New Pokemon':
+                case 'NEW POKEMON':
                     self.cancel = False
 
                     while not self.cancel:
                         window1.Hide()
-                        src.new_pokemon_screen(self, player)
+                        c.new_pokemon_screen(self, player)
                         if player.properties['name']:
-                            src.choose_pokemon(self, player)
+                            c.choose_pokemon(self, player)
 
                     if player.properties['portrait']:
                         break
@@ -72,10 +72,10 @@ class Game:
                         window1.UnHide()
                         continue
 
-                case 'load':
+                case 'LOAD':
                     self.has_been_called = False
                     window1.Hide()
-                    src.loading_screen(self, player)
+                    c.loading_screen(self, player)
 
                     if self.has_been_called:
                         break
@@ -83,10 +83,10 @@ class Game:
                         window1.UnHide()
                         continue
 
-                case 'Settings':
+                case 'SETTINGS':
                     self.cancel = False
                     window1.Hide()
-                    src.settings_screen(self)
+                    c.settings_screen(self)
 
                     if self.cancel:
                         window1.UnHide()
@@ -149,26 +149,26 @@ class Game:
                     break
 
                 case 'Eat':
-                    src.eat_screen(self, player)
+                    c.eat_screen(self, player)
 
                 case 'Battle':
                     pass
 
                 case 'Training':
-                    src.train_screen(self, player)
+                    c.train_screen(self, player)
 
                 case 'Play':
-                    src.play_screen(self, player)
+                    c.play_screen(self, player)
 
                 case 'Sleep':
-                    src.sleep_screen(self, player)
+                    c.sleep_screen(self, player)
                     
                 case 'Main Menu':
                     self.run = False
                     os.execl(sys.executable, sys.executable, *sys.argv)
 
                 case sg.WINDOW_CLOSE_ATTEMPTED_EVENT:
-                    event = src.popUp(self,'Quit','Are you sure you want to quit?')
+                    event = c.popUp(self,'Quit','Are you sure you want to quit?')
 
                     if event == 'OK':
                         self.run = False
@@ -178,9 +178,9 @@ class Game:
                         continue
 
             if not player.status['alive']:
-                src.death_screen(self, player)
+                c.death_screen(self, player)
             if player.status['sleeping']:
-                src.sleep_screen(self, player)
+                c.sleep_screen(self, player)
 
             if 40 < player.condition["food"]:
                 fdClr = (None)
@@ -289,16 +289,19 @@ def newGame(self):
         case "TamagoLight":
             titlebar = '#0052e7'
 
-    buttonColumn = [
-        c.button(self,'New Pokemon',0.75),
-        c.button(self,'Continue',0.75),
-        c.button(self,'Settings',0.75),
-        c.button(self,'Exit',0.75)
+    buttonColumn1 = [
+        c.button(self,'New Pokemon',0.65),
+        c.button(self,'Settings',0.65),
+    ]
+
+    buttonColumn2 = [
+        c.button(self,'Continue',0.65),
+        c.button(self,'Exit',0.65)
     ]
 
     elements = [
-        [sg.Image('data\\img\\logo.png', subsample=3)],
-        [sg.Column(buttonColumn)]
+        [sg.Image('src\\assets\\img\\logo.png', subsample=2)],
+        [sg.Column(buttonColumn1), sg.Column(buttonColumn2)]
     ]
 
     frame = [
