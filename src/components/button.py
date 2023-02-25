@@ -1,59 +1,38 @@
 import PySimpleGUI as sg
 from io import BytesIO
 from PIL import Image
+import src.hooks.funct as f
 
-def button(self,text,size,disabled=False,tooltip=None):
+def button(self,text,size,disabled=False,visible=True,return_key=False):
     match self.settings['theme']:
 
         case "TamagoDefault":
-            image = Image.open('src\\assets\\img\\buttons\\default_button.png')
-            width, height = image.size
-            resized_image = image.resize((int(width*size), int(height*size)))
+            data = f.image2data_resize('buttons\\default_button', size)
 
-            with BytesIO() as output:
-                resized_image.save(output, format='PNG')
-                data = output.getvalue()
-
-            color = '#64778d'
+            color = ((sg.theme_text_color(),sg.theme_background_color()))
 
         case "TamagoDark":
-            image = Image.open('src\\assets\\img\\buttons\\dark_button.png')
-            width, height = image.size
-            resized_image = image.resize((int(width*size), int(height*size)))
+            data = f.image2data_resize('buttons\\dark_button', size)
 
-            with BytesIO() as output:
-                resized_image.save(output, format='PNG')
-                data = output.getvalue()
-
-            color = '#202124'
+            color = ((sg.theme_text_color(),sg.theme_background_color()))
 
         case "TamagoLight":
-            image = Image.open('src\\assets\\img\\buttons\\light_button.png')
-            width, height = image.size
-            resized_image = image.resize((int(width*size), int(height*size)))
+            data = f.image2data_resize('buttons\\light_button', size)
 
-            with BytesIO() as output:
-                resized_image.save(output, format='PNG')
-                data = output.getvalue()
-
-            color = '#efefde'
+            color = (sg.theme_text_color(),sg.theme_background_color())
 
     match disabled:
 
         case True:
             disabled = sg.BUTTON_DISABLED_MEANS_IGNORE
 
-            image = Image.open('src\\assets\\img\\buttons\\disabled_button.png')
-            width, height = image.size
-            resized_image = image.resize((int(width*size), int(height*size)))
+            data = f.image2data_resize('buttons\\disabled_button', size)
 
-            with BytesIO() as output:
-                resized_image.save(output, format='PNG')
-                data = output.getvalue()
+            color = ('#363840',sg.theme_background_color())
 
         case False:
             disabled = False
 
-    return [sg.Button(text, image_source=data, mouseover_colors=('#41434D',color), border_width=0, 
-        button_color=color, disabled=disabled, disabled_button_color=('#41434D', color), 
-        tooltip=tooltip, k=text.upper())]
+    return sg.Button(text, image_source=data, border_width=0, mouseover_colors=color, 
+        button_color=color, disabled=disabled, bind_return_key=return_key, visible=visible, 
+        k=text.upper())

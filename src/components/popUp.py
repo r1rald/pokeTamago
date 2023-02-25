@@ -1,4 +1,5 @@
 import PySimpleGUI as sg
+import src.components as c
 
 
 def popUp_layout(self, message):
@@ -14,7 +15,7 @@ def popUp_layout(self, message):
             titlebar = '#0052e7'
 
     elements = [
-        [sg.T(message, justification='c')], [sg.Button('OK'), sg.B('Cancel', k='c')]
+        [sg.T(message, justification='c')], [c.button(self,'Ok',0.45), c.button(self,'Cancel',0.45)]
         ]
 
     frame = [
@@ -29,8 +30,8 @@ def popUp_layout(self, message):
                     
 
 def popUp(self,name,message,button=None):
-    popUp = sg.Window(name, popUp_layout(self,message), icon='data\\img\\warning.ico',
-        keep_on_top=True, enable_close_attempted_event=True, disable_minimize=True)
+    popUp = sg.Window(name, popUp_layout(self,message), keep_on_top=True, 
+        enable_close_attempted_event=True, disable_minimize=True)
     
     while True:
         event, values = popUp.read(timeout=1)
@@ -40,7 +41,7 @@ def popUp(self,name,message,button=None):
             case 'OK':
                 break
 
-            case 'c' | sg.WINDOW_CLOSE_ATTEMPTED_EVENT:
+            case 'CANCEL' | sg.WINDOW_CLOSE_ATTEMPTED_EVENT:
                 break
 
         if button:

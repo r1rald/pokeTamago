@@ -3,6 +3,7 @@ import PySimpleGUI as sg
 from time import sleep
 from PIL import Image
 import src.hooks.funct as f
+import src.components as c
 import sys
 import os
 
@@ -27,15 +28,15 @@ def dead(self,player):
     ]
 
     elements = [
-        [sg.Frame('', graph1, s=(300, 260), visible=True, k='death_frame'), sg.Frame('', graph2,
-        s=(300, 260), visible=False, k='revive_frame')],
+        [sg.Frame('', graph1, s=(300, 260), visible=True, k='death_frame'), 
+         sg.Frame('', graph2, s=(300, 260), visible=False, k='revive_frame')],
         [sg.Text('Sadly seems like your pet is passed away.\n Do you want to revive it?',
-        p=(0,10), k='text1', visible=True, justification='c')],
+            p=(0,10), k='text1', visible=True, justification='c')],
         [sg.Text('Your pet is about to begin a new life.\n' +
-        f'The process will take {f.time_counter(player.status["revive_time"])}.', p=(0,10),
-        visible=False, k='text2', justification='c')], [sg.Button('Revive', size=8, k='revive', 
-        p=(0,10), visible=True), sg.Button('Letting go', size=8, k='letgo', p=(0,10), visible=True),
-        sg.Button('Main Menu', size=8, p=(0, 10), k='menu', visible=False)]
+            f'The process will take {f.time_counter(player.status["revive_time"])}.', p=(0,10),
+            visible=False, k='text2', justification='c')], 
+        [c.button(self,'Revive',0.45), c.button(self,'Letting go',0.45),
+         c.button(self,'Main Menu',0.45,False,False)]
     ]
 
     frame = [
@@ -67,8 +68,8 @@ def death_screen(self, player):
                 break
 
     im1 = Image.open(player.properties['portrait'])
-    im2 = Image.open('data\\img\\effects\\death.gif')
-    im3 = Image.open('data\\img\\effects\\revive.gif')
+    im2 = Image.open('src\\assets\\img\\effects\\death.gif')
+    im3 = Image.open('src\\assets\\img\\effects\\revive.gif')
 
     width1, height1 = im1.size
     width2, height2 = im2.size
@@ -80,11 +81,10 @@ def death_screen(self, player):
 
     graph_width, graph_height = size = (300, 260)
 
-    deathWindow = sg.Window('Passing', dead(self,player), finalize=True, icon='data\\img\\death.ico', 
-    element_justification="c")
+    deathWindow = sg.Window('Passing', dead(self,player), finalize=True, element_justification="c")
 
-    deathWindow['death_graph'].draw_image('data\\img\\bg\\death_graveyard.png', location=(0, 0))
-    deathWindow['revive_graph'].draw_image('data\\img\\bg\\death_graveyard.png', location=(0, 0))
+    deathWindow['death_graph'].draw_image('src\\assets\\img\\bg\\death_graveyard.png', location=(0, 0))
+    deathWindow['revive_graph'].draw_image('src\\assets\\img\\death_graveyard.png', location=(0, 0))
 
     index1 = 1
     index2 = 1
@@ -98,10 +98,10 @@ def death_screen(self, player):
     location2 = ((graph_width//2-width2//2), (graph_height//1.4-height1)-height1)
     location3 = ((graph_width//2-width3//2), (graph_height//1.4-height1)-height1)
 
-    item1 = deathWindow['death_graph'].draw_image(data=f.image_to_data(im1), location=location1)
-    item2 = deathWindow['death_graph'].draw_image(data=f.image_to_data(im2), location=location2)
-    item3 = deathWindow['revive_graph'].draw_image(data=f.image_to_data(im1), location=location1)
-    item4 = deathWindow['revive_graph'].draw_image(data=f.image_to_data(im3), location=location3)
+    item1 = deathWindow['death_graph'].draw_image(data=f.image2data(im1), location=location1)
+    item2 = deathWindow['death_graph'].draw_image(data=f.image2data(im2), location=location2)
+    item3 = deathWindow['revive_graph'].draw_image(data=f.image2data(im1), location=location1)
+    item4 = deathWindow['revive_graph'].draw_image(data=f.image2data(im3), location=location3)
 
     thread = Thread(target=portrait_thread, daemon=True)
     if self.settings['portrait_anim']:
@@ -120,9 +120,9 @@ def death_screen(self, player):
                 im1.seek(index1)
                 im2.seek(index2)
 
-                item_new1 = deathWindow['death_graph'].draw_image(data=f.image_to_data(im1),
+                item_new1 = deathWindow['death_graph'].draw_image(data=f.image2data(im1),
                 location=location1)
-                item_new2 = deathWindow['death_graph'].draw_image(data=f.image_to_data(im2),
+                item_new2 = deathWindow['death_graph'].draw_image(data=f.image2data(im2),
                 location=location2)
 
                 item1 = item_new1
@@ -131,9 +131,9 @@ def death_screen(self, player):
                 if player.status["revive"]:
                     im1.seek(index1)
                     im3.seek(index3)
-                    item_new3 = deathWindow['revive_graph'].draw_image(data=f.image_to_data(im1),
+                    item_new3 = deathWindow['revive_graph'].draw_image(data=f.image2data(im1),
                     location=location1)
-                    item_new4 = deathWindow['revive_graph'].draw_image(data=f.image_to_data(im3),
+                    item_new4 = deathWindow['revive_graph'].draw_image(data=f.image2data(im3),
                     location=location2)
                     item3 = item_new3
                     item4 = item_new4
@@ -145,16 +145,16 @@ def death_screen(self, player):
                 death = False
                 sys.exit()
 
-            case 'menu':
+            case 'MENU':
                 self.run = False
                 death = False
                 os.execl(sys.executable, sys.executable, *sys.argv)
 
-            case 'revive':
+            case 'REVIVE':
                 player.status['revive'] = True
                 player.status['revive_time'] = 86400
 
-            case 'letgo':
+            case 'LETTING GO':
                 os.remove(os.path.expanduser(f'~\\Documents\\pokeTamago\\save\\{player.properties["name"]}.json'))
                 self.run = False
                 os.execl(sys.executable, sys.executable, *sys.argv)
@@ -165,18 +165,18 @@ def death_screen(self, player):
             deathWindow['text1'].update(visible=False)
             deathWindow['text2'].update('Your pet is about to begin a new life.\n' +
             f'The process will take {f.time_counter(player.status["revive_time"])}.', visible=True)
-            deathWindow['revive'].update(visible=False)
-            deathWindow['letgo'].update(visible=False)
-            deathWindow['menu'].update(visible=True)
+            deathWindow['REVIVE'].update(visible=False)
+            deathWindow['LETTING GO'].update(visible=False)
+            deathWindow['MENU'].update(visible=True)
 
             if player.status['revive'] and player.status['revive_time'] == 0:
                 deathWindow['death_frame'].update(visible=True)
                 deathWindow['revive_frame'].update(visible=False)
                 deathWindow['text1'].update(visible=True)
                 deathWindow['text2'].update(visible=False)
-                deathWindow['revive'].update(visible=True)
-                deathWindow['letgo'].update(visible=True)
-                deathWindow['menu'].update(visible=False)
+                deathWindow['REVIVE'].update(visible=True)
+                deathWindow['LETTING GO'].update(visible=True)
+                deathWindow['MENU'].update(visible=False)
 
                 player.condition['health'] = player.condition['MaxHP']
                 player.condition['bored'] = 0

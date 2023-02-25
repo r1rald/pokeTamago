@@ -2,6 +2,7 @@ from threading import Thread
 import PySimpleGUI as sg
 from PIL import Image
 import src.hooks.funct as f
+import src.components as c
 import sys
 import os
 
@@ -27,7 +28,7 @@ def sleeping(self,player):
         [sg.Text('Shhh!!! Your pet is sleeping now.\n' + 
         f'Let it rest for about {f.time_counter(player.status["sleep_time"])}.', k='text', p=(0,10),
         justification='c')],
-        [sg.Button('Main Menu', size=8, p=(0,10))]
+        [c.button(self,'Main Menu',0.45)]
     ]
 
     frame = [
@@ -59,7 +60,7 @@ def sleep_screen(self, player):
                 break
 
     im1 = Image.open(player.properties['portrait'])
-    im2 = Image.open('data\\img\\effects\\sleep.gif')
+    im2 = Image.open('src\\assets\\img\\effects\\sleep.gif')
 
     width1, height1 = im1.size
     width2, height2 = im2.size
@@ -70,9 +71,9 @@ def sleep_screen(self, player):
     graph_width, graph_height = size = (300, 260)
 
     sleepWindow = sg.Window('Sleeping', sleeping(self,player), finalize=True, size=(320, 375),
-                            element_justification="c", icon='data\\img\\sleep.ico')
+        element_justification="c")
 
-    sleepWindow['sleep_graph'].draw_image('data\\img\\bg\\room_sleeping.png', location=(0, 0))
+    sleepWindow['sleep_graph'].draw_image('src\\assets\\img\\bg\\room_sleeping.png', location=(0, 0))
 
     index1 = 1
     index2 = 1
@@ -83,8 +84,8 @@ def sleep_screen(self, player):
     location1 = (graph_width // 2 - width1 // 2, graph_height // 1.65 - height1 // 1.65)
     location2 = (graph_width // 2 - width1 // 2, graph_height // 2 - (height2 - 10))
 
-    item1 = sleepWindow['sleep_graph'].draw_image(data=f.image_to_data(im1), location=location1)
-    item2 = sleepWindow['sleep_graph'].draw_image(data=f.image_to_data(im2), location=location2)
+    item1 = sleepWindow['sleep_graph'].draw_image(data=f.image2data(im1), location=location1)
+    item2 = sleepWindow['sleep_graph'].draw_image(data=f.image2data(im2), location=location2)
 
     thread = Thread(target=portrait_thread, daemon=True)
     if self.settings['portrait_anim']:
@@ -98,9 +99,9 @@ def sleep_screen(self, player):
                 im1.seek(index1)
                 im2.seek(index2)
 
-                item_new1 = sleepWindow['sleep_graph'].draw_image(data=f.image_to_data(im1),
+                item_new1 = sleepWindow['sleep_graph'].draw_image(data=f.image2data(im1),
                                                                   location=location1)
-                item_new2 = sleepWindow['sleep_graph'].draw_image(data=f.image_to_data(im2),
+                item_new2 = sleepWindow['sleep_graph'].draw_image(data=f.image2data(im2),
                                                                   location=location2)
 
                 sleepWindow['sleep_graph'].delete_figure(item1)
@@ -115,7 +116,7 @@ def sleep_screen(self, player):
                 self.run = False
                 sys.exit()
 
-            case 'Main Menu':
+            case 'MAIN MENU':
                 self.run = False
                 os.execl(sys.executable, sys.executable, *sys.argv)
 

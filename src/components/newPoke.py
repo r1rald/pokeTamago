@@ -18,8 +18,8 @@ def newPoke(self):
     elements = [
         [sg.Text('What is the name of your Pokemon?')],
         [sg.Input(key='-IN-', s=48, expand_x=False, expand_y=False, justification='l')],
-        [sg.B('Random'), sg.Button('Enter', p=((170, 0), (0, 0))), 
-        sg.Button('Back'),sg.Button('Submit', visible=False, bind_return_key=True)]
+        [c.button(self,'Random',0.45), c.button(self,'Enter',0.45), c.button(self,'Back',0.45),
+         c.button(self,'Submit',0.45,False,False,True)]
     ]
 
     frame = [
@@ -34,7 +34,7 @@ def newPoke(self):
 
 
 def new_pokemon_screen(self, player):
-    pokeName = sg.Window('Name', newPoke(self), grab_anywhere=True)
+    pokeName = sg.Window('Name', newPoke(self))
 
     while True:
         event, values = pokeName.read(timeout=41.66)
@@ -43,14 +43,14 @@ def new_pokemon_screen(self, player):
             case sg.TIMEOUT_KEY:
                 pokeName.refresh()
 
-            case sg.WINDOW_CLOSED | 'Back':
+            case sg.WINDOW_CLOSED | 'BACK':
                 self.cancel = True
                 break
             
-            case 'Random':
+            case 'RANDOM':
                 pokeName['-IN-'].update(value=generate())
 
-            case 'Enter' | 'Submit':
+            case 'ENTER' | 'SUBMIT':
                 if 1 <= len(values['-IN-']) <= 14 and values['-IN-'] not in self.read_save():
                     player.properties["name"] = values['-IN-']
                     break

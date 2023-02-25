@@ -50,8 +50,7 @@ def setting(self):
         [sg.Frame('Theme', theme, s=(215, 80))],
         [sg.Frame('Audio', sounds, s=(215, 200))],
         [sg.Frame('Portrait', portrait, s=(215, 55))],
-        [sg.B('Default', p=((5, 0), (10, 5))), sg.B('Apply', p=((73, 0), (10, 5))),
-        sg.B('Back', p=((10, 0), (10, 5)))]
+        [c.button(self,'Default',0.45), c.button(self,'Apply',0.45), c.button(self,'Back',0.45)]
     ]
 
     frame = [
@@ -66,8 +65,8 @@ def setting(self):
 
 
 def settings_screen(self):
-    OptWindow = sg.Window('Settings', setting(self), icon='data\\img\\gear.ico', grab_anywhere=True,
-    enable_close_attempted_event=True)
+    OptWindow = sg.Window('Settings', setting(self), icon='data\\img\\gear.ico',
+        enable_close_attempted_event=True)
 
     while True:
         event, values = OptWindow.read(timeout=100)
@@ -94,7 +93,7 @@ def settings_screen(self):
                 self.save_settings()
                 os.execl(sys.executable, sys.executable, *sys.argv)
 
-            case sg.WINDOW_CLOSE_ATTEMPTED_EVENT | 'Back':
+            case sg.WINDOW_CLOSE_ATTEMPTED_EVENT | 'BACK':
                 event = c.popUp(self,'','Are you sure you want to continue?\n' +
                     '(Your unapplied changes may be lost!)')
 
@@ -108,10 +107,10 @@ def settings_screen(self):
                     self.cancel = True
                     break
 
-                if event == 'c':
+                if event == 'CANCEL':
                     continue
 
-            case 'Apply':
+            case 'APPLY':
                 self.settings['theme'] = values['_theme_']
                 self.save_settings()
                 os.execl(sys.executable, sys.executable, *sys.argv)

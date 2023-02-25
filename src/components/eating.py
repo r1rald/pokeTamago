@@ -3,6 +3,7 @@ import PySimpleGUI as sg
 from time import sleep
 from PIL import Image
 import src.hooks.funct as f
+import src.components as c
 
 
 def eat(self,player):
@@ -28,7 +29,7 @@ def eat(self,player):
         sg.Text("Your pet is full, you can't feed it for now!\n" +
         f'Let it rest for about {f.time_counter(player.status["eat_time"])}.', justification='c',
         visible=False, k='text3', p=(0,10))],
-        [sg.Button('Feed', size=8, p=(10,10), k='feed'), sg.Button('Back', size=8, p=(10,10))]
+        [c.button(self,'Feed',0.45), c.button(self,'Back',0.45)]
     ]
 
     frame = [
@@ -58,7 +59,7 @@ def eat_screen(self, player):
                     break
 
     im1 = Image.open(player.properties['portrait'])
-    im2 = Image.open('data\\img\\effects\\eat.gif')
+    im2 = Image.open('src\\assets\\img\\effects\\eat.gif')
 
     width1, height1 = im1.size
     width2, height2 = im2.size
@@ -69,7 +70,7 @@ def eat_screen(self, player):
     graph_width, graph_height = size = (300, 260)
 
     eatWindow = sg.Window('Eating', eat(self,player), finalize=True, size=(320, 375),
-    element_justification="c", icon='data\\img\\eat.ico')
+        element_justification="c",)
 
     eatWindow['eat_graph'].draw_image('data\\img\\bg\\kitchen_eating.png', location=(0, 0))
 
@@ -82,8 +83,8 @@ def eat_screen(self, player):
     location1 = (graph_width//2-width1//2, graph_height//1.5-height1)
     location2 = (graph_width//2-width2//2, graph_height//1.5-(height2+(height1//2)))
 
-    item1 = eatWindow['eat_graph'].draw_image(data=f.image_to_data(im1), location=location1)
-    item2 = eatWindow['eat_graph'].draw_image(data=f.image_to_data(im2), location=location2)
+    item1 = eatWindow['eat_graph'].draw_image(data=f.image2data(im1), location=location1)
+    item2 = eatWindow['eat_graph'].draw_image(data=f.image2data(im2), location=location2)
 
     thread = Thread(target=portrait_thread, daemon=True)
     if self.settings['portrait_anim']:
@@ -98,7 +99,7 @@ def eat_screen(self, player):
 
                 im1.seek(index1)
                 
-                item_new1 = eatWindow['eat_graph'].draw_image(data=f.image_to_data(im1),
+                item_new1 = eatWindow['eat_graph'].draw_image(data=f.image2data(im1),
                 location=location1)
 
                 eatWindow['eat_graph'].delete_figure(item1)
@@ -107,7 +108,7 @@ def eat_screen(self, player):
 
                 if player.status['eating'] == True:
                     im2.seek(index2)
-                    item_new2 = eatWindow['eat_graph'].draw_image(data=f.image_to_data(im2),
+                    item_new2 = eatWindow['eat_graph'].draw_image(data=f.image2data(im2),
                     location=location2)
                     item2 = item_new2
 

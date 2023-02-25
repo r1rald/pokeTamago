@@ -3,6 +3,7 @@ import PySimpleGUI as sg
 from time import sleep
 from PIL import Image
 import src.hooks.funct as f
+import src.components as c
 
 
 def training(self):
@@ -25,7 +26,7 @@ def training(self):
         [sg.Frame('', graph, s=(300, 260))],
         [sg.T('Your pokemon is ready for training!\nPlease, be gentle with it!', justification='c',
         k='train')],
-        [sg.B("Let's begin", p=(10, 10), k='begin'), sg.B('Back', p=(10, 10))]
+        [c.button(self,"Let's begin",0.45), c.button(self,'Back',0.45)]
     ]
 
     frame = [
@@ -56,8 +57,8 @@ def train_screen(self, player):
                 break
 
     im1 = Image.open(player.properties['portrait'])
-    im2 = Image.open('data\\img\\effects\\sweat1.gif')
-    im3 = Image.open('data\\img\\effects\\sweat2.gif')
+    im2 = Image.open('src\\assets\\img\\effects\\sweat1.gif')
+    im3 = Image.open('src\\assets\\img\\effects\\sweat2.gif')
 
     width1, height1 = im1.size
     width2, height2 = im2.size
@@ -69,10 +70,10 @@ def train_screen(self, player):
 
     graph_width, graph_height = size = (300, 260)
 
-    trainWindow = sg.Window('Training', training(self), finalize=True, size=(320, 365),
-    icon='data\\img\\gym.ico', element_justification="c")
+    trainWindow = sg.Window('Training', training(self), size=(320, 365), element_justification="c",
+        finalize=True)
 
-    trainWindow['train_graph'].draw_image('data\\img\\bg\\gym_training.png', location=(0, 0))
+    trainWindow['train_graph'].draw_image('src\\assets\\img\\bg\\gym_training.png', location=(0, 0))
 
     index1 = 1
     index2 = 1
@@ -86,9 +87,9 @@ def train_screen(self, player):
     location2 = ((graph_width//2-width2//2)+60, graph_height//1.4-height1//1.5)
     location3 = ((graph_width//2-width2//2)-60, graph_height//1.4-height1//1.5)
 
-    item1 = trainWindow['train_graph'].draw_image(data=f.image_to_data(im1), location=location1)
-    item2 = trainWindow['train_graph'].draw_image(data=f.image_to_data(im2), location=location2)
-    item3 = trainWindow['train_graph'].draw_image( data=f.image_to_data(im3), location=location3)
+    item1 = trainWindow['train_graph'].draw_image(data=f.image2data(im1), location=location1)
+    item2 = trainWindow['train_graph'].draw_image(data=f.image2data(im2), location=location2)
+    item3 = trainWindow['train_graph'].draw_image( data=f.image2data(im3), location=location3)
 
     thread = Thread(target=portrait_thread, daemon=True)
     if self.settings['portrait_anim']:
@@ -104,7 +105,7 @@ def train_screen(self, player):
 
                 im1.seek(index1)
 
-                item_new1 = trainWindow['train_graph'].draw_image(data=f.image_to_data(im1),
+                item_new1 = trainWindow['train_graph'].draw_image(data=f.image2data(im1),
                 location=location1)
 
                 trainWindow['train_graph'].delete_figure(item1)
@@ -114,31 +115,31 @@ def train_screen(self, player):
                 if player.status['training'] == True:
                     im2.seek(index2)
                     im3.seek(index3)
-                    item_new2 = trainWindow['train_graph'].draw_image(data=f.image_to_data(im2),
+                    item_new2 = trainWindow['train_graph'].draw_image(data=f.image2data(im2),
                     location=location2)
-                    item_new3 = trainWindow['train_graph'].draw_image(data=f.image_to_data(im3),
+                    item_new3 = trainWindow['train_graph'].draw_image(data=f.image2data(im3),
                     location=location3)              
                     item2 = item_new2
                     item3 = item_new3
 
                 trainWindow.refresh()
 
-            case sg.WIN_CLOSED | 'Back':
+            case sg.WIN_CLOSED | 'BACK':
                 train = False
                 break
 
-            case 'begin':
+            case "LET'S BEGIN":
                 player.training()
 
         if player.status['training'] == True:
             trainWindow['train'].update('Your pokemon is already trained!\n' +
             f'It needs to rest for about {f.time_counter(player.status["training_time"])}')
-            trainWindow['begin'].update(disabled=True)
+            trainWindow["LET'S BEGIN"].update(disabled=True)
 
             if player.status['training_time'] == 0:
                 player.status['training'] = False
                 trainWindow['train'].update('Your pokemon is ready for training!\n'
                 + 'Please, be gentle with it!')
-                trainWindow['begin'].update(disabled=False)
+                trainWindow["LET'S BEGIN"].update(disabled=False)
 
     trainWindow.close()

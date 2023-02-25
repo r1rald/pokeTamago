@@ -31,7 +31,7 @@ else:
     scale = 1
 
 sg.set_options(
-    icon='data\\img\\logo.ico',
+    icon='src\\assets\\img\\logo.ico',
     button_color=None,
     element_size=(100, 100),
     button_element_size=(8, 0),
@@ -77,7 +77,7 @@ sg.set_options(
     titlebar_background_color = titlebar,
     titlebar_text_color = 'white',
     titlebar_font = ('', 10, 'normal'),
-    titlebar_icon = 'data\\img\\icon.png',
+    titlebar_icon = 'src\\assets\\img\\icon.png',
     user_settings_path = '~\\Documents\\pokeTamago\\cfg',
     pysimplegui_settings_path = None,
     pysimplegui_settings_filename = None,

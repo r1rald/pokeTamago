@@ -40,6 +40,7 @@ class Game:
         sg.theme(self.settings['theme'])
         f.randomYieldGroup()
 
+
     def newGame(self, player):
         window1 = sg.Window('', newGame(self), element_justification='c',
             enable_close_attempted_event=True)
@@ -48,13 +49,20 @@ class Game:
             event, values = window1.read(timeout=41.66)
 
             match event:
+                case sg.TIMEOUT_KEY:
+                    if not self.read_save():
+                        window1['CONTINUE'].update(disabled=sg.BUTTON_DISABLED_MEANS_IGNORE,
+                            image_data=f.image2data_resize('buttons\\disabled_button',0.6), 
+                            button_color=('#363840', sg.theme_background_color()))
+
                 case sg.WINDOW_CLOSE_ATTEMPTED_EVENT | 'EXIT':
                     event = c.popUp(self,'Quit','Are you sure you want to quit?')
                     
                     if event=='OK':
+                        self.run = False
                         sys.exit()
 
-                    if event=='c':
+                    if event=='CANCEL':
                         continue
 
                 case 'NEW POKEMON':
@@ -72,7 +80,7 @@ class Game:
                         window1.UnHide()
                         continue
 
-                case 'LOAD':
+                case 'CONTINUE':
                     self.has_been_called = False
                     window1.Hide()
                     c.loading_screen(self, player)
@@ -91,12 +99,8 @@ class Game:
                     if self.cancel:
                         window1.UnHide()
 
-            if not self.read_save():
-                window1['load'].update(disabled=True)
-            else:
-                window1['load'].update(disabled=False)
-
         window1.close()
+
 
     def mainGame(self, player):
         global index, frames, size
@@ -116,8 +120,8 @@ class Game:
 
         graph_width, graph_height = size = (170, 100)
 
-        mainWindow = sg.Window('pokéTamago', mainGame(self, player), icon='data\\img\\logo.ico',
-        finalize=True, enable_close_attempted_event=True)
+        mainWindow = sg.Window('pokéTamago', mainGame(self, player), finalize=True,
+            enable_close_attempted_event=True)
 
         mainWindow['GRAPH'].draw_image(f'{f.portrait_background(player)}', location=(0, 0))
 
@@ -127,7 +131,7 @@ class Game:
 
         location = (graph_width//2-width//2, graph_height//2-height//2)
 
-        item = mainWindow['GRAPH'].draw_image(data=f.image_to_data(im),location=location)
+        item = mainWindow['GRAPH'].draw_image(data=f.image2data(im),location=location)
 
         thread = Thread(target=portrait_thread, daemon=True)
         if self.settings['portrait_anim']:
@@ -139,7 +143,7 @@ class Game:
             match event:
                 case sg.TIMEOUT_KEY:
                     im.seek(index)
-                    item_new = mainWindow['GRAPH'].draw_image(data=f.image_to_data(im), location=location)
+                    item_new = mainWindow['GRAPH'].draw_image(data=f.image2data(im), location=location)
                     mainWindow['GRAPH'].delete_figure(item)
                     item = item_new
                     mainWindow.refresh()
@@ -148,24 +152,30 @@ class Game:
                     self.run = False
                     break
 
-                case 'Eat':
+                case 'EAT':
                     c.eat_screen(self, player)
 
-                case 'Battle':
+                case 'BATTLE':
                     pass
 
-                case 'Training':
+                case 'TRAINING':
                     c.train_screen(self, player)
 
-                case 'Play':
+                case 'PLAY':
                     c.play_screen(self, player)
 
-                case 'Sleep':
+                case 'SLEEP':
                     c.sleep_screen(self, player)
                     
-                case 'Main Menu':
-                    self.run = False
-                    os.execl(sys.executable, sys.executable, *sys.argv)
+                case 'MAIN MENU':
+                    event = c.popUp(self,'Quit','Are you sure you want to quit?')
+
+                    if event == 'OK':
+                        self.run = False
+                        os.execl(sys.executable, sys.executable, *sys.argv)
+
+                    if event == 'CANCLE':
+                        continue
 
                 case sg.WINDOW_CLOSE_ATTEMPTED_EVENT:
                     event = c.popUp(self,'Quit','Are you sure you want to quit?')
@@ -174,7 +184,7 @@ class Game:
                         self.run = False
                         break
 
-                    if event == 'c':
+                    if event == 'CANCLE':
                         continue
 
             if not player.status['alive']:
@@ -218,6 +228,7 @@ class Game:
 
         mainWindow.close()
 
+
     def autosave(self, player):
         save = {}
 
@@ -232,16 +243,18 @@ class Game:
         with open(f"{path}\\{player.properties['name']}.json", 'w') as outfile:
             json.dump(save, outfile, indent=4)
 
+
     def save_settings(self):
         path = os.path.expanduser('~\\Documents\\pokeTamago\\cfg')
 
         with open(f"{path}\\settings.json", 'w') as settings: 
             json.dump(self.settings, settings, indent=4)
 
+
     def open_dex(self):
         pokes = ([], [], [], [])
 
-        with open('data\\pokedex.json', 'r') as read_file:
+        with open('src\\cfg\\pokedex.json', 'r') as read_file:
             data = json.load(read_file)
             for poke in data:
                 pokes[0].append(poke['name'])
@@ -250,6 +263,7 @@ class Game:
                 pokes[3].append(poke['yield'])
 
         return pokes
+
 
     def read_save(self):
         saves = []
@@ -289,19 +303,16 @@ def newGame(self):
         case "TamagoLight":
             titlebar = '#0052e7'
 
-    buttonColumn1 = [
-        c.button(self,'New Pokemon',0.65),
-        c.button(self,'Settings',0.65),
-    ]
-
-    buttonColumn2 = [
-        c.button(self,'Continue',0.65),
-        c.button(self,'Exit',0.65)
+    buttonColumn = [
+        [c.button(self,'New Pokemon',0.6)],
+        [c.button(self,'Continue',0.6)],
+        [c.button(self,'Settings',0.6)],
+        [c.button(self,'Exit',0.6)]
     ]
 
     elements = [
-        [sg.Image('src\\assets\\img\\logo.png', subsample=2)],
-        [sg.Column(buttonColumn1), sg.Column(buttonColumn2)]
+        [sg.Image('src\\assets\\img\\logo.png', subsample=3)],
+        [sg.Column(buttonColumn)]
     ]
 
     frame = [
@@ -381,17 +392,17 @@ def mainGame(self, player):
 
     if len(player.properties["type"]) < 2:
         TypeImage2 = [
-            sg.Image(f'data\\img\\types\\none.png', k='type2', p=0, size=(30, 24), 
+            sg.Image(f'src\\assets\\img\\types\\none.png', k='type2', p=0, size=(30, 24), 
             tooltip=' There is no second type of this Pokemon ')
         ]
     else:
         TypeImage2 = [
-            sg.Image(f'data\\img\\types\\{player.properties["type"][1]}_Type_Icon.png', k='type2',
+            sg.Image(f'src\\assets\\img\\types\\{player.properties["type"][1]}_Type_Icon.png', k='type2',
             p=0,  size=(30, 24), tooltip=f' {player.properties["type"][1]} ')
         ]
 
     conditionBar = [
-        [sg.Image(f'data\\img\\types\\{player.properties["type"][0]}_Type_Icon.png', k='type1',
+        [sg.Image(f'src\\assets\\img\\types\\{player.properties["type"][0]}_Type_Icon.png', k='type1',
         p=0, size=(30, 24), tooltip=f' {player.properties["type"][0]} ')], [sg.HSeparator(color='#3c4754', p=0)],
         TypeImage2, [sg.HSeparator(color='#3c4754', p=0)], [sg.HSeparator(color='#3c4754', p=0)]
     ]
@@ -407,15 +418,15 @@ def mainGame(self, player):
     ]
 
     buttonColumn = [
-        [sg.B('Eat', size=8)],
-        [sg.B('Play', size=8)],
-        [sg.B('Sleep', size=8)],
+        [c.button(self,'Eat',0.6)],
+        [c.button(self,'Play',0.6)],
+        [c.button(self,'Sleep',0.6)],
         [sg.HSeparator(color='#3c4754', p=((0, 0), (10, 10)))],
-        [sg.B('Training', size=8)],
-        [sg.B('Battle', size=8, disabled=True)],
-        [sg.B('Shop', size=8, disabled=True)],
+        [c.button(self,'Training',0.6)],
+        [c.button(self,'Battle',0.6,True)],
+        [c.button(self,'Shop',0.6,True)],
         [sg.HSeparator(color='#3c4754', p=((0, 0), (10, 10)))],
-        [sg.B('Main Menu', size=8)],
+        [c.button(self,'Main Menu',0.6)]
     ]
 
     elements = [

@@ -1,4 +1,5 @@
 import PySimpleGUI as sg
+import src.components as c
 import os
 
 
@@ -15,9 +16,9 @@ def load(self):
             titlebar = '#0052e7'
                 
     elements = [
-        [sg.Listbox(values=[x for x in self.read_save()], enable_events=True, key="load")],
-        [sg.B('Load', p=((55, 0), (0, 0))), sg.B('Delete'), sg.B('Back'), 
-        sg.B('Submit', visible=False, bind_return_key=True)]
+        [sg.Listbox(values=[x for x in self.read_save()], s=(1,1), enable_events=True, key="load")],
+        [c.button(self, 'Load', 0.45), c.button(self, 'Delete', 0.45), c.button(self, 'Back', 0.45),
+         c.button(self, 'Submit', 0.45, False, False, True)]
     ]
 
     frame = [
@@ -32,29 +33,33 @@ def load(self):
 
 
 def loading_screen(self, player):
-    loadScreen = sg.Window('Load', load(self), icon='data\\img\\load.ico')
+    loadScreen = sg.Window('Load', load(self))
 
     while True:
         event, values = loadScreen.read()  
         loadScreen["load"].bind('<Double-Button-1>', "+-double click-")
 
         match event:
-            case sg.WINDOW_CLOSED | 'Back':
+            case sg.WINDOW_CLOSED | 'BACK':
                 break
 
-            case 'Load' | 'load+-double click-':
+            case 'LOAD' | 'load+-double click-':
                 if not values["load"]:
-                    sg.Popup('You must choose a save file!', title='error', keep_on_top=True,
-                    auto_close=True, icon='data\\img\\warning.ico')
+                    event = c.popUp(self,'','You must choose a save file!',True)
+
+                    if event == 'OK':
+                        continue
                 else:
                     self.load_saves(player, values["load"][0])
                     player.offline_time()
                     break
 
-            case 'Delete':
+            case 'DELETE':
                 if not values["load"]:
-                    sg.Popup('You must choose a save file!', title='error', keep_on_top=True,
-                    auto_close=True, icon='data\\img\\warning.ico')
+                    event = c.popUp(self,'','You must choose a save file!',True)
+
+                    if event == 'OK':
+                        continue
                 else:
                     path = os.path.expanduser('~\\Documents\\pokeTamago\\save')
                     os.remove(f'{path}\\{values["load"][0]}.json')
