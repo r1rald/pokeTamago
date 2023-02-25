@@ -1,6 +1,10 @@
 import src.components as c
 import PySimpleGUI as sg
 from re import sub
+from PIL import Image
+import src.hooks.funct as f
+from time import sleep
+from threading import Thread
 
 
 def choosePoke(self):
@@ -15,8 +19,13 @@ def choosePoke(self):
         case "TamagoLight":
             titlebar = '#0052e7'
 
+    imageLayout = [
+        [sg.Graph((170, 100), (0, 100), (170, 0), p=0, key='GRAPH')]
+    ]
+
     elements = [
-        [sg.Listbox(values=[x for x in self.open_dex()[0]], enable_events=True, size=(25, 15), 
+        [sg.Frame('', imageLayout, size=(170, 100), element_justification='c')],
+        [sg.Listbox(values=[x for x in self.open_dex()[0]], enable_events=True, size=(25, 10), 
             key="poke", expand_x=True,)], 
         [c.button(self,'Choose',0.45), c.button(self,'Back',0.45)]
     ]
@@ -33,14 +42,72 @@ def choosePoke(self):
 
 
 def choose_pokemon(self, player):
-    pokeChooseWin = sg.Window('Choose', choosePoke(self))
+    global index, frames, size
+
+    poke_choosed = True
+
+    def portrait_thread():
+        global index, frames
+        while True:
+            sleep(0.03)
+            index = (index + 1) % frames
+            if not poke_choosed:
+                break
+
+    im = Image.open('src\\assets\\img\\poke\\default.gif')
+
+    width, height = im.size
+    frames = im.n_frames
+
+    graph_width, graph_height = size = (170, 100)
+
+    pokeChooseWin = sg.Window('Choose', choosePoke(self), finalize=True)
+
+    pokeChooseWin['GRAPH'].draw_image('src\\assets\\img\\bg\\grassland-feild-day.png', location=(0, 0))
+
+    index = 1
+
+    im.seek(index)
+
+    location = (graph_width//2-width//2, graph_height//2-height//2)
+
+    item = pokeChooseWin['GRAPH'].draw_image(data=f.image2data(im),location=location)
+
+    thread = Thread(target=portrait_thread, daemon=True)
+    if self.settings['portrait_anim']:
+        thread.start()
 
     while True:
-        event, values = pokeChooseWin.read()
+        event, values = pokeChooseWin.read(timeout=41.66)
 
         pokeChooseWin["poke"].bind('<Double-Button-1>', "+-double click-")
 
         match event:
+            case sg.TIMEOUT_KEY:
+                    if values['poke']:
+                        pokeChooseWin['GRAPH'].delete_figure(item)
+
+                        name = sub("\s|[']", '', values["poke"][0])
+                        im = Image.open(f'src\\assets\\img\\poke\\{name}.gif')
+
+                        width, height = im.size
+                        frames = im.n_frames
+
+                        location = (graph_width//2-width//2, graph_height//2-height//2)
+
+                        item = pokeChooseWin['GRAPH'].draw_image(data=f.image2data(im),location=location)
+
+                    im.seek(index)
+
+                    item_new = pokeChooseWin['GRAPH'].draw_image(data=f.image2data(im),
+                        location=location)
+                    
+                    pokeChooseWin['GRAPH'].delete_figure(item)
+
+                    item = item_new
+
+                    pokeChooseWin.refresh()
+
             case sg.WINDOW_CLOSED | 'BACK':
                 player.properties['name'] = ""
                 break
@@ -48,13 +115,17 @@ def choose_pokemon(self, player):
             case 'CHOOSE' | 'poke+-double click-':
                 if values['poke']:
                     index = self.open_dex()[0].index(f'{values["poke"][0]}')
+
                     name = sub("\s|[']", '', values["poke"][0])
+
                     player.properties['portrait'] = f'src\\assets\\img\\poke\\{name}.gif'
                     player.properties['type'] = self.open_dex()[1][index]
                     player.properties['xp_group'] = self.open_dex()[2][index]
                     player.properties['yield'] = self.open_dex()[3][index]
+
                     self.cancel = True
                     break
+
                 else:
                     event = c.popUp(self,'','You must choose a Pokemon!', True)
 
