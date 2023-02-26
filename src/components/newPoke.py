@@ -34,7 +34,7 @@ def newPoke(self):
 
 
 def new_pokemon_screen(self, player):
-    pokeName = sg.Window('Name', newPoke(self))
+    pokeName = sg.Window('Name', newPoke(self), enable_close_attempted_event=True)
 
     while True:
         event, values = pokeName.read(timeout=24)
@@ -43,9 +43,15 @@ def new_pokemon_screen(self, player):
             case sg.TIMEOUT_KEY:
                 pokeName.refresh()
 
-            case sg.WINDOW_CLOSED | 'BACK':
-                self.cancel = True
-                break
+            case sg.WINDOW_CLOSE_ATTEMPTED_EVENT | 'BACK':
+                event = c.popUp(self,'','Are you sure you want to continue?')
+
+                if event == 'OK':
+                    self.cancel = True
+                    break
+
+                if event == 'CANCEL':
+                    continue
             
             case 'RANDOM':
                 pokeName['-IN-'].update(value=generate())
