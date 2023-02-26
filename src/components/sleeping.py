@@ -92,7 +92,7 @@ def sleep_screen(self, player):
         thread.start()
 
     while True:
-        event, value = sleepWindow.read(timeout=41.66)
+        event, value = sleepWindow.read(timeout=24)
 
         match event:
             case sg.TIMEOUT_KEY:

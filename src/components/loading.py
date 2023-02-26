@@ -16,9 +16,10 @@ def load(self):
             titlebar = '#0052e7'
                 
     elements = [
-        [sg.Listbox(values=[x for x in self.read_save()], s=(1,1), enable_events=True, key="load")],
+        [sg.Listbox(values=[x for x in self.read_save()], s=(1,1), enable_events=True,size=(25, 10),
+            key="load")],
         [c.button(self, 'Load', 0.45), c.button(self, 'Delete', 0.45), c.button(self, 'Back', 0.45),
-         c.button(self, 'Submit', 0.45, False, False, True)]
+            c.button(self, 'Submit', 0.45, False, False, True)]
     ]
 
     frame = [

@@ -69,7 +69,7 @@ def settings_screen(self):
         enable_close_attempted_event=True)
 
     while True:
-        event, values = OptWindow.read(timeout=100)
+        event, values = OptWindow.read(timeout=24)
 
         match event:
             case sg.TIMEOUT_KEY:
@@ -80,7 +80,7 @@ def settings_screen(self):
                 self.settings['portrait_anim'] = values['_portrait_']
                 OptWindow.refresh()
 
-            case 'Default':
+            case 'DEFAULT':
                 self.settings = {
                     "theme": "TamagoDefault",
                     "background": "#516073",

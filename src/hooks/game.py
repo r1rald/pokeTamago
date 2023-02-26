@@ -46,13 +46,13 @@ class Game:
             enable_close_attempted_event=True)
 
         while True:
-            event, values = window1.read(timeout=41.66)
+            event, values = window1.read(timeout=24)
 
             match event:
                 case sg.TIMEOUT_KEY:
                     if not self.read_save():
                         window1['CONTINUE'].update(disabled=sg.BUTTON_DISABLED_MEANS_IGNORE,
-                            image_data=f.image2data_resize('buttons\\disabled_button',0.6), 
+                            image_data=f.image2data(None,True,'buttons\\disabled_button',0.6), 
                             button_color=('#363840', sg.theme_background_color()))
 
                 case sg.WINDOW_CLOSE_ATTEMPTED_EVENT | 'EXIT':
@@ -65,7 +65,7 @@ class Game:
                     if event=='CANCEL':
                         continue
 
-                case 'NEW POKEMON':
+                case 'NEW POKE':
                     self.cancel = False
 
                     while not self.cancel:
@@ -138,7 +138,7 @@ class Game:
             thread.start()
 
         while True:
-            event, value = mainWindow.read(timeout=41.66)
+            event, value = mainWindow.read(timeout=24)
 
             match event:
                 case sg.TIMEOUT_KEY:
@@ -304,14 +304,14 @@ def newGame(self):
             titlebar = '#0052e7'
 
     buttonColumn = [
-        [c.button(self,'New Pokemon',0.6)],
-        [c.button(self,'Continue',0.6)],
-        [c.button(self,'Settings',0.6)],
-        [c.button(self,'Exit',0.6)]
+        [c.button(self,'New Poke',0.75,False,True,False,(0,2))],
+        [c.button(self,'Continue',0.75,False,True,False,(0,2))],
+        [c.button(self,'Settings',0.75,False,True,False,(0,2))],
+        [c.button(self,'Exit',0.75,False,True,False,(0,2))]
     ]
 
     elements = [
-        [sg.Image('src\\assets\\img\\logo.png', subsample=3)],
+        [sg.Image('src\\assets\\img\\logo.png', subsample=2, p=(2,2))],
         [sg.Column(buttonColumn)]
     ]
 

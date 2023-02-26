@@ -96,7 +96,7 @@ def train_screen(self, player):
         thread.start()
 
     while True:
-        event, value = trainWindow.read(timeout=41.66)
+        event, value = trainWindow.read(timeout=24)
 
         match event:
             case sg.TIMEOUT_KEY:

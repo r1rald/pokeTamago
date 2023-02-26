@@ -34,7 +34,7 @@ def popUp(self,name,message,button=None):
         enable_close_attempted_event=True, disable_minimize=True)
     
     while True:
-        event, values = popUp.read(timeout=1)
+        event, values = popUp.read(timeout=24)
         
         match event:
 
@@ -45,7 +45,7 @@ def popUp(self,name,message,button=None):
                 break
 
         if button:
-            popUp['c'].update(visible=False)
+            popUp['CANCEL'].update(visible=False)
 
     popUp.close()
     return event

@@ -108,7 +108,7 @@ def death_screen(self, player):
         thread.start()
 
     while True:
-        event, value = deathWindow.read(timeout=41.66)
+        event, value = deathWindow.read(timeout=24)
 
         match event:
             case sg.TIMEOUT_KEY:

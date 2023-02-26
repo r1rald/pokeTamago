@@ -72,7 +72,7 @@ def eat_screen(self, player):
     eatWindow = sg.Window('Eating', eat(self,player), finalize=True, size=(320, 375),
         element_justification="c",)
 
-    eatWindow['eat_graph'].draw_image('data\\img\\bg\\kitchen_eating.png', location=(0, 0))
+    eatWindow['eat_graph'].draw_image('src\\assets\\img\\bg\\kitchen_eating.png', location=(0, 0))
 
     index1 = 1
     index2 = 1
@@ -91,7 +91,7 @@ def eat_screen(self, player):
         thread.start()
 
     while True:
-        event, value = eatWindow.read(timeout=41.66)
+        event, value = eatWindow.read(timeout=24)
 
         match event:
             case sg.TIMEOUT_KEY:
@@ -114,11 +114,11 @@ def eat_screen(self, player):
 
                 eatWindow.refresh()
 
-            case sg.WINDOW_CLOSED | 'Back':
+            case sg.WINDOW_CLOSED | 'BACK':
                 eating = False
                 break
 
-            case 'feed':
+            case 'FEED':
                 player.eat()
 
         if player.status['eating']:

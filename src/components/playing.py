@@ -93,7 +93,7 @@ def play_screen(self, player):
     playWindow['play_graph'].draw_image('src\\assets\\img\\bg\\room_playing_2.png', location=(0, 0))
 
     while True:
-        event, value = playWindow.read(timeout=41.66)
+        event, value = playWindow.read(timeout=24)
 
         match event:
             case sg.TIMEOUT_KEY:

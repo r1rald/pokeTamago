@@ -37,7 +37,7 @@ def new_pokemon_screen(self, player):
     pokeName = sg.Window('Name', newPoke(self))
 
     while True:
-        event, values = pokeName.read(timeout=41.66)
+        event, values = pokeName.read(timeout=24)
 
         match event:
             case sg.TIMEOUT_KEY:
@@ -55,7 +55,7 @@ def new_pokemon_screen(self, player):
                     player.properties["name"] = values['-IN-']
                     break
                 else:
-                    c.popUp(self, 'error', 'Invalid name or this Pokemon is already exist!\n'+
+                    c.popUp(self, '', 'Invalid name or this Pokemon is already exist!\n'+
                     '(The name cannot be longer than 14 characters)', True)
 
     pokeName.close()

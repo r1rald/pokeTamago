@@ -20,21 +20,14 @@ def randomYieldGroup():
         json.dump(data, write_file)
 
 
-def image2data(im):
-    with BytesIO() as output:
-        im.save(output, format="PNG")
-        data = output.getvalue()
-        
-    return data
-
-
-def image2data_resize(path,size):
-    image = Image.open(f'src\\assets\\img\\{path}.png')
-    width, height = image.size
-    resized_image = image.resize((int(width*size), int(height*size)))
+def image2data(im=None,resize=False,path='',size=1):
+    if resize:
+        image = Image.open(f'src\\assets\\img\\{path}.png')
+        width, height = image.size
+        im = image.resize((int(width*size), int(height*size)))
 
     with BytesIO() as output:
-        resized_image.save(output, format='PNG')
+        im.save(output, format='PNG')
         data = output.getvalue()
 
     return data
