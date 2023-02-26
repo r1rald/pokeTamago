@@ -34,4 +34,4 @@ def button(self,text,size,disabled=False,visible=True,return_key=False,pad=(0,0)
 
     return sg.Button(text, image_source=data, border_width=0, pad=pad, mouseover_colors=color, 
         button_color=color, disabled=disabled, bind_return_key=return_key, visible=visible, 
-        font=('',int(20*size),'normal'), k=text.upper())
+        font=('Pokemon Pixel Font',int(24*size),'normal'), k=text.upper())

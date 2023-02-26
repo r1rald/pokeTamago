@@ -1,15 +1,19 @@
 from src.hooks.player import Player
+from src.hooks.game import Game
 from threading import Thread
 from sched import scheduler
-from src.hooks.game import Game
 import time as t
+import ctypes
 import sys
 import os
+
 
 
 if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
     os.chdir(sys._MEIPASS)
 
+gdi32 = ctypes.WinDLL('gdi32')
+result = gdi32.AddFontResourceW(u"src\\assets\\pokemon_pixel_font.ttf")
 
 s = scheduler(t.time, t.sleep)
 t = Thread(target=s.run)

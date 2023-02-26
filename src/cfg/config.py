@@ -2,6 +2,7 @@ import PySimpleGUI as sg
 import json
 import os
 
+
 path = os.path.expanduser('~\\Documents\\pokeTamago\\cfg')
 
 if os.path.exists(path):
@@ -39,7 +40,7 @@ sg.set_options(
     element_padding = (None, None),
     auto_size_text = True,
     auto_size_buttons = True,
-    font = ('src\\assets\\pokemon_pixel_font.ttf', 10, 'normal'),
+    font = ('Pokemon Pixel Font', 24, 'normal'),
     border_width = 1,
     slider_border_width = 1,
     slider_relief = sg.RELIEF_RAISED,
@@ -64,7 +65,7 @@ sg.set_options(
     window_location=(None, None),
     error_button_color=(None, None),
     tooltip_time=200,
-    tooltip_font=('src\\assets\\pokemon_pixel_font.ttf', 10, 'normal'),
+    tooltip_font=('Pokemon Pixel Font', 24, 'normal'),
     use_ttk_buttons=False,
     ttk_theme='alt',
     suppress_error_popups=True,
