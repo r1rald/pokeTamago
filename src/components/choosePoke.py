@@ -1,6 +1,6 @@
 import src.components as c
 import PySimpleGUI as sg
-from re import sub
+from re import sub, search
 from PIL import Image
 import src.hooks.funct as f
 from time import sleep
@@ -12,15 +12,19 @@ def choosePoke(self,player):
 
         case "TamagoDefault":
             titlebar = '#283b5b'
+            bg = '#516173'
 
         case "TamagoDark":
             titlebar = '#303134'
+            bg = '#303134'
 
         case "TamagoLight":
             titlebar = '#0052e7'
+            bg = '#0052e7'
 
     nameLayout = [
-        [sg.Text(f'{player.properties["name"].upper()}', p=0, font=('',10,'bold'))]
+        [sg.Text(f'{player.properties["name"].upper()}', p=0, background_color=bg,
+             font=('Pokemon Pixel Font',16,'bold'), text_color='white')]
     ]
 
     imageLayout = [
@@ -28,19 +32,22 @@ def choosePoke(self,player):
     ]
 
     elements = [
-        [sg.Frame('', nameLayout, size=(170, 23), p=0, element_justification='c')],
-        [sg.Frame('', imageLayout, size=(170, 100), p=0, element_justification='c')],
-        [sg.Listbox(values=[x for x in self.open_dex()[0]], p=0, enable_events=True, size=(25, 15), 
-            key="poke", expand_x=True,)], 
-        [c.button(self,'Choose',0.45), c.button(self,'Back',0.45)]
+        [sg.Frame('', nameLayout, size=(170, 23), p=((5,5),(5,0)), element_justification='c', 
+            background_color=bg)],
+        [sg.Frame('', imageLayout, size=(170, 100), p=((5,5),(0,0)), element_justification='c')],
+        [sg.Listbox(values=[f'{self.open_dex()[0].index(x)+1}. {x}' for x in self.open_dex()[0]], 
+            p=((5,5),(0,0)), enable_events=True, size=(19, 10), key="poke", expand_x=True,)], 
+        [sg.Input(key='-IN-', s=28, expand_x=False, expand_y=False, justification='l',
+            font=('Pokemon Pixel Font', 16, 'normal'), p=((5,5),(0,10)), border_width=1)],
+        [c.button(self,'Choose',0.5,pad=((0,5),(0,5))), c.button(self,'Back',0.5,pad=((5,0),(0,5)))]
     ]
 
     frame = [
-        [sg.Frame('', elements, p=(0,0), element_justification="c", relief=sg.RELIEF_FLAT)]
+        [sg.Frame('', elements, p=0, element_justification="c", relief=sg.RELIEF_FLAT)]
         ]
 
     layout = [
-        [sg.Frame('', frame, p=(0,0), background_color=titlebar, relief=sg.RELIEF_FLAT)]
+        [sg.Frame('', frame, p=0, background_color=titlebar, relief=sg.RELIEF_FLAT)]
     ]
 
     return layout
@@ -93,7 +100,7 @@ def choose_pokemon(self, player):
                         if values['poke']:
                             pokeChooseWin['GRAPH'].delete_figure(item)
 
-                            name = sub("\s|[']", '', values["poke"][0])
+                            name = sub("\s|[']|[.0-9]", '', values["poke"][0])
                             im = Image.open(f'src\\assets\\img\\poke\\{name}.gif')
 
                             width, height = im.size
@@ -122,9 +129,8 @@ def choose_pokemon(self, player):
 
             case 'CHOOSE' | 'poke+-double click-':
                 if values['poke']:
-                    index = self.open_dex()[0].index(f'{values["poke"][0]}')
-
-                    name = sub("\s|[']", '', values["poke"][0])
+                    name = sub("\s|[']|[.0-9]", '', values["poke"][0])
+                    index = self.open_dex()[0].index(name)
 
                     player.properties['portrait'] = f'src\\assets\\img\\poke\\{name}.gif'
                     player.properties['type'] = self.open_dex()[1][index]
@@ -139,5 +145,16 @@ def choose_pokemon(self, player):
 
                     if event == 'OK':
                         continue
+
+        if values['-IN-']:
+            pokeChooseWin['poke'].update(
+                values=[f'{self.open_dex()[0].index(x)+1}. {x}' for x in self.open_dex()[0] if search(
+                    f'(?i)(?:{values["-IN-"]})', x)]
+                )
+        else:
+            pokeChooseWin['poke'].update(
+                values=[f'{self.open_dex()[0].index(x)+1}. {x}' for x in self.open_dex()[0]]
+                )
+
 
     pokeChooseWin.close()
