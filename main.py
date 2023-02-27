@@ -13,7 +13,7 @@ if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
     os.chdir(sys._MEIPASS)
 
 gdi32 = ctypes.WinDLL('gdi32')
-result = gdi32.AddFontResourceW(u"src\\assets\\pokemon_pixel_font.ttf")
+result = gdi32.AddFontResourceW(u"src\\assets\\font.ttf")
 
 s = scheduler(t.time, t.sleep)
 t = Thread(target=s.run)
