@@ -33,13 +33,14 @@ def choosePoke(self,player):
     ]
 
     elements = [
-        [sg.Frame('', nameLayout, size=(170, 23), p=((5,5),(5,0)), element_justification='c', 
-            background_color=bg)],
-        [sg.Frame('', imageLayout, size=(170, 100), p=((5,5),(0,0)), element_justification='c')],
-        [sg.Input(key='-IN-', s=28, expand_x=False, expand_y=False, justification='l',
-            font=('Pokemon Pixel Font', 16, 'normal'), p=((5,5),(0,0)), border_width=1)],
+        [sg.Frame('', nameLayout, size=(168, 23), p=((5,5),(5,0)), element_justification='c', 
+            background_color=bg, border_width=3)],
+        [sg.Frame('', imageLayout, size=(168, 100), p=((5,5),(0,0)), element_justification='c',
+            border_width=3)],
+        [sg.Input(key='-IN-', s=27, expand_x=False, expand_y=False, justification='l',
+            font=('Pokemon Pixel Font', 16, 'normal'), p=((5,5),(0,0)), border_width=2)],
         [sg.Listbox(values=[f'{self.open_dex()[0].index(x)+1}. {x}' for x in self.open_dex()[0]], 
-            p=((5,5),(0,10)), enable_events=True, size=(19, 10), key="poke", expand_x=True,)], 
+            p=((5,5),(0,10)), enable_events=True, size=(19, 10), key="poke")], 
         [c.button(self,'Choose',0.5,pad=((0,5),(0,5))), c.button(self,'Back',0.5,pad=((5,0),(0,5)))]
     ]
 
@@ -74,7 +75,7 @@ def choose_pokemon(self, player):
 
     graph_width, graph_height = size = (170, 100)
 
-    pokeChooseWin = sg.Window('Choose', choosePoke(self,player), finalize=True)
+    pokeChooseWin = sg.Window('', choosePoke(self,player), finalize=True)
 
     pokeChooseWin['GRAPH'].draw_image('src\\assets\\img\\bg\\grassland-feild-day.png', location=(0, 0))
 
@@ -103,7 +104,7 @@ def choose_pokemon(self, player):
                         if values['poke']:
                             pokeChooseWin['GRAPH'].delete_figure(item)
 
-                            name = sub("\s|[']|[.0-9]", '', values["poke"][0])
+                            name = sub("[\\0-9](.*?)[\s]|[']", '', values["poke"][0])
                             im = Image.open(f'src\\assets\\img\\poke\\{name}.gif')
 
                             width, height = im.size
@@ -132,7 +133,7 @@ def choose_pokemon(self, player):
 
             case 'CHOOSE' | 'poke+-double click-':
                 if values['poke']:
-                    name = sub("\s|[']|[.0-9]", '', values["poke"][0])
+                    name = sub("[\\0-9](.*?)[\s]|[']", '', values["poke"][0])
                     index = self.open_dex()[0].index(name)
 
                     player.properties['portrait'] = f'src\\assets\\img\\poke\\{name}.gif'
