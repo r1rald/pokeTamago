@@ -5,6 +5,7 @@ from PIL import Image
 import src.hooks.funct as f
 from time import sleep
 from threading import Thread
+from watchpoints import watch
 
 
 def choosePoke(self,player):
@@ -35,10 +36,10 @@ def choosePoke(self,player):
         [sg.Frame('', nameLayout, size=(170, 23), p=((5,5),(5,0)), element_justification='c', 
             background_color=bg)],
         [sg.Frame('', imageLayout, size=(170, 100), p=((5,5),(0,0)), element_justification='c')],
-        [sg.Listbox(values=[f'{self.open_dex()[0].index(x)+1}. {x}' for x in self.open_dex()[0]], 
-            p=((5,5),(0,0)), enable_events=True, size=(19, 10), key="poke", expand_x=True,)], 
         [sg.Input(key='-IN-', s=28, expand_x=False, expand_y=False, justification='l',
-            font=('Pokemon Pixel Font', 16, 'normal'), p=((5,5),(0,10)), border_width=1)],
+            font=('Pokemon Pixel Font', 16, 'normal'), p=((5,5),(0,0)), border_width=1)],
+        [sg.Listbox(values=[f'{self.open_dex()[0].index(x)+1}. {x}' for x in self.open_dex()[0]], 
+            p=((5,5),(0,10)), enable_events=True, size=(19, 10), key="poke", expand_x=True,)], 
         [c.button(self,'Choose',0.5,pad=((0,5),(0,5))), c.button(self,'Back',0.5,pad=((5,0),(0,5)))]
     ]
 
@@ -88,6 +89,8 @@ def choose_pokemon(self, player):
     thread = Thread(target=portrait_thread, daemon=True)
     if self.settings['portrait_anim']:
         thread.start()
+
+    old_value = None
 
     while True:
         event, values = pokeChooseWin.read(timeout=24)
@@ -146,15 +149,12 @@ def choose_pokemon(self, player):
                     if event == 'OK':
                         continue
 
-        if values['-IN-']:
+        if old_value != values['-IN-']:
             pokeChooseWin['poke'].update(
                 values=[f'{self.open_dex()[0].index(x)+1}. {x}' for x in self.open_dex()[0] if search(
                     f'(?i)(?:{values["-IN-"]})', x)]
                 )
-        else:
-            pokeChooseWin['poke'].update(
-                values=[f'{self.open_dex()[0].index(x)+1}. {x}' for x in self.open_dex()[0]]
-                )
+            old_value = values['-IN-']
 
 
     pokeChooseWin.close()
