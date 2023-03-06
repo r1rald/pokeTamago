@@ -1,7 +1,9 @@
+from nickname_generator import generate
+from regex import search, sub
 from threading import Thread
+import src.hooks.funct as f
 import src.components as c
 import PySimpleGUI as sg
-import src.hooks.funct as f
 from time import sleep
 from PIL import Image
 import src.cfg.themes
@@ -38,25 +40,90 @@ class Game:
             self.save_settings()
 
         sg.theme(self.settings['theme'])
-        f.randomYieldGroup()
+        f.poke_randomizer()
 
 
     def newGame(self, player):
-        window1 = sg.Window('', c.newGame(self), element_justification='c',
-            enable_close_attempted_event=True)
+        global index, frames, size
+
+        poke_choose = True
+
+        def portrait_thread():
+            global index, frames
+            while True:
+                sleep(0.03)
+                index = (index + 1) % frames
+                if not poke_choose:
+                    break
+
+        im = Image.open('src\\assets\\img\\poke\\default.gif')
+
+        width, height = im.size
+        frames = im.n_frames
+
+        graph_width, graph_height = size = (170, 100)
+
+        main_menu = sg.Window('', c.newGame(self,player), element_justification='c',
+            enable_close_attempted_event=True, finalize=True)
+        
+        main_menu['GRAPH'].draw_image('src\\assets\\img\\bg\\grassland-feild-day.png', location=(0, 0))
+
+        index = 1
+
+        im.seek(index)
+
+        location = (graph_width//2-width//2, graph_height//2-height//2)
+
+        item = main_menu['GRAPH'].draw_image(data=f.image2data(im),location=location)
+
+        thread = Thread(target=portrait_thread, daemon=True)
+        if self.settings['portrait_anim']:
+            thread.start()
+
+        old_value = None
 
         while True:
-            event, values = window1.read(timeout=24)
+            event, values = main_menu.read(timeout=24)
+
+            main_menu['poke'].bind('<Double-Button-1>', "-double click")
+            main_menu['load'].bind('<Double-Button-1>', "-double click")
 
             match event:
                 case sg.TIMEOUT_KEY:
+                    try:
+                        if values['poke']:
+                            main_menu['GRAPH'].delete_figure(item)
+
+                            name = sub("[\\0-9](.*?)[\s]|[']", '', values["poke"][0])
+                            im = Image.open(f'src\\assets\\img\\poke\\{name}.gif')
+
+                            width, height = im.size
+                            frames = im.n_frames
+
+                            location = (graph_width//2-width//2, graph_height//2-height//2)
+
+                            item = main_menu['GRAPH'].draw_image(data=f.image2data(im),location=location)
+
+                        im.seek(index)
+
+                        item_new = main_menu['GRAPH'].draw_image(data=f.image2data(im),
+                            location=location)
+                        
+                        main_menu['GRAPH'].delete_figure(item)
+
+                        item = item_new
+                    except EOFError:
+                        pass
+
                     if not self.read_save():
-                        window1['CONTINUE'].update(disabled=sg.BUTTON_DISABLED_MEANS_IGNORE,
-                            image_data=f.image2data(None,True,'buttons\\disabled_button',0.6), 
+                        main_menu['CONTINUE'].update(disabled=sg.BUTTON_DISABLED_MEANS_IGNORE,
+                            image_data=f.image2data(None,True,'buttons\\disabled_button',0.75), 
                             button_color=('#363840', sg.theme_background_color()))
+                        
+                    main_menu.refresh()
 
                 case sg.WINDOW_CLOSE_ATTEMPTED_EVENT | 'EXIT':
-                    event = c.popUp(self,'Quit','Are you sure you want to quit?')
+                    event = c.pop_up(self,'','Are you sure you want to quit?')
                     
                     if event=='OK':
                         self.run = False
@@ -66,40 +133,90 @@ class Game:
                         continue
 
                 case 'NEW POKE':
-                    self.cancel = False
+                    main_menu['menu'].update(visible=False)
+                    main_menu['choose'].update(visible=True)
 
-                    while not self.cancel:
-                        window1.Hide()
-                        c.new_pokemon_screen(self, player)
-                        if player.properties['name']:
-                            c.choose_pokemon(self, player)
+                case 'RANDOM':
+                    main_menu['-IN-'].update(value=generate())
 
-                    if player.properties['portrait']:
-                        break
+                case 'CHOOSE' | 'poke-double click':
+                    if search('^[A-Za-zÀ-ȕ0-9\\p{P}\\p{S}]{1,14}$', values['-IN-']) and values['-IN-'] not in self.read_save():
+                        player.properties["name"] = values['-IN-']
+
+                        if values['poke']:
+                            name = sub("[\\0-9](.*?)[\s]|[']", '', values["poke"][0])
+                            index = self.open_dex()[0].index(name)
+
+                            player.properties['portrait'] = f'src\\assets\\img\\poke\\{name}.gif'
+                            player.properties['type'] = self.open_dex()[1][index]
+                            player.properties['xp_group'] = self.open_dex()[2][index]
+                            player.properties['yield'] = self.open_dex()[3][index]
+
+                            break
+
+                        else:
+                            event = c.pop_up(self,'','You must choose a Pokemon!', True)
+
+                            if event == 'OK':
+                                continue          
                     else:
-                        window1.UnHide()
-                        continue
+                        c.pop_up(self, '', 'Invalid name or this Pokemon is already exist!\n'+
+                        '(The name cannot be longer than 14 characters)', True)
 
                 case 'CONTINUE':
-                    self.has_been_called = False
-                    window1.Hide()
-                    c.loading_screen(self, player)
+                    main_menu['menu'].update(visible=False)
+                    main_menu['loading'].update(visible=True)
 
-                    if self.has_been_called:
-                        break
+                case 'LOAD' | 'load+-double click-':
+                    if not values['load']:
+                        event = c.pop_up(self,'','You must choose a save file!',True)
+
+                        if event == 'OK':
+                            continue
                     else:
-                        window1.UnHide()
-                        continue
+                        self.load_saves(player, values["load"][0])
+                        player.offline_time()
+                        break
+
+                case 'DELETE':
+                    if not values["load"]:
+                        event = c.pop_up(self,'','You must choose a save file!',True)
+
+                        if event == 'OK':
+                            continue
+                    else:
+                        path = os.path.expanduser('~\\Documents\\pokeTamago\\save')
+                        os.remove(f'{path}\\{values["load"][0]}.json')
+                        self.read_save()
+                        main_menu['load'].update(values=[x for x in self.read_save()])
 
                 case 'SETTINGS':
-                    self.cancel = False
-                    window1.Hide()
-                    c.settings_screen(self)
+                    main_menu['menu'].update(visible=False)
+                    main_menu['settings'].update(visible=True)
 
-                    if self.cancel:
-                        window1.UnHide()
+                case 'BACK':
+                    main_menu['menu'].update(visible=True)
+                    main_menu['choose'].update(visible=False)
+                    main_menu['loading'].update(visible=False)
+                    main_menu['settings'].update(visible=False)
 
-        window1.close()
+            if main_menu.FindElementWithFocus() == main_menu['-IN-'] and values['-IN-'] == '--ENTER NAME--':
+                main_menu['-IN-'].update(value='')
+            if main_menu.FindElementWithFocus() != main_menu['-IN-'] and values['-IN-'] == '':
+                main_menu['-IN-'].update(value='--ENTER NAME--')
+
+            if old_value != values['search']:
+                main_menu['poke'].update(
+                    values=[f'{self.open_dex()[0].index(x)+1}. {x}' for x in self.open_dex()[0] if search(
+                        f'(?i)(?:{values["search"]})', x)]
+                    )
+                old_value = values['search']
+
+            if values['poke']:
+                pass
+
+
+        main_menu.close()
 
 
     def mainGame(self, player):
@@ -168,7 +285,7 @@ class Game:
                     c.sleep_screen(self, player)
                     
                 case 'MAIN MENU':
-                    event = c.popUp(self,'Quit','Are you sure you want to quit?')
+                    event = c.pop_up(self,'Quit','Are you sure you want to quit?')
 
                     if event == 'OK':
                         self.run = False
@@ -178,7 +295,7 @@ class Game:
                         continue
 
                 case sg.WINDOW_CLOSE_ATTEMPTED_EVENT:
-                    event = c.popUp(self,'Quit','Are you sure you want to quit?')
+                    event = c.pop_up(self,'Quit','Are you sure you want to quit?')
 
                     if event == 'OK':
                         self.run = False
@@ -252,7 +369,7 @@ class Game:
 
 
     def open_dex(self):
-        pokes = ([], [], [], [])
+        pokes = ([], [], [], [], [])
 
         with open('src\\cfg\\pokedex.json', 'r') as read_file:
             data = json.load(read_file)
@@ -261,6 +378,7 @@ class Game:
                 pokes[1].append(poke['type'])
                 pokes[2].append(poke['xp_group'])
                 pokes[3].append(poke['yield'])
+                pokes[4].append(poke['nature'])
 
         return pokes
 

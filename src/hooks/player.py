@@ -1,4 +1,5 @@
 from nickname_generator import generate
+import src.hooks.funct as f
 from random import choice
 import time
 import json
@@ -8,45 +9,58 @@ class Poke:
 
     def __init__(self):
         self.properties = {
-            "name": None,
-            "portrait": None,
-            "type": [],
-            "level": 1,
-            "xp": 0,
-            "xp_group": None,
-            "yield": None
+            'name': None,
+            'portrait': None,
+            'type': [],
+            'level': 1,
+            'xp': 0,
+            'xp_group': None,
+            'yield': None,
+            'nature': None
         }
         
         self.base = {
-            "Attack": 50,
-            "Defense": 53,
-            "Sp. Attack": 58,
-            "Sp. Defense": 60,
-            "Speed": 51
+            'HP' : 43,
+            'Attack': 50,
+            'Defense': 53,
+            'Sp. Attack': 58,
+            'Sp. Defense': 60,
+            'Speed': 51,
+            'HP_IV': 0,
+            'Attack_IV': 0,
+            'Defense_IV': 0,
+            'Sp. Attack_IV': 0,
+            'Sp. Defense_IV': 0,
+            'Speed_IV': 0,
+            'HP_EV': 0,
+            'Attack_EV': 0,
+            'Defense_EV': 0,
+            'Sp. Attack_EV': 0,
+            'Sp. Defense_EV': 0,
+            'Speed_EV': 0
         }
 
         self.condition = {
-            "MaxHP" : 43,
-            "health": 43,
-            "age": 0,
-            "bored": 0,
-            "food": 100,
-            "exhausted": 0
+            'health': 43,
+            'age': 0,
+            'bored': 0,
+            'food': 100,
+            'exhausted': 0
         }
 
         self.status = {
-            "alive": True,
-            "revive": False,
-            "revive_time": 0,
-            "sleeping": False,
-            "sleep_time": 0,
-            "eating": False,
-            "eat_time": 0,
-            "training": False,
-            "training_time": 0,
-            "playing": False,
-            "play_time": 0,
-            "logoff_time": 0
+            'alive': True,
+            'revive': False,
+            'revive_time': 0,
+            'sleeping': False,
+            'sleep_time': 0,
+            'eating': False,
+            'eat_time': 0,
+            'training': False,
+            'training_time': 0,
+            'playing': False,
+            'play_time': 0,
+            'logoff_time': 0
         }
 
 
@@ -55,22 +69,43 @@ class Player(Poke):
     def __init__(self):
         super().__init__()
 
+        base = Poke().base
+        level = self.properties['level']
+
+        self.condition['health'] = f.hp_formula(
+            base['HP'],base['HP_IV'],base['HP_EV'],level)
+        
+        self.condition['Attack'] = f.stat_formula(
+            base['Attack'],base['Attack_IV'],base['Attack_EV'],level)
+        
+        self.condition['Defense'] = f.stat_formula(
+            base['Defense'],base['Defense_IV'],base['Defense_EV'],level)
+        
+        self.condition['Sp. Attack'] = f.stat_formula(
+            base['Sp. Attack'],base['Sp. Attack_IV'],base['Sp. Attack_EV'],level)
+        
+        self.condition['Sp. Defense'] = f.stat_formula(
+            base['Sp. Defense'],base['Sp. Defense_IV'],base['Sp. Defense_EV'],level)
+        
+        self.condition['Speed'] = f.stat_formula(
+            base['Speed'],base['Speed'],base['Speed'],level)
+
 
     def xp_need(self):
         level = self.properties['level']
 
         match self.properties["xp_group"]:
             case "Fast":
-                need = int((4 * (level ** 3)) / 5)
+                need = int((4*(level**3))/5)
 
             case "Medium Fast":
-                need = int(level ** 3)
+                need = int(level**3)
 
             case "Medium Slow":
-                need = int(((6 / 5) * (level ** 3)) - (15 * (level ** 2)) + (100 * level)-140)
+                need = int(((6/5)*(level**3))-(15*(level**2))+(100*level)-140)
                 
             case "Slow":
-                need = int((5 * (level ** 3)) / 4)
+                need = int((5*(level**3))/4)
 
         return need
 
@@ -90,7 +125,7 @@ class Player(Poke):
             self.base["Sp. Defense"] += round(self.base["Sp. Defense"]/50, 2)
             self.base["Speed"] += round(self.base["Speed"]/50, 2)
 
-            self.condition['MaxHP'] = 43
+            self.condition['health'] = 43
             self.condition['health'] = self.condition['MaxHP']
 
 

@@ -5,7 +5,7 @@ import sys
 import os
 
 
-def setting(self):
+def settings(self):
     match self.settings['theme']:
 
         case "TamagoDefault":
@@ -53,15 +53,7 @@ def setting(self):
         [c.button(self,'Default',0.45), c.button(self,'Apply',0.45), c.button(self,'Back',0.45)]
     ]
 
-    frame = [
-        [sg.Frame('', elements, p=(0,0), element_justification="c", relief=sg.RELIEF_FLAT)]
-        ]
-
-    layout = [
-        [sg.Frame('', frame, p=(0,0), background_color=titlebar, relief=sg.RELIEF_FLAT)]
-    ]
-
-    return layout
+    return elements
 
 
 def settings_screen(self):

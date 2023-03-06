@@ -3,7 +3,7 @@ import src.components as c
 import PySimpleGUI as sg
 
 
-def newGame(self):
+def newGame(self,player):
     match self.settings['theme']:
 
         case "TamagoDefault":
@@ -15,16 +15,12 @@ def newGame(self):
         case "TamagoLight":
             titlebar = '#0052e7'
 
-    buttonColumn = [
-        [c.button(self,'New Poke',0.75,False,True,False,(0,2))],
-        [c.button(self,'Continue',0.75,False,True,False,(0,2))],
-        [c.button(self,'Settings',0.75,False,True,False,(0,2))],
-        [c.button(self,'Exit',0.75,False,True,False,(0,2))]
-    ]
-
     elements = [
-        [sg.Image('src\\assets\\img\\logo.png', subsample=2, p=(2,2))],
-        [sg.Column(buttonColumn)]
+        [sg.pin(sg.Column(c.main_menu(self), visible=True, element_justification='c', k='menu'))],
+        [sg.pin(sg.Column(c.choose_poke(self,player), visible=False, element_justification='c',
+            k='choose'))],
+        [sg.pin(sg.Column(c.load_poke(self), visible=False, element_justification='c', k='loading'))],
+        [sg.pin(sg.Column(c.settings(self), visible=False, element_justification='c', k='settings'))]
     ]
 
     frame = [
@@ -142,7 +138,7 @@ def mainGame(self, player):
     ]
 
     elements = [
-        [sg.Column(buttonColumn), sg.Column(Column, element_justification='c')],
+        [sg.pin(sg.Column(buttonColumn), sg.Column(Column, element_justification='c'))],
     ]
 
     frame = [

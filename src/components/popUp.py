@@ -2,7 +2,7 @@ import PySimpleGUI as sg
 import src.components as c
 
 
-def popUp_layout(self, message):
+def pop_up_layout(self, message):
     match self.settings['theme']:
 
         case "TamagoDefault":
@@ -15,7 +15,8 @@ def popUp_layout(self, message):
             titlebar = '#0052e7'
 
     elements = [
-        [sg.T(message, justification='c')], [c.button(self,'Ok',0.45), c.button(self,'Cancel',0.45)]
+        [sg.T(message, justification='c')], 
+        [c.button(self,'Ok',0.5,pad=(5,5)), c.button(self,'Cancel',0.5,pad=(5,5))]
         ]
 
     frame = [
@@ -29,8 +30,8 @@ def popUp_layout(self, message):
     return layout
                     
 
-def popUp(self,name,message,button=None):
-    popUp = sg.Window(name, popUp_layout(self,message), keep_on_top=True, 
+def pop_up(self,name,message,button=None):
+    popUp = sg.Window(name, pop_up_layout(self,message), keep_on_top=True, 
         enable_close_attempted_event=True, disable_minimize=True)
     
     while True:
