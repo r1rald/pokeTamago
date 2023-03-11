@@ -102,7 +102,7 @@ class Game:
 
                             location = (graph_width//2-width//2, graph_height//2-height//2)
 
-                            main_menu['type'].update(
+                            main_menu['type1'].update(
                                 f'src\\assets\\img\\types\\{self.open_dex()[1][self.open_dex()[0].index(name)][0]}_Type_Icon.png')
                             if len(self.open_dex()[1][self.open_dex()[0].index(name)])==2:
                                 main_menu['type2'].update(
@@ -146,6 +146,15 @@ class Game:
                             frames = im.n_frames
 
                             location = (graph_width//2-width//2, graph_height//2-height//2)
+
+                            main_menu['type1'].update('src\\assets\\img\\types\\none.png')
+                            main_menu['type2'].update('src\\assets\\img\\types\\none.png')
+                            main_menu['type3'].update('src\\assets\\img\\types\\none.png')
+                            main_menu['type4'].update('src\\assets\\img\\types\\none.png')
+                            main_menu['group'].update('src\\assets\\img\\types\\none.png')
+                            main_menu['nature'].update('src\\assets\\img\\types\\none.png')
+                            main_menu['mood'].update('src\\assets\\img\\types\\none.png')
+                            main_menu['xy'].update('src\\assets\\img\\types\\none.png')
 
                         im.seek(index)
 
