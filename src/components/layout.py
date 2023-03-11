@@ -137,8 +137,12 @@ def mainGame(self, player):
         [c.button(self,'Main Menu',0.6)]
     ]
 
+    main = [
+        [sg.Column(buttonColumn), sg.Column(Column, element_justification='c')],
+    ]
+
     elements = [
-        [sg.pin(sg.Column(buttonColumn), sg.Column(Column, element_justification='c'))],
+        [sg.pin(sg.Column(main, visible=True, element_justification='c'))]
     ]
 
     frame = [

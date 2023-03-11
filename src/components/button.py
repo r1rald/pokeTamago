@@ -2,7 +2,7 @@ import src.hooks.funct as f
 import PySimpleGUI as sg
 
 
-def button(self,text,size,disabled=False,visible=True,return_key=False,pad=(0,0)):
+def button(self,text,size,disabled=False,visible=True,return_key=False,pad=(0,0),key=None):
     match self.settings['theme']:
 
         case "TamagoDefault":
@@ -32,6 +32,11 @@ def button(self,text,size,disabled=False,visible=True,return_key=False,pad=(0,0)
         case False:
             disabled = False
 
+    if not key:
+        kkey = text.upper()
+    else:
+        kkey = key.upper()
+
     return sg.Button(text, image_source=data, border_width=0, pad=pad, mouseover_colors=color, 
         button_color=color, disabled=disabled, bind_return_key=return_key, visible=visible, 
-        font=('Pokemon Pixel Font',int(36*size),'normal'), k=text.upper())
+        font=('Pokemon Pixel Font',int(36*size),'normal'), k=kkey)

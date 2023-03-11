@@ -9,13 +9,13 @@ def settings(self):
     match self.settings['theme']:
 
         case "TamagoDefault":
-            titlebar = '#283b5b'
+            bg = '#516173'
 
         case "TamagoDark":
-            titlebar = '#303134'
+            bg = '#303134'
 
         case "TamagoLight":
-            titlebar = '#0052e7'
+            bg = '#0052e7'
 
     status1 = 'Enabled' if self.settings['music_playing'] else 'Disabled'
     status2 = 'Enabled' if self.settings['portrait_anim'] else 'Disabled'
@@ -25,91 +25,49 @@ def settings(self):
     listOfMusic = ['music1', 'music2', 'music3']
 
     theme = [
-        [sg.T(f"Current theme: {self.settings['theme']}", key='_theme_txt_')],
-        [sg.Combo(listOfThemes, size=(25, 10), default_value=f"{self.settings['theme']}", key='_theme_')],
+        [sg.Text(f"Current theme: {self.settings['theme']}", background_color=bg, key='_theme_txt_',
+            font=('Pokemon Pixel Font', 18, 'normal'))],
+        [sg.Combo(listOfThemes, size=(25, 10), default_value=f"{self.settings['theme']}", 
+            font=('Pokemon Pixel Font', 20, 'normal'), key='_theme_')],
     ]
 
     sounds = [
-        [sg.T(f"Current music: {self.settings['music']}", key='_music_txt_')],
-        [sg.Combo(listOfMusic, size=(14, 0), default_value=self.settings['music'], key='_music_'),
-        sg.Checkbox(text=status1, default=self.settings['music_playing'], key='_playing_')],
-        [sg.T(f'Music')],
-        [sg.Slider(orientation='h', disable_number_display=True,range=(0, 100), key='_music_vol_',
-        default_value=self.settings['music_volume'])],
-        [sg.T(f'Sound')],
+        [sg.Text(f"Current music: {self.settings['music']}", background_color=bg, key='_music_txt_',
+            font=('Pokemon Pixel Font', 18, 'normal'))],
+        [sg.Combo(listOfMusic, size=(12, 1), default_value=self.settings['music'], key='_music_',
+            font=('Pokemon Pixel Font', 20, 'normal')),
+        sg.Checkbox(text=status1, default=self.settings['music_playing'], background_color=bg,
+            font=('Pokemon Pixel Font', 18, 'normal'), key='_playing_')],
+        [sg.Text(f'Music', background_color=bg, font=('Pokemon Pixel Font', 18, 'normal'))],
+        [sg.Slider(orientation='h', disable_number_display=True, range=(0, 100), key='_music_vol_',
+            default_value=self.settings['music_volume'])],
+        [sg.Text(f'Sound', background_color=bg, font=('Pokemon Pixel Font', 18, 'normal'))],
         [sg.Slider(orientation='h', disable_number_display=True, range=(0, 100), key='_sound_vol_',
-        default_value=self.settings['sound_volume'])]
+            default_value=self.settings['sound_volume'])]
     ]
 
     portrait = [
-        [sg.T('Animated image:'), sg.Checkbox(text=status2, default=self.settings['portrait_anim'],
-        p=((20, 0), (0, 0)), key='_portrait_')]
+        [sg.Text('Animated image:', background_color=bg, font=('Pokemon Pixel Font', 18, 'normal')), 
+         sg.Checkbox(text=status2, default=self.settings['portrait_anim'], background_color=bg,
+            font=('Pokemon Pixel Font', 18, 'normal'), key='_portrait_')]
+    ]
+
+    scaling = [
+        [sg.Checkbox('0.5x', background_color=bg), sg.Checkbox('1x', background_color=bg), 
+         sg.Checkbox('2x', background_color=bg)]
     ]
 
     elements = [
-        [sg.Frame('Theme', theme, s=(215, 80))],
-        [sg.Frame('Audio', sounds, s=(215, 200))],
-        [sg.Frame('Portrait', portrait, s=(215, 55))],
-        [c.button(self,'Default',0.45), c.button(self,'Apply',0.45), c.button(self,'Back',0.45)]
+        [sg.Frame('', theme, s=(210, 65), relief=sg.RELIEF_SUNKEN, background_color=bg,
+            pad=((5,5),(5,2)))],
+        [sg.Frame('', sounds, s=(210, 190), relief=sg.RELIEF_SUNKEN, background_color=bg,
+            pad=((5,5),(2,2)))],
+        [sg.Frame('', portrait, s=(210, 35), relief=sg.RELIEF_SUNKEN, background_color=bg,
+            pad=((5,5),(2,2)), element_justification='c')],
+        [sg.Frame('', scaling, s=(210, 35), relief=sg.RELIEF_SUNKEN, background_color=bg,
+            pad=((5,5),(2,0)), element_justification='c')],
+        [c.button(self,'Default',0.45), c.button(self,'Apply',0.45), c.button(self,'Back',0.45,
+            key='back3')]
     ]
 
     return elements
-
-
-def settings_screen(self):
-    OptWindow = sg.Window('Settings', setting(self), icon='data\\img\\gear.ico',
-        enable_close_attempted_event=True)
-
-    while True:
-        event, values = OptWindow.read(timeout=24)
-
-        match event:
-            case sg.TIMEOUT_KEY:
-                self.settings['music'] = values['_music_']
-                self.settings['music_playing'] = values['_playing_']
-                self.settings['music_volume'] = values['_music_vol_']
-                self.settings['sound_volume'] = values['_sound_vol_']
-                self.settings['portrait_anim'] = values['_portrait_']
-                OptWindow.refresh()
-
-            case 'DEFAULT':
-                self.settings = {
-                    "theme": "TamagoDefault",
-                    "background": "#516073",
-                    "music": "music1",
-                    "music_playing": True,
-                    "music_volume": 100.0,
-                    "sound_volume": 100.0,
-                    "portrait_anim": True
-                }
-                self.save_settings()
-                os.execl(sys.executable, sys.executable, *sys.argv)
-
-            case sg.WINDOW_CLOSE_ATTEMPTED_EVENT | 'BACK':
-                event = c.popUp(self,'','Are you sure you want to continue?\n' +
-                    '(Your unapplied changes may be lost!)')
-
-                if event == 'OK':
-                    path = os.path.expanduser('~\\Documents\\pokeTamago\\cfg')
-
-                    with open(f'{path}\\settings.json', 'r') as settings:
-                        data = json.load(settings)
-                        self.settings = data
-
-                    self.cancel = True
-                    break
-
-                if event == 'CANCEL':
-                    continue
-
-            case 'APPLY':
-                self.settings['theme'] = values['_theme_']
-                self.save_settings()
-                os.execl(sys.executable, sys.executable, *sys.argv)
-
-        OptWindow['_playing_'].update(text='Enabled' if self.settings['music_playing'] is True else 'Disabled')
-        OptWindow['_portrait_'].update(text='Enabled' if self.settings['portrait_anim'] is True else 'Disabled')
-        OptWindow['_theme_txt_'].update(f"Current theme: {self.settings['theme']}")
-        OptWindow['_music_txt_'].update(f"Current music: {self.settings['music']}")
-
-    OptWindow.close()

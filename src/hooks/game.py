@@ -28,7 +28,7 @@ class Game:
             'portrait_anim': True,
             'scale': 1
         }
-        
+
         path = os.path.expanduser('~\\Documents\\pokeTamago\\cfg')
 
         if os.path.exists(os.path.expanduser('~\\Documents\\pokeTamago\\cfg')):
@@ -46,14 +46,15 @@ class Game:
     def newGame(self, player):
         global index, frames, size
 
-        poke_choose = True
+        poke = True
+        new = False
 
         def portrait_thread():
             global index, frames
             while True:
                 sleep(0.03)
                 index = (index + 1) % frames
-                if not poke_choose:
+                if not poke:
                     break
 
         im = Image.open('src\\assets\\img\\poke\\default.gif')
@@ -67,6 +68,7 @@ class Game:
             enable_close_attempted_event=True, finalize=True)
         
         main_menu['GRAPH'].draw_image('src\\assets\\img\\bg\\grassland-feild-day.png', location=(0, 0))
+        main_menu['GRAPH2'].draw_image('src\\assets\\img\\bg\\grassland-feild-day.png', location=(0, 0))
 
         index = 1
 
@@ -92,9 +94,7 @@ class Game:
                 case sg.TIMEOUT_KEY:
                     try:
                         if values['poke']:
-                            main_menu['GRAPH'].delete_figure(item)
-
-                            name = sub("[\\0-9](.*?)[\s]|[']", '', values["poke"][0])
+                            name = sub("[\\0-9](.*?)[\s]|[']", '', values['poke'][0])
                             im = Image.open(f'src\\assets\\img\\poke\\{name}.gif')
 
                             width, height = im.size
@@ -102,16 +102,61 @@ class Game:
 
                             location = (graph_width//2-width//2, graph_height//2-height//2)
 
-                            item = main_menu['GRAPH'].draw_image(data=f.image2data(im),location=location)
+                            main_menu['type'].update(
+                                f'src\\assets\\img\\types\\{self.open_dex()[1][self.open_dex()[0].index(name)][0]}_Type_Icon.png')
+                            if len(self.open_dex()[1][self.open_dex()[0].index(name)])==2:
+                                main_menu['type2'].update(
+                                    f'src\\assets\\img\\types\\{self.open_dex()[1][self.open_dex()[0].index(name)][1]}_Type_Icon.png')
+                            else:
+                                main_menu['type2'].update('src\\assets\\img\\types\\none.png')
+
+                        elif values['load']:
+                            path = os.path.expanduser('~\\Documents\\pokeTamago\\save')
+
+                            with open(os.path.expanduser(f'{path}\\{values["load"][0]}.json'), 'r') as load:
+                                data = json.load(load)
+
+                            im = Image.open(f"{data['properties']['portrait']}")
+
+                            width, height = im.size
+                            frames = im.n_frames
+
+                            location = (graph_width//2-width//2, graph_height//2-height//2)
+
+                            leveling = f'level {data["properties"]["level"]}'
+                            aliving = 'alive' if data["status"]["alive"] else 'fainted'
+                            sleeping = 'sleep' if data["status"]["sleeping"] else 'awake'
+
+                            main_menu['head1'].update(leveling.upper())
+                            main_menu['head2'].update(aliving.upper())
+                            main_menu['head3'].update(sleeping.upper())
+
+                            main_menu['type3'].update(
+                                f'src\\assets\\img\\types\\{data["properties"]["type"][0]}_Type_Icon.png')
+                            if len(data['properties']['type'])==2:
+                                main_menu['type4'].update(
+                                    f'src\\assets\\img\\types\\{data["properties"]["type"][1]}_Type_Icon.png')
+                            else:
+                                main_menu['type4'].update('src\\assets\\img\\types\\none.png')
+
+                        else:
+                            im = Image.open('src\\assets\\img\\poke\\default.gif')
+
+                            width, height = im.size
+                            frames = im.n_frames
+
+                            location = (graph_width//2-width//2, graph_height//2-height//2)
 
                         im.seek(index)
 
-                        item_new = main_menu['GRAPH'].draw_image(data=f.image2data(im),
-                            location=location)
-                        
+                        item_new = main_menu['GRAPH' if new else 'GRAPH2'].draw_image(
+                            data=f.image2data(im), location=location)
+
                         main_menu['GRAPH'].delete_figure(item)
+                        main_menu['GRAPH2'].delete_figure(item)
 
                         item = item_new
+                        
                     except EOFError:
                         pass
 
@@ -119,6 +164,12 @@ class Game:
                         main_menu['CONTINUE'].update(disabled=sg.BUTTON_DISABLED_MEANS_IGNORE,
                             image_data=f.image2data(None,True,'buttons\\disabled_button',0.75), 
                             button_color=('#363840', sg.theme_background_color()))
+                        
+                    self.settings['music'] = values['_music_']
+                    self.settings['music_playing'] = values['_playing_']
+                    self.settings['music_volume'] = values['_music_vol_']
+                    self.settings['sound_volume'] = values['_sound_vol_']
+                    self.settings['portrait_anim'] = values['_portrait_']
                         
                     main_menu.refresh()
 
@@ -133,6 +184,7 @@ class Game:
                         continue
 
                 case 'NEW POKE':
+                    new = True
                     main_menu['menu'].update(visible=False)
                     main_menu['choose'].update(visible=True)
 
@@ -152,6 +204,8 @@ class Game:
                             player.properties['xp_group'] = self.open_dex()[2][index]
                             player.properties['yield'] = self.open_dex()[3][index]
 
+                            poke = False
+
                             break
 
                         else:
@@ -162,6 +216,12 @@ class Game:
                     else:
                         c.pop_up(self, '', 'Invalid name or this Pokemon is already exist!\n'+
                         '(The name cannot be longer than 14 characters)', True)
+
+                case 'BACK1':
+                    new = False
+                    main_menu['menu'].update(visible=True)
+                    main_menu['choose'].update(visible=False)
+                    main_menu['poke'].update(set_to_index=[])
 
                 case 'CONTINUE':
                     main_menu['menu'].update(visible=False)
@@ -176,6 +236,7 @@ class Game:
                     else:
                         self.load_saves(player, values["load"][0])
                         player.offline_time()
+                        poke = False
                         break
 
                 case 'DELETE':
@@ -190,20 +251,61 @@ class Game:
                         self.read_save()
                         main_menu['load'].update(values=[x for x in self.read_save()])
 
+                case 'BACK2':
+                    main_menu['menu'].update(visible=True)
+                    main_menu['loading'].update(visible=False)
+                    main_menu['load'].update(set_to_index=[])
+
                 case 'SETTINGS':
                     main_menu['menu'].update(visible=False)
                     main_menu['settings'].update(visible=True)
 
-                case 'BACK':
-                    main_menu['menu'].update(visible=True)
-                    main_menu['choose'].update(visible=False)
-                    main_menu['loading'].update(visible=False)
-                    main_menu['settings'].update(visible=False)
+                case 'DEFAULT':
+                    self.settings = {
+                        "theme": "TamagoDefault",
+                        "background": "#516073",
+                        "music": "music1",
+                        "music_playing": True,
+                        "music_volume": 100.0,
+                        "sound_volume": 100.0,
+                        "portrait_anim": True
+                    }
+                    self.save_settings()
+                    os.execl(sys.executable, sys.executable, *sys.argv)
 
-            if main_menu.FindElementWithFocus() == main_menu['-IN-'] and values['-IN-'] == '--ENTER NAME--':
-                main_menu['-IN-'].update(value='')
-            if main_menu.FindElementWithFocus() != main_menu['-IN-'] and values['-IN-'] == '':
-                main_menu['-IN-'].update(value='--ENTER NAME--')
+                case 'APPLY':
+                    self.settings['theme'] = values['_theme_']
+                    self.save_settings()
+                    os.execl(sys.executable, sys.executable, *sys.argv)
+
+                case 'BACK3':
+                    event = c.pop_up(self,'','Are you sure you want to continue?\n' +
+                        '(Your unapplied changes may be lost!)')
+
+                    if event == 'OK':
+                        path = os.path.expanduser('~\\Documents\\pokeTamago\\cfg')
+
+                        with open(f'{path}\\settings.json', 'r') as settings:
+                            data = json.load(settings)
+                            self.settings = data
+
+                        main_menu['menu'].update(visible=True)
+                        main_menu['settings'].update(visible=False)
+
+                    if event == 'CANCEL':
+                        main_menu['menu'].update(visible=False)
+                        main_menu['settings'].update(visible=True)
+            try:
+                if main_menu.FindElementWithFocus() == main_menu['-IN-'] and values['-IN-'] == '--ENTER NAME--':
+                    main_menu['-IN-'].update(value='')
+                if main_menu.FindElementWithFocus() != main_menu['-IN-'] and values['-IN-'] == '':
+                    main_menu['-IN-'].update(value='--ENTER NAME--')
+
+            except KeyError:
+                pass
+
+            main_menu['_playing_'].update(text='Enabled' if self.settings['music_playing'] else 'Disabled')
+            main_menu['_portrait_'].update(text='Enabled' if self.settings['portrait_anim'] else 'Disabled')
 
             if old_value != values['search']:
                 main_menu['poke'].update(
@@ -211,10 +313,6 @@ class Game:
                         f'(?i)(?:{values["search"]})', x)]
                     )
                 old_value = values['search']
-
-            if values['poke']:
-                pass
-
 
         main_menu.close()
 
@@ -396,8 +494,6 @@ class Game:
 
 
     def load_saves(self, player, var):
-        self.has_been_called = True
-
         path = os.path.expanduser('~\\Documents\\pokeTamago\\save')
 
         with open(os.path.expanduser(f'{path}\\{var}.json'), 'r') as load:
