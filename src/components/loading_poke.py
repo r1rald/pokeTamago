@@ -49,13 +49,15 @@ def load_poke(self):
         [sg.HSeparator(color='#3c4754', p=0)],
         [sg.Column(imageLayout, p=0, background_color=bg), sg.VSeparator(color='#3c4754', p=0), 
          sg.Column(conditionBar, p=0, background_color=bg, element_justification='c')],
+        [sg.HSeparator(color='#3c4754', p=0)],
         [sg.Column(listbox, p=0)]
     ]
 
     elements = [
         [sg.Frame('', combined, size=(200, 345), p=5, border_width=3, background_color=bg)],
-        [c.button(self, 'Load', 0.45), c.button(self, 'Delete', 0.45), c.button(self, 'Back', 0.45,
-            key='back2')]
+        [c.button(self, 'Load', 0.45, pad=((0,0),(5,5))),
+         c.button(self, 'Delete', 0.45, pad=((5,0),(5,5))),
+         c.button(self, 'Back', 0.45, pad=((20,0),(5,5)), key='back2')]
     ]
 
     return elements

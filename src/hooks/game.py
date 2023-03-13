@@ -64,8 +64,7 @@ class Game:
 
         graph_width, graph_height = size = (170, 100)
 
-        main_menu = sg.Window('', c.newGame(self,player), element_justification='c',
-            enable_close_attempted_event=True, finalize=True)
+        main_menu = sg.Window('', c.newGame(self,player), enable_close_attempted_event=True, finalize=True)
         
         main_menu['GRAPH'].draw_image('src\\assets\\img\\bg\\grassland-feild-day.png', location=(0, 0))
         main_menu['GRAPH2'].draw_image('src\\assets\\img\\bg\\grassland-feild-day.png', location=(0, 0))
@@ -83,6 +82,7 @@ class Game:
             thread.start()
 
         old_value = None
+        name_value = None
 
         while True:
             event, values = main_menu.read(timeout=24)
@@ -156,6 +156,10 @@ class Game:
                             main_menu['mood'].update('src\\assets\\img\\types\\none.png')
                             main_menu['xy'].update('src\\assets\\img\\types\\none.png')
 
+                            main_menu['head1'].update('LEVEL 0')
+                            main_menu['head2'].update('NONE')
+                            main_menu['head3'].update('NONE')
+
                         im.seek(index)
 
                         item_new = main_menu['GRAPH' if new else 'GRAPH2'].draw_image(
@@ -223,8 +227,7 @@ class Game:
                             if event == 'OK':
                                 continue          
                     else:
-                        c.pop_up(self, '', 'Invalid name or this Pokemon is already exist!\n'+
-                        '(The name cannot be longer than 14 characters)', True)
+                        c.pop_up(self, '', 'Invalid name or this Pokemon is already exist!', True)
 
                 case 'BACK1':
                     new = False
@@ -313,15 +316,22 @@ class Game:
             except KeyError:
                 pass
 
-            main_menu['_playing_'].update(text='Enabled' if self.settings['music_playing'] else 'Disabled')
-            main_menu['_portrait_'].update(text='Enabled' if self.settings['portrait_anim'] else 'Disabled')
-
             if old_value != values['search']:
                 main_menu['poke'].update(
                     values=[f'{self.open_dex()[0].index(x)+1}. {x}' for x in self.open_dex()[0] if search(
                         f'(?i)(?:{values["search"]})', x)]
                     )
                 old_value = values['search']
+
+            if search('^(.{0,14})$', values['-IN-']):
+                name_value = values['-IN-']
+            else:
+                main_menu['-IN-'].update(value=name_value)
+
+            main_menu['_playing_'].update(text='Enabled' if self.settings['music_playing'] else 'Disabled')
+            main_menu['_portrait_'].update(text='Enabled' if self.settings['portrait_anim'] else 'Disabled')
+            main_menu['m_value'].update(f'{int(self.settings["music_volume"])}')
+            main_menu['s_value'].update(f'{int(self.settings["sound_volume"])}')
 
         main_menu.close()
 

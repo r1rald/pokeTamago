@@ -51,8 +51,8 @@ def choose_poke(self,player):
 
     elements = [
         [sg.Frame('', combined, size=(200, 345), p=5, border_width=3, background_color=bg)],
-        [c.button(self,'Choose',0.5,pad=((0,5),(0,5))), 
-         c.button(self,'Back',0.5,pad=((5,0),(0,5)), key='BACK1')]
+        [c.button(self,'Choose',0.45,pad=((5,5),(5,5))), 
+         c.button(self,'Back',0.45,pad=((5,5),(5,5)), key='BACK1')]
     ]
 
     return elements
