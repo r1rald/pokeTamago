@@ -10,3 +10,4 @@ from src.components.eating import eat_screen
 from src.components.button import button
 from src.components.PopUp import pop_up
 from src.components.main_menu import main_menu
+from src.components.main_loop import main_loop
