@@ -27,15 +27,15 @@ def settings(self):
     theme = [
         [sg.Text(f"Current theme: {self.settings['theme']}", background_color=bg, key='_theme_txt_',
             font=('Pokemon Pixel Font', 16, 'normal'))],
-        [sg.Combo(listOfThemes, size=(25, 10), default_value=f"{self.settings['theme']}", 
-            font=('Pokemon Pixel Font', 18, 'normal'), key='_theme_')],
+        [sg.Combo(listOfThemes, size=(25, 10), default_value=self.settings['theme'], 
+            font=('Pokemon Pixel Font', 18, 'normal'), key='_theme_', readonly=True)],
     ]
 
     sounds = [
         [sg.Text(f"Current music: {self.settings['music']}", background_color=bg, key='_music_txt_',
             font=('Pokemon Pixel Font', 16, 'normal'))],
         [sg.Combo(listOfMusic, size=(12, 1), default_value=self.settings['music'], key='_music_',
-            font=('Pokemon Pixel Font', 18, 'normal')),
+            font=('Pokemon Pixel Font', 18, 'normal'), readonly=True),
         sg.Checkbox(text=status1, default=self.settings['music_playing'], background_color=bg,
             font=('Pokemon Pixel Font', 16, 'normal'), key='_playing_')],
         [sg.Text(f'Music', background_color=bg, font=('Pokemon Pixel Font', 16, 'normal'))],
@@ -57,9 +57,12 @@ def settings(self):
     ]
 
     scaling = [
-        [sg.Checkbox('0.5x', background_color=bg, font=('Pokemon Pixel Font', 16, 'normal'), k='s05'), 
-         sg.Checkbox('1x', background_color=bg, font=('Pokemon Pixel Font', 16, 'normal'), k='s1'), 
-         sg.Checkbox('2x', background_color=bg, font=('Pokemon Pixel Font', 16, 'normal'), k='s2')]
+        [sg.Radio('0.5x', group_id='scale', background_color=bg, font=('Pokemon Pixel Font', 16, 'normal'),
+            k='s1'), 
+         sg.Radio('1x', group_id='scale', background_color=bg, font=('Pokemon Pixel Font', 16, 'normal'),
+            k='s2'), 
+         sg.Radio('1.5x', group_id='scale', background_color=bg, font=('Pokemon Pixel Font', 16, 'normal'),
+            k='s3')]
     ]
 
     combined = [

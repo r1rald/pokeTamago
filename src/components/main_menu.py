@@ -8,15 +8,15 @@ def main_menu(self):
     ]
 
     buttons = [
-        [c.button(self,'New Poke',0.65,False,True,False,(0,2))],
-        [c.button(self,'Continue',0.65,False,True,False,(0,2))],
-        [c.button(self,'Settings',0.65,False,True,False,(0,2))],
-        [c.button(self,'Exit',0.65,False,True,False,(0,2))]
+        [c.button(self,'New Poke',0.65,False,True,False,(0,4))],
+        [c.button(self,'Continue',0.65,False,True,False,(0,4))],
+        [c.button(self,'Settings',0.65,False,True,False,(0,4))],
+        [c.button(self,'Exit',0.65,False,True,False,(0,4))]
     ]
 
 
     combined = [
-        [sg.Column(image, p=((0,0),(50,0)))],
+        [sg.Column(image, p=((0,0),(40,10)))],
         [sg.Column(buttons, p=0)]
     ]
     

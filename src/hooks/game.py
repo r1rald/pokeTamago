@@ -17,6 +17,7 @@ import os
 class Game:
     run = True
     cancel = False
+    path = os.path.expanduser('~\\Documents\\pokeTamago\\cfg')
 
     def __init__(self):
         self.settings = {
@@ -29,14 +30,12 @@ class Game:
             'scale': 1
         }
 
-        path = os.path.expanduser('~\\Documents\\pokeTamago\\cfg')
-
         if os.path.exists(os.path.expanduser('~\\Documents\\pokeTamago\\cfg')):
-            with open(f'{path}\\settings.json', 'r') as settings:
+            with open(f'{self.path}\\settings.json', 'r') as settings:
                 data = json.load(settings)
                 self.settings = data
         else:
-            os.makedirs(path)
+            os.makedirs(self.path)
             self.save_settings()
 
         sg.theme(self.settings['theme'])
@@ -175,14 +174,14 @@ class Game:
 
                     if not self.read_save():
                         main_menu['CONTINUE'].update(disabled=sg.BUTTON_DISABLED_MEANS_IGNORE,
-                            image_data=f.image2data(None,True,'buttons\\disabled_button',0.75), 
+                            image_data=f.image2data(None,True,'buttons\\disabled_button',0.65), 
                             button_color=('#363840', sg.theme_background_color()))
                         
-                    self.settings['music'] = values['_music_']
                     self.settings['music_playing'] = values['_playing_']
                     self.settings['music_volume'] = values['_music_vol_']
                     self.settings['sound_volume'] = values['_sound_vol_']
                     self.settings['portrait_anim'] = values['_portrait_']
+                    self.settings['scale'] = 0.5 if values['s1']==True else 1.5 if values['s3']==True else 1.0
                         
                     main_menu.refresh()
 
@@ -258,10 +257,16 @@ class Game:
                         if event == 'OK':
                             continue
                     else:
-                        path = os.path.expanduser('~\\Documents\\pokeTamago\\save')
-                        os.remove(f'{path}\\{values["load"][0]}.json')
-                        self.read_save()
-                        main_menu['load'].update(values=[x for x in self.read_save()])
+                        event = c.pop_up(self,'','Are you sure you want to continue?')
+
+                        if event == 'OK':
+                            path = os.path.expanduser('~\\Documents\\pokeTamago\\save')
+                            os.remove(f'{path}\\{values["load"][0]}.json')
+                            self.read_save()
+                            main_menu['load'].update(values=[x for x in self.read_save()])
+
+                        if event == 'Cancel':
+                            continue
 
                 case 'BACK2':
                     main_menu['menu'].update(visible=True)
@@ -272,6 +277,10 @@ class Game:
                     main_menu['menu'].update(visible=False)
                     main_menu['settings'].update(visible=True)
 
+                    with open(f'{self.path}\\settings.json', 'r') as settings:
+                        data = json.load(settings)
+                        self.settings = data                  
+
                 case 'DEFAULT':
                     self.settings = {
                         "theme": "TamagoDefault",
@@ -280,7 +289,8 @@ class Game:
                         "music_playing": True,
                         "music_volume": 100.0,
                         "sound_volume": 100.0,
-                        "portrait_anim": True
+                        "portrait_anim": True,
+                        "scale": 1
                     }
                     self.save_settings()
                     os.execl(sys.executable, sys.executable, *sys.argv)
@@ -301,12 +311,14 @@ class Game:
                             data = json.load(settings)
                             self.settings = data
 
+                        main_menu['_music_'].update(self.settings['music'])
+                        main_menu['_theme_'].update(self.settings['theme'])
                         main_menu['menu'].update(visible=True)
                         main_menu['settings'].update(visible=False)
 
                     if event == 'CANCEL':
-                        main_menu['menu'].update(visible=False)
-                        main_menu['settings'].update(visible=True)
+                        continue
+
             try:
                 if main_menu.FindElementWithFocus() == main_menu['-IN-'] and values['-IN-'] == '--ENTER NAME--':
                     main_menu['-IN-'].update(value='')
@@ -328,10 +340,14 @@ class Game:
             else:
                 main_menu['-IN-'].update(value=name_value)
 
-            main_menu['_playing_'].update(text='Enabled' if self.settings['music_playing'] else 'Disabled')
-            main_menu['_portrait_'].update(text='Enabled' if self.settings['portrait_anim'] else 'Disabled')
+            main_menu['_theme_txt_'].update(f"Current theme: {self.settings['theme']}")
+            main_menu['_music_txt_'].update(f"Current music: {self.settings['music']}")
+            main_menu['_playing_'].update(self.settings['music_playing'], text='Enabled' if self.settings['music_playing'] else 'Disabled')
+            main_menu['_portrait_'].update(self.settings['portrait_anim'], text='Enabled' if self.settings['portrait_anim'] else 'Disabled')
             main_menu['m_value'].update(f'{int(self.settings["music_volume"])}')
+            main_menu['_music_vol_'].update(f'{int(self.settings["music_volume"])}')
             main_menu['s_value'].update(f'{int(self.settings["sound_volume"])}')
+            main_menu['_sound_vol_'].update(f'{int(self.settings["sound_volume"])}')
 
         main_menu.close()
 
@@ -479,9 +495,7 @@ class Game:
 
 
     def save_settings(self):
-        path = os.path.expanduser('~\\Documents\\pokeTamago\\cfg')
-
-        with open(f"{path}\\settings.json", 'w') as settings: 
+        with open(f"{self.path}\\settings.json", 'w') as settings: 
             json.dump(self.settings, settings, indent=4)
 
 
