@@ -84,7 +84,7 @@ def death_screen(self, player):
     deathWindow = sg.Window('Passing', dead(self,player), finalize=True, element_justification="c")
 
     deathWindow['death_graph'].draw_image('src\\assets\\img\\bg\\death_graveyard.png', location=(0, 0))
-    deathWindow['revive_graph'].draw_image('src\\assets\\img\\death_graveyard.png', location=(0, 0))
+    deathWindow['revive_graph'].draw_image('src\\assets\\img\\bg\\death_graveyard.png', location=(0, 0))
 
     index1 = 1
     index2 = 1
